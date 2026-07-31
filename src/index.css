@@ -1,1 +1,71 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-brand-primary: #0f172a;
+    --color-brand-accent: #0d9488;
+    --color-brand-emerald: #059669;
+    --color-brand-gold: #d97706;
+    --color-brand-blue: #2563eb;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans antialiased min-h-screen selection:bg-teal-600 selection:text-white;
+  }
+}
+
+/* Light Glassmorphism & Card Utility Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 14px 0 rgba(15, 23, 42, 0.04);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  background: #ffffff;
+  border-color: rgba(13, 148, 136, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px -10px rgba(13, 148, 136, 0.15);
+}
+
+/* Light Ambient Glow & Gradient Effects */
+.bg-radial-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.08) 0%, transparent 65%);
+}
+
+.bg-hero-light {
+  background: linear-gradient(135deg, rgba(240, 253, 250, 0.9) 0%, rgba(255, 255, 255, 1) 50%, rgba(236, 253, 245, 0.9) 100%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
+}
