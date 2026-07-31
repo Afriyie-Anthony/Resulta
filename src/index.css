@@ -4,51 +4,49 @@
   :root {
     --color-brand-primary: #0f172a;
     --color-brand-accent: #0d9488;
-    --color-brand-emerald: #059669;
-    --color-brand-gold: #d97706;
+    --color-brand-emerald: #10b981;
+    --color-brand-gold: #f59e0b;
     --color-brand-blue: #2563eb;
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 font-sans antialiased min-h-screen selection:bg-teal-600 selection:text-white;
+    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-teal-500 selection:text-white;
   }
 }
 
-/* Light Glassmorphism & Card Utility Classes */
+/* Glassmorphism Utility Classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 14px 0 rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card-hover:hover {
-  background: #ffffff;
-  border-color: rgba(13, 148, 136, 0.3);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 30px -10px rgba(13, 148, 136, 0.15);
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(13, 148, 136, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(13, 148, 136, 0.2);
 }
 
-/* Light Ambient Glow & Gradient Effects */
+/* Custom Glow & Gradient Effects */
 .bg-radial-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.08) 0%, transparent 65%);
+  background: radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.15) 0%, transparent 65%);
 }
 
-.bg-hero-light {
-  background: linear-gradient(135deg, rgba(240, 253, 250, 0.9) 0%, rgba(255, 255, 255, 1) 50%, rgba(236, 253, 245, 0.9) 100%);
+.bg-hero-gradient {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(13, 148, 136, 0.2) 50%, rgba(15, 23, 42, 0.98) 100%);
 }
 
 /* Custom Scrollbar */
@@ -58,11 +56,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0f172a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #334155;
   border-radius: 9999px;
 }
 

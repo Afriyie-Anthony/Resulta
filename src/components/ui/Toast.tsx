@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
-import type { ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import type { ToastMessage } from '../../types/ui';
 
 interface ToastContextType {

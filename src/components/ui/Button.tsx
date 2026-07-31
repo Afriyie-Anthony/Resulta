@@ -1,5 +1,4 @@
-import React from 'react';
-import type { ButtonHTMLAttributes } from 'react';
+import React, { type ButtonHTMLAttributes } from 'react';
 import type { ButtonVariant, ButtonSize } from '../../types/ui';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

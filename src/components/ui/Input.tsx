@@ -1,5 +1,4 @@
-import React from 'react';
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import React, { InputHTMLAttributes, ReactNode } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -26,14 +25,14 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+        <label htmlFor={inputId} className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
           {label}
         </label>
       )}
 
-      <div className="relative flex items-center rounded-xl overflow-hidden bg-white border border-slate-300 focus-within:border-teal-600 focus-within:ring-2 focus-within:ring-teal-600/20 transition-all duration-200 shadow-sm">
+      <div className="relative flex items-center rounded-xl overflow-hidden bg-slate-900/90 border border-slate-800 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all duration-200">
         {prefix && (
-          <span className="pl-3 py-2.5 text-sm font-semibold text-slate-600 select-none bg-slate-100 border-r border-slate-200">
+          <span className="pl-3 py-2.5 text-sm font-semibold text-slate-400 select-none bg-slate-850 border-r border-slate-800">
             {prefix}
           </span>
         )}
@@ -46,12 +45,11 @@ export const Input: React.FC<InputProps> = ({
 
         <input
           id={inputId}
-          className={`w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
             leftIcon && !prefix ? 'pl-2' : ''
           } ${rightIcon ? 'pr-10' : ''} ${className}`}
           {...props}
         />
-
 
         {rightIcon && (
           <div className="absolute right-3.5 text-slate-400 flex items-center">

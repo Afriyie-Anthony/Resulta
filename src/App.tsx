@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
 import { AffiliateLayout } from './components/layout/AffiliateLayout';
@@ -13,14 +13,12 @@ import type { LayoutMode } from './types/ui';
 import {
   FiCheckCircle,
   FiZap,
-  FiShield,
+  FiShieldCheck,
   FiSmartphone,
   FiTrendingUp,
   FiCopy,
   FiBox,
-  FiRefreshCw,
-  FiChevronLeft,
-  FiChevronRight
+  FiRefreshCw
 } from 'react-icons/fi';
 
 const AppContent: React.FC = () => {
@@ -29,57 +27,7 @@ const AppContent: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE' | null>(null);
   const [phone, setPhone] = useState('');
   const [momoNetwork, setMomoNetwork] = useState('MTN');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const { addToast } = useToast();
-
-  const slides = [
-    {
-      badge: 'Official WAEC Result Checker Distributor',
-      badgeVariant: 'primary' as const,
-      title: 'Get Your WASSCE & BECE Result Checker Instantly',
-      description: 'Buy genuine WAEC result checking vouchers 24/7 online or via USSD (*928*44#). Instant PIN & Serial delivery straight to your screen and SMS.',
-      primaryBtnText: 'Buy WASSCE Checker (GH₵ 35.00)',
-      secondaryBtnText: 'Buy BECE Checker (GH₵ 30.00)',
-      primaryProduct: 'WASSCE' as const,
-      secondaryProduct: 'BECE' as const,
-      imageIcon: <FiZap className="w-12 h-12 text-teal-600" />,
-      bgGradient: 'from-teal-500/10 via-emerald-500/5 to-transparent',
-    },
-    {
-      badge: 'Offline Cellular USSD Technology',
-      badgeVariant: 'warning' as const,
-      title: 'No Internet? Dial *928*44# On Any Phone Network',
-      description: 'Zero data needed. Dial *928*44# on MTN, Telecel, or AT to buy WASSCE and BECE result checkers directly with Mobile Money in under 10 seconds.',
-      primaryBtnText: 'Try Online Checkout Now',
-      secondaryBtnText: 'View USSD Instructions',
-      primaryProduct: 'WASSCE' as const,
-      secondaryProduct: 'BECE' as const,
-      imageIcon: <FiSmartphone className="w-12 h-12 text-amber-600" />,
-      bgGradient: 'from-amber-500/10 via-teal-500/5 to-transparent',
-    },
-    {
-      badge: 'Earn 8% Commission Per Sale',
-      badgeVariant: 'success' as const,
-      title: 'Become an Authorized Resulta Affiliate Agent',
-      description: 'Share your custom referral link with students, schools, and friends. Earn instant commissions paid straight to your Mobile Money wallet.',
-      primaryBtnText: 'Join Affiliate Program',
-      secondaryBtnText: 'Calculate Earnings',
-      primaryProduct: 'WASSCE' as const,
-      secondaryProduct: 'BECE' as const,
-      imageIcon: <FiTrendingUp className="w-12 h-12 text-emerald-600" />,
-      bgGradient: 'from-emerald-500/10 via-sky-500/5 to-transparent',
-    },
-  ];
-
-  // Hero Slider Auto-Play Effect
-  useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [isPaused, slides.length]);
 
   const handleBuyClick = (product: 'WASSCE' | 'BECE') => {
     setSelectedProduct(product);
@@ -97,38 +45,38 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div>
       {/* Top Layout Switcher Control */}
-      <div className="bg-white border-b border-slate-200 py-2.5 px-4 sticky top-0 z-50 flex items-center justify-between text-xs shadow-xs">
+      <div className="bg-slate-900/90 border-b border-slate-800 py-2.5 px-4 sticky top-0 z-50 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-slate-500 font-semibold uppercase tracking-wider">Preview Mode:</span>
-          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <span className="text-slate-400 font-semibold uppercase tracking-wider">Preview Mode:</span>
+          <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setLayoutMode('customer')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 layoutMode === 'customer'
-                  ? 'bg-teal-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Customer Website
             </button>
             <button
               onClick={() => setLayoutMode('affiliate')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 layoutMode === 'affiliate'
-                  ? 'bg-teal-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Affiliate Portal
             </button>
             <button
               onClick={() => setLayoutMode('admin')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-medium transition-all ${
                 layoutMode === 'admin'
-                  ? 'bg-teal-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Admin Control Center
@@ -137,140 +85,75 @@ const AppContent: React.FC = () => {
         </div>
 
         <Badge variant="primary" pulse>
-          Light Theme Commercial Architecture
+          Phase 1 Production Ready Architecture
         </Badge>
       </div>
 
       {/* Render Selected Layout Mode */}
       {layoutMode === 'customer' && (
         <CustomerLayout>
-          {/* Hero Slider Section */}
-          <section
-            className="relative py-16 lg:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            <div className="relative rounded-3xl border border-slate-200/80 bg-white shadow-xl overflow-hidden">
-              {/* Slider Track */}
-              <div
-                className="flex transition-transform duration-700 ease-out"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          {/* Hero Section */}
+          <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center relative overflow-hidden">
+            <Badge variant="success" pulse className="mb-4">
+              Official WAEC Result-Checking Voucher Distributor
+            </Badge>
+
+            <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight max-w-3xl mx-auto leading-tight">
+              Get Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-200">WASSCE & BECE</span> Result Checker Instantly
+            </h1>
+
+            <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Buy WAEC result checking vouchers online or via USSD (*928*44#). Instant PIN & Serial delivery straight to your screen and phone SMS.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <Button
+                variant="gradient"
+                size="lg"
+                leftIcon={<FiZap className="w-5 h-5" />}
+                onClick={() => handleBuyClick('WASSCE')}
               >
-                {slides.map((slide, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-full shrink-0 p-8 sm:p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-br ${slide.bgGradient}`}
-                  >
-                    <div className="max-w-2xl text-center md:text-left">
-                      <Badge variant={slide.badgeVariant} pulse className="mb-4">
-                        {slide.badge}
-                      </Badge>
+                Buy WASSCE Checker (GH₵ 25.00)
+              </Button>
 
-                      <h1 className="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight leading-tight mb-4">
-                        {slide.title}
-                      </h1>
-
-                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-8">
-                        {slide.description}
-                      </p>
-
-                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                        <Button
-                          variant="primary"
-                          size="lg"
-                          leftIcon={<FiZap className="w-5 h-5" />}
-                          onClick={() => handleBuyClick(slide.primaryProduct)}
-                        >
-                          {slide.primaryBtnText}
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          leftIcon={<FiSmartphone className="w-5 h-5" />}
-                          onClick={() => handleBuyClick(slide.secondaryProduct)}
-                          className="border-slate-300 text-slate-700 hover:bg-slate-50"
-                        >
-                          {slide.secondaryBtnText}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Decorative Visual Card */}
-                    <div className="shrink-0 flex flex-col items-center justify-center p-8 bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200 shadow-lg w-full md:w-72 text-center">
-                      <div className="w-20 h-20 rounded-2xl bg-teal-50 flex items-center justify-center mb-4 border border-teal-100 shadow-inner">
-                        {slide.imageIcon}
-                      </div>
-                      <img src="/assets/logo.png" alt="Resulta" className="h-7 w-auto mb-2 object-contain" />
-                      <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200">
-                        24/7 Automated Dispatch
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Slider Controls (Prev / Next & Dots) */}
-              <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between px-6 pointer-events-none">
-                <button
-                  onClick={() => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
-                  className="pointer-events-auto w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-teal-600 hover:text-white transition-all"
-                  aria-label="Previous Slide"
-                >
-                  <FiChevronLeft className="w-5 h-5" />
-                </button>
-
-                <div className="flex gap-2 pointer-events-auto">
-                  {slides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentSlide(i)}
-                      className={`h-2.5 rounded-full transition-all ${
-                        currentSlide === i ? 'w-8 bg-teal-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
-                      }`}
-                      aria-label={`Go to slide ${i + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-                  className="pointer-events-auto w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-teal-600 hover:text-white transition-all"
-                  aria-label="Next Slide"
-                >
-                  <FiChevronRight className="w-5 h-5" />
-                </button>
-              </div>
+              <Button
+                variant="outline"
+                size="lg"
+                leftIcon={<FiSmartphone className="w-5 h-5" />}
+                onClick={() => handleBuyClick('BECE')}
+              >
+                Buy BECE Checker (GH₵ 20.00)
+              </Button>
             </div>
 
-            {/* Feature Highlights Grid */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            {/* Feature Highlights */}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
               <Card glass hoverable>
-                <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl mb-4 border border-teal-200">
+                <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-xl mb-4 border border-teal-500/20">
                   <FiZap />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">Instant Fulfillment</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-bold text-white mb-1">Instant Fulfillment</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
                   Your Serial Number & PIN display immediately on screen and arrive via SMS in less than 5 seconds.
                 </p>
               </Card>
 
               <Card glass hoverable>
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 border border-emerald-200">
-                  <FiShield />
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 border border-emerald-500/20">
+                  <FiShieldCheck />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">100% Genuine WAEC Vouchers</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-bold text-white mb-1">100% Genuine WAEC Vouchers</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
                   Verified stock directly sourced for authentic WASSCE School & Private candidate result portals.
                 </p>
               </Card>
 
               <Card glass hoverable>
-                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-4 border border-amber-200">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 border border-amber-500/20">
                   <FiSmartphone />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">USSD Offline Support</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h3 className="text-lg font-bold text-white mb-1">USSD Offline Support</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
                   No internet? Dial *928*44# on any Ghanaian phone network to buy instantly via Mobile Money.
                 </p>
               </Card>
@@ -278,57 +161,56 @@ const AppContent: React.FC = () => {
           </section>
 
           {/* Catalog Section */}
-          <section id="vouchers" className="py-16 bg-white border-t border-slate-200 px-4 sm:px-6 lg:px-8">
+          <section id="vouchers" className="py-12 bg-slate-900/60 border-t border-slate-800 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-12">
-                <Badge variant="primary" className="mb-2">Official Portal Rates</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Select Result Checker Voucher</h2>
-                <p className="text-xs sm:text-sm text-slate-600 mt-2">Available 24/7 with zero service markup fees</p>
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white">Select Result Checker Voucher</h2>
+                <p className="text-xs text-slate-400 mt-1">Available 24/7 with zero service markup fees</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {/* WASSCE Product Card */}
-                <Card glass hoverable className="border-teal-300 bg-gradient-to-b from-teal-50/50 to-white">
+                <Card glass hoverable className="border-teal-500/30">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <Badge variant="primary" className="mb-2">WASSCE 2026 Ready</Badge>
-                      <h3 className="text-2xl font-bold text-slate-900">WASSCE Result Checker</h3>
-                      <p className="text-xs text-slate-500 mt-1">School & Private Candidates</p>
+                      <h3 className="text-xl font-extrabold text-white">WASSCE Result Checker</h3>
+                      <p className="text-xs text-slate-400 mt-1">School & Private Candidates</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-3xl font-bold text-teal-700">{formatCedi(35.0)}</span>
-                      <span className="block text-[10px] font-semibold text-slate-500">per voucher</span>
+                      <span className="text-2xl font-black text-emerald-400">{formatCedi(25.0)}</span>
+                      <span className="block text-[10px] text-slate-400">per voucher</span>
                     </div>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-700 mb-8 border-y border-slate-100 py-4">
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-teal-600" /> Checks WASSCE School & Nov/Dec Results</li>
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-teal-600" /> Up to 5 uses per voucher pin</li>
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-teal-600" /> Instant SMS & On-Screen PIN delivery</li>
+                  <ul className="space-y-2 text-xs text-slate-300 mb-6">
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Checks WASSCE School & Nov/Dec Results</li>
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Up to 5 uses per voucher pin</li>
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Instant SMS & On-Screen PIN delivery</li>
                   </ul>
-                  <Button variant="primary" fullWidth size="lg" onClick={() => handleBuyClick('WASSCE')}>
+                  <Button variant="gradient" fullWidth onClick={() => handleBuyClick('WASSCE')}>
                     Buy WASSCE Voucher Now
                   </Button>
                 </Card>
 
                 {/* BECE Product Card */}
-                <Card glass hoverable className="border-emerald-300 bg-gradient-to-b from-emerald-50/50 to-white">
+                <Card glass hoverable className="border-emerald-500/30">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <Badge variant="success" className="mb-2">BECE 2026 Ready</Badge>
-                      <h3 className="text-2xl font-bold text-slate-900">BECE Result Checker</h3>
-                      <p className="text-xs text-slate-500 mt-1">Junior High School Candidates</p>
+                      <h3 className="text-xl font-extrabold text-white">BECE Result Checker</h3>
+                      <p className="text-xs text-slate-400 mt-1">Junior High School Candidates</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-3xl font-bold text-emerald-700">{formatCedi(30.0)}</span>
-                      <span className="block text-[10px] font-semibold text-slate-500">per voucher</span>
+                      <span className="text-2xl font-black text-emerald-400">{formatCedi(20.0)}</span>
+                      <span className="block text-[10px] text-slate-400">per voucher</span>
                     </div>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-700 mb-8 border-y border-slate-100 py-4">
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-emerald-600" /> Checks BECE School & Private Results</li>
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-emerald-600" /> Up to 5 uses per voucher pin</li>
-                    <li className="flex items-center gap-2 font-medium"><FiCheckCircle className="text-emerald-600" /> Instant SMS & On-Screen PIN delivery</li>
+                  <ul className="space-y-2 text-xs text-slate-300 mb-6">
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-emerald-400" /> Checks BECE School & Private Results</li>
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-emerald-400" /> Up to 5 uses per voucher pin</li>
+                    <li className="flex items-center gap-2"><FiCheckCircle className="text-emerald-400" /> Instant SMS & On-Screen PIN delivery</li>
                   </ul>
-                  <Button variant="primary" fullWidth size="lg" onClick={() => handleBuyClick('BECE')}>
+                  <Button variant="primary" fullWidth onClick={() => handleBuyClick('BECE')}>
                     Buy BECE Voucher Now
                   </Button>
                 </Card>
@@ -345,36 +227,36 @@ const AppContent: React.FC = () => {
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card glass>
-                <p className="text-xs text-slate-500 font-semibold uppercase">Total Sales Referred</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">148</p>
-                <p className="text-[10px] text-emerald-600 font-bold mt-1 flex items-center gap-1">
+                <p className="text-xs text-slate-400 font-semibold uppercase">Total Sales Referred</p>
+                <p className="text-2xl font-black text-white mt-1">148</p>
+                <p className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
                   <FiTrendingUp /> +18% from last week
                 </p>
               </Card>
 
               <Card glass>
-                <p className="text-xs text-slate-500 font-semibold uppercase">Total Earnings</p>
-                <p className="text-3xl font-bold text-teal-700 mt-1">{formatCedi(1450.0)}</p>
-                <p className="text-[10px] text-slate-500 mt-1">GH₵ 10.00 commission per sale</p>
+                <p className="text-xs text-slate-400 font-semibold uppercase">Total Earnings</p>
+                <p className="text-2xl font-black text-emerald-400 mt-1">{formatCedi(1450.0)}</p>
+                <p className="text-[10px] text-slate-400 mt-1">GH₵ 10.00 commission per sale</p>
               </Card>
 
               <Card glass>
-                <p className="text-xs text-slate-500 font-semibold uppercase">Withdrawn to MoMo</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">{formatCedi(1130.0)}</p>
-                <p className="text-[10px] text-teal-700 mt-1 font-medium">Paid directly to 024XXXX67</p>
+                <p className="text-xs text-slate-400 font-semibold uppercase">Withdrawn to MoMo</p>
+                <p className="text-2xl font-black text-white mt-1">{formatCedi(1130.0)}</p>
+                <p className="text-[10px] text-teal-400 mt-1">Paid directly to 024XXXX67</p>
               </Card>
 
               <Card glass>
-                <p className="text-xs text-slate-500 font-semibold uppercase">Available for Payout</p>
-                <p className="text-3xl font-bold text-amber-600 mt-1">{formatCedi(320.0)}</p>
-                <Button variant="primary" size="sm" className="mt-2 w-full">
+                <p className="text-xs text-slate-400 font-semibold uppercase">Available for Payout</p>
+                <p className="text-2xl font-black text-amber-400 mt-1">{formatCedi(320.0)}</p>
+                <Button variant="gradient" size="sm" className="mt-2 w-full">
                   Withdraw to MoMo
                 </Button>
               </Card>
             </div>
 
             {/* Link Sharing Card */}
-            <Card glass header={<h3 className="font-bold text-slate-900">Your Unique Referral Link</h3>}>
+            <Card glass header={<h3 className="font-bold text-white">Your Unique Referral Link</h3>}>
               <div className="flex flex-col sm:flex-row gap-3 items-center">
                 <Input
                   readOnly
@@ -399,8 +281,8 @@ const AppContent: React.FC = () => {
               <Card glass>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold uppercase">WASSCE Stock Available</p>
-                    <p className="text-3xl font-bold text-slate-900 mt-1">1,420</p>
+                    <p className="text-xs text-slate-400 font-semibold uppercase">WASSCE Stock Available</p>
+                    <p className="text-2xl font-black text-white mt-1">1,420</p>
                   </div>
                   <Badge variant="success">Healthy</Badge>
                 </div>
@@ -409,8 +291,8 @@ const AppContent: React.FC = () => {
               <Card glass>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold uppercase">BECE Stock Available</p>
-                    <p className="text-3xl font-bold text-amber-600 mt-1">180</p>
+                    <p className="text-xs text-slate-400 font-semibold uppercase">BECE Stock Available</p>
+                    <p className="text-2xl font-black text-amber-400 mt-1">180</p>
                   </div>
                   <Badge variant="warning" pulse>Low Stock</Badge>
                 </div>
@@ -419,8 +301,8 @@ const AppContent: React.FC = () => {
               <Card glass>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold uppercase">Today's Revenue</p>
-                    <p className="text-3xl font-bold text-emerald-700 mt-1">{formatCedi(8450.0)}</p>
+                    <p className="text-xs text-slate-400 font-semibold uppercase">Today's Revenue</p>
+                    <p className="text-2xl font-black text-emerald-400 mt-1">{formatCedi(8450.0)}</p>
                   </div>
                   <Badge variant="primary">338 Orders</Badge>
                 </div>
@@ -429,8 +311,8 @@ const AppContent: React.FC = () => {
               <Card glass>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-slate-500 font-semibold uppercase">Pending Withdrawals</p>
-                    <p className="text-3xl font-bold text-rose-600 mt-1">{formatCedi(640.0)}</p>
+                    <p className="text-xs text-slate-400 font-semibold uppercase">Pending Withdrawals</p>
+                    <p className="text-2xl font-black text-rose-400 mt-1">{formatCedi(640.0)}</p>
                   </div>
                   <Badge variant="error">2 Payouts</Badge>
                 </div>
@@ -438,9 +320,9 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Quick Actions */}
-            <Card glass header={<h3 className="font-bold text-slate-900">Voucher Inventory Batch Operations</h3>}>
+            <Card glass header={<h3 className="font-bold text-white">Voucher Inventory Batch Operations</h3>}>
               <div className="flex flex-wrap gap-3">
-                <Button variant="primary" leftIcon={<FiBox />}>
+                <Button variant="gradient" leftIcon={<FiBox />}>
                   Import Voucher Batch (CSV / Excel)
                 </Button>
                 <Button variant="secondary" leftIcon={<FiRefreshCw />}>
@@ -460,18 +342,18 @@ const AppContent: React.FC = () => {
         description="Select Mobile Money network and enter your phone number to receive payment prompt."
       >
         <form onSubmit={handlePaymentSubmit} className="space-y-4">
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
             <div>
-              <p className="font-bold text-slate-900 text-sm">{selectedProduct} Result Checker</p>
-              <p className="text-xs text-slate-500">Instant Serial & PIN via SMS</p>
+              <p className="font-bold text-white text-sm">{selectedProduct} Result Checker</p>
+              <p className="text-xs text-slate-400">Instant Serial & PIN via SMS</p>
             </div>
-            <p className="text-xl font-bold text-teal-700">
-              {selectedProduct === 'WASSCE' ? formatCedi(35.0) : formatCedi(30.0)}
+            <p className="text-lg font-black text-emerald-400">
+              {selectedProduct === 'WASSCE' ? formatCedi(25.0) : formatCedi(20.0)}
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
               Mobile Money Network
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -482,8 +364,8 @@ const AppContent: React.FC = () => {
                   onClick={() => setMomoNetwork(net)}
                   className={`py-2 rounded-xl text-xs font-bold border transition-all ${
                     momoNetwork === net
-                      ? 'bg-teal-50 border-teal-600 text-teal-800 ring-2 ring-teal-600/20'
-                      : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
+                      ? 'bg-teal-500/20 border-teal-500 text-teal-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   {net}
@@ -505,8 +387,8 @@ const AppContent: React.FC = () => {
             <Button variant="ghost" type="button" onClick={() => setIsCheckoutOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" type="submit" size="lg">
-              Pay Now ({selectedProduct === 'WASSCE' ? formatCedi(35.0) : formatCedi(30.0)})
+            <Button variant="gradient" type="submit">
+              Pay Now ({selectedProduct === 'WASSCE' ? formatCedi(25.0) : formatCedi(20.0)})
             </Button>
           </div>
         </form>
