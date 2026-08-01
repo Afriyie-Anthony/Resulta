@@ -20,9 +20,10 @@ import ContactSupportPage from './pages/website/help/ContactSupportPage';
 import TermsPage from './pages/website/legal/TermsPage';
 import PrivacyPage from './pages/website/legal/PrivacyPage';
 import RefundPolicyPage from './pages/website/legal/RefundPolicyPage';
-import AffiliateApplyPage from './pages/website/affiliate/AffiliateApplyPage';
-import AffiliateLoginPage from './pages/website/affiliate/AffiliateLoginPage';
+import AffiliateAuth from './pages/website/affiliate/AffiliateAuth';
+import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
+import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
 import AdminLogin from './pages/admin/Login';
 import type { LayoutMode } from './types/ui';
 import {
@@ -499,8 +500,16 @@ const AppRoutes: React.FC = () => {
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/refund" element={<RefundPolicyPage />} />
       <Route path="/affiliate" element={<AffiliatePage />} />
-      <Route path="/affiliate/apply" element={<AffiliateApplyPage />} />
-      <Route path="/affiliate/login" element={<AffiliateLoginPage />} />
+      <Route path="/affiliate/apply" element={<AffiliateAuth defaultView="register" />} />
+      <Route path="/affiliate/login" element={<AffiliateAuth defaultView="login" />} />
+      <Route
+        path="/affiliate/dashboard"
+        element={
+          <AffiliateProtectedRoute>
+            <AffiliateDashboard />
+          </AffiliateProtectedRoute>
+        }
+      />
       <Route path="/" element={<Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

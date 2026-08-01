@@ -27,7 +27,7 @@ const FinalCTASection: React.FC = () => {
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            to="/purchase"
+            to="/purchase?type=bece"
             className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-4 rounded-xl text-base hover:bg-soft-ivory transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
           >
             Buy a Voucher

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiChevronDown } from 'react-icons/fi';
+import { FiChevronDown } from 'react-icons/fi';
 import BuyBottomSheet from './BuyBottomSheet';
 
 const navLinks = [
@@ -14,20 +14,13 @@ const purchaseOptions = [
   { label: 'BECE', href: '/purchase?type=bece' },
 ];
 
-const affiliateOptions = [
-  { label: 'Apply', href: '/affiliate/apply' },
-  { label: 'Login', href: '/affiliate/login' },
-];
-
 const WebsiteNavbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
-  const [isAffiliateOpen, setIsAffiliateOpen] = useState(false);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const purchaseRef = useRef<HTMLDivElement>(null);
-  const affiliateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +32,6 @@ const WebsiteNavbar: React.FC = () => {
 
   useEffect(() => {
     setIsPurchaseOpen(false);
-    setIsAffiliateOpen(false);
     setIsBuyOpen(false);
   }, [location]);
 
@@ -47,9 +39,6 @@ const WebsiteNavbar: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (purchaseRef.current && !purchaseRef.current.contains(event.target as Node)) {
         setIsPurchaseOpen(false);
-      }
-      if (affiliateRef.current && !affiliateRef.current.contains(event.target as Node)) {
-        setIsAffiliateOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -67,11 +56,6 @@ const WebsiteNavbar: React.FC = () => {
 
   const handlePurchaseNavigate = (href: string) => {
     setIsPurchaseOpen(false);
-    navigate(href);
-  };
-
-  const handleAffiliateNavigate = (href: string) => {
-    setIsAffiliateOpen(false);
     navigate(href);
   };
 
@@ -103,39 +87,6 @@ const WebsiteNavbar: React.FC = () => {
                 {link.label}
               </Link>
             ))}
-
-            {/* Affiliate Dropdown */}
-            <div className="relative" ref={affiliateRef}>
-              <button
-                type="button"
-                onClick={() => setIsAffiliateOpen(!isAffiliateOpen)}
-                className={`flex items-center gap-1 ${dropdownText} transition-colors`}
-                aria-expanded={isAffiliateOpen}
-                aria-haspopup="true"
-              >
-                Affiliate
-                <FiChevronDown className={`w-4 h-4 transition-transform ${isAffiliateOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isAffiliateOpen && (
-                <div
-                  className={`absolute top-full left-0 mt-2 w-40 rounded-xl ${dropdownBg} ${dropdownBorder} ${dropdownShadow} py-2 transition-all duration-200`}
-                  role="menu"
-                >
-                  {affiliateOptions.map((option) => (
-                    <button
-                      key={option.href}
-                      type="button"
-                      onClick={() => handleAffiliateNavigate(option.href)}
-                      className="block w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-slate-50"
-                      role="menuitem"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Purchase Dropdown */}
             <div className="relative" ref={purchaseRef}>
@@ -175,14 +126,12 @@ const WebsiteNavbar: React.FC = () => {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsBuyOpen(true)}
+            <Link
+              to="/affiliate/apply"
               className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-soft-ivory transition-colors shadow-lg"
             >
-              <FiShoppingCart className="w-4 h-4" />
-              Buy a Voucher
-            </button>
+              Apply as Affiliate
+            </Link>
           </div>
         </div>
       </div>

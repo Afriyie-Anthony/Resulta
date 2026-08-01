@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FiMinus, FiPlus, FiShoppingCart, FiUsers } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
@@ -23,7 +23,8 @@ const voucherConfig = {
 
 const PurchasePage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const voucherType = searchParams.get('type') || 'wassce';
+  const navigate = useNavigate();
+  const voucherType = searchParams.get('type') || 'bece';
   const config = voucherConfig[voucherType as keyof typeof voucherConfig];
   const [mode, setMode] = useState<'single' | 'bulk'>('single');
   const [quantity, setQuantity] = useState(mode === 'single' ? 1 : 10);
@@ -107,11 +108,8 @@ const PurchasePage: React.FC = () => {
       <WebsiteNavbar />
 
       <main className="flex-1 pb-20 md:pb-0">
-        <section className={`bg-${voucherType === 'wassce' ? 'primary' : 'secondary'} py-16 lg:py-20`}>
+        <section className={`${voucherType === 'wassce' ? 'bg-primary' : 'bg-secondary'} py-16 lg:py-20`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span className="inline-block text-xs font-semibold uppercase tracking-widest text-accent mb-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-              {config.badge}
-            </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
               {config.title} Result Checker
             </h1>
@@ -127,32 +125,64 @@ const PurchasePage: React.FC = () => {
               <div>
                 <div className="flex justify-center">
                   <div className="bg-warm rounded-2xl border border-border p-1.5 inline-flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleModeChange('single')}
-                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
-                      mode === 'single'
-                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    <FiShoppingCart className="w-4 h-4" />
-                    Single
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleModeChange('bulk')}
-                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
-                      mode === 'bulk'
-                        ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    <FiUsers className="w-4 h-4" />
-                    Bulk
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/purchase?type=bece')}
+                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                        voucherType === 'bece'
+                          ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      BECE
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/purchase?type=wassce')}
+                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                        voucherType === 'wassce'
+                          ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      WASSCE / NOVDEC
+                    </button>
+                  </div>
                 </div>
+                <p className="mt-2 text-xs text-text-secondary text-center">
+                  Select the voucher type you want to purchase.
+                </p>
               </div>
+
+              <div>
+                <div className="flex justify-center">
+                  <div className="bg-warm rounded-2xl border border-border p-1.5 inline-flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleModeChange('single')}
+                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                        mode === 'single'
+                          ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      <FiShoppingCart className="w-4 h-4" />
+                      Single
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleModeChange('bulk')}
+                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                        mode === 'bulk'
+                          ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      <FiUsers className="w-4 h-4" />
+                      Bulk
+                    </button>
+                  </div>
+                </div>
                 <p className="mt-2 text-xs text-text-secondary text-center">
                   {mode === 'single'
                     ? 'Buy 1 to 9 vouchers at GH₵ 20 each.'
