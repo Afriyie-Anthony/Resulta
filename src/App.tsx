@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
 import { AffiliateLayout } from './components/affilite/AffiliateLayout';
@@ -20,6 +20,7 @@ import ContactSupportPage from './pages/website/help/ContactSupportPage';
 import TermsPage from './pages/website/legal/TermsPage';
 import PrivacyPage from './pages/website/legal/PrivacyPage';
 import RefundPolicyPage from './pages/website/legal/RefundPolicyPage';
+import NotFound from './pages/website/NotFound';
 import AffiliateAuth from './pages/website/affiliate/AffiliateAuth';
 import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
@@ -511,7 +512,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route path="/" element={<Home />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
