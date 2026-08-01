@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
-import { AffiliateLayout } from './components/layout/AffiliateLayout';
-import { AdminLayout } from './components/layout/AdminLayout';
+import { AffiliateLayout } from './components/affilite/AffiliateLayout';
+import { AdminLayout } from './components/admin/AdminLayout';
 import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
 import { Badge } from './components/ui/Badge';
 import { Input } from './components/ui/Input';
 import { Modal } from './components/ui/Modal';
+import ProtectedRoute from './components/website/layout/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 import { formatCedi } from './utils/formatters';
+import Home from './pages/website/Home';
+import PurchasePage from './pages/website/purchase/PurchasePage';
+import RetrieveVoucherPage from './pages/website/my-vouchers/RetrieveVoucherPage';
+import FAQPage from './pages/website/help/FAQPage';
+import ContactSupportPage from './pages/website/help/ContactSupportPage';
+import TermsPage from './pages/website/legal/TermsPage';
+import PrivacyPage from './pages/website/legal/PrivacyPage';
+import RefundPolicyPage from './pages/website/legal/RefundPolicyPage';
+import AffiliateApplyPage from './pages/website/affiliate/AffiliateApplyPage';
+import AffiliateLoginPage from './pages/website/affiliate/AffiliateLoginPage';
+import AffiliatePage from './pages/website/affiliate/AffiliatePage';
+import AdminLogin from './pages/admin/Login';
 import type { LayoutMode } from './types/ui';
 import {
   FiCheckCircle,
   FiZap,
-  FiShieldCheck,
   FiSmartphone,
   FiTrendingUp,
   FiCopy,
@@ -60,6 +74,16 @@ const AppContent: React.FC = () => {
               }`}
             >
               Customer Website
+            </button>
+            <button
+              onClick={() => setLayoutMode('website')}
+              className={`px-3 py-1 rounded-lg font-medium transition-all ${
+                layoutMode === 'website'
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Resulta Homepage
             </button>
             <button
               onClick={() => setLayoutMode('affiliate')}
@@ -140,7 +164,7 @@ const AppContent: React.FC = () => {
 
               <Card glass hoverable>
                 <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 border border-emerald-500/20">
-                  <FiShieldCheck />
+                  <FiCheckCircle />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">100% Genuine WAEC Vouchers</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -219,6 +243,9 @@ const AppContent: React.FC = () => {
           </section>
         </CustomerLayout>
       )}
+
+      {/* Website Homepage */}
+      {layoutMode === 'website' && <Home />}
 
       {/* Affiliate Layout View */}
       {layoutMode === 'affiliate' && (
@@ -397,10 +424,98 @@ const AppContent: React.FC = () => {
   );
 };
 
+const AppRoutes: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isWebsiteRoute = location.pathname === '/' || location.pathname.startsWith('/purchase') || location.pathname.startsWith('/retrieve-voucher') || location.pathname.startsWith('/help') || location.pathname.startsWith('/legal') || location.pathname.startsWith('/affiliate');
+
+  return (
+    <Routes>
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Card glass>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-slate-400 font-semibold uppercase">WASSCE Stock Available</p>
+                        <p className="text-2xl font-black text-white mt-1">1,420</p>
+                      </div>
+                      <Badge variant="success">Healthy</Badge>
+                    </div>
+                  </Card>
+                  <Card glass>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-slate-400 font-semibold uppercase">BECE Stock Available</p>
+                        <p className="text-2xl font-black text-amber-400 mt-1">180</p>
+                      </div>
+                      <Badge variant="warning" pulse>Low Stock</Badge>
+                    </div>
+                  </Card>
+                  <Card glass>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-slate-400 font-semibold uppercase">Today's Revenue</p>
+                        <p className="text-2xl font-black text-emerald-400 mt-1">{formatCedi(8450.0)}</p>
+                      </div>
+                      <Badge variant="primary">338 Orders</Badge>
+                    </div>
+                  </Card>
+                  <Card glass>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-slate-400 font-semibold uppercase">Pending Withdrawals</p>
+                        <p className="text-2xl font-black text-rose-400 mt-1">{formatCedi(640.0)}</p>
+                      </div>
+                      <Badge variant="error">2 Payouts</Badge>
+                    </div>
+                  </Card>
+                </div>
+                <Card glass header={<h3 className="font-bold text-white">Voucher Inventory Batch Operations</h3>}>
+                  <div className="flex flex-wrap gap-3">
+                    <Button variant="gradient" leftIcon={<FiBox />}>
+                      Import Voucher Batch (CSV / Excel)
+                    </Button>
+                    <Button variant="secondary" leftIcon={<FiRefreshCw />}>
+                      Trigger MoMo Reconciliation
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/purchase" element={<PurchasePage />} />
+      <Route path="/retrieve-voucher" element={<RetrieveVoucherPage />} />
+      <Route path="/help/faq" element={<FAQPage />} />
+      <Route path="/help/contact" element={<ContactSupportPage />} />
+      <Route path="/legal/terms" element={<TermsPage />} />
+      <Route path="/legal/privacy" element={<PrivacyPage />} />
+      <Route path="/legal/refund" element={<RefundPolicyPage />} />
+      <Route path="/affiliate" element={<AffiliatePage />} />
+      <Route path="/affiliate/apply" element={<AffiliateApplyPage />} />
+      <Route path="/affiliate/login" element={<AffiliateLoginPage />} />
+      <Route path="/" element={<Home />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+
 export default function App() {
   return (
-    <ToastProvider>
-      <AppContent />
-    </ToastProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

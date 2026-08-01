@@ -1,16 +1,33 @@
 @import "tailwindcss";
 
+@theme {
+  --font-primary: 'Manrope', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+  --color-primary: #123B5D;
+  --color-secondary: #0F8B8D;
+  --color-accent: #E2B93B;
+  --color-warm: #F8F7F2;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #172B3A;
+  --color-text-secondary: #5B6873;
+  --color-border: #DCE3E7;
+  --color-success: #15803D;
+  --color-warning: #B7791F;
+  --color-error: #C53030;
+  --color-info: #2563EB;
+}
+
 @layer base {
   :root {
-    --color-brand-primary: #0f172a;
-    --color-brand-accent: #0d9488;
-    --color-brand-emerald: #10b981;
-    --color-brand-gold: #f59e0b;
-    --color-brand-blue: #2563eb;
+    --color-brand-primary: #123B5D;
+    --color-brand-accent: #0F8B8D;
+    --color-brand-emerald: #0F8B8D;
+    --color-brand-gold: #E2B93B;
+    --color-brand-blue: #2563EB;
   }
 
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-teal-500 selection:text-white;
+    @apply bg-warm text-text-primary font-primary antialiased min-h-screen selection:bg-secondary selection:text-surface;
   }
 }
 
@@ -66,4 +83,30 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #0d9488;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

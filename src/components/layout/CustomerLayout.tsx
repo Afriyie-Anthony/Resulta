@@ -3,7 +3,7 @@ import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
-import { FiSearch, FiPhoneCall, FiShieldCheck, FiCheckCircle } from 'react-icons/fi';
+import { FiSearch, FiPhoneCall, FiCheckCircle } from 'react-icons/fi';
 
 export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
   const [isLookupOpen, setIsLookupOpen] = useState(false);
@@ -163,7 +163,7 @@ export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
               Ghana's premier instant digital voucher distribution platform for WASSCE & BECE examination result checking.
             </p>
             <div className="flex items-center gap-2 text-emerald-400 font-medium">
-              <FiShieldCheck className="w-4 h-4" />
+              <FiCheckCircle className="w-4 h-4" />
               <span>Instant SMS & On-Screen Fulfillment</span>
             </div>
           </div>

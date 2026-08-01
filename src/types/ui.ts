@@ -27,4 +27,4 @@ export interface NavItem {
   children?: NavItem[];
 }
 
-export type LayoutMode = 'customer' | 'affiliate' | 'admin';
+export type LayoutMode = 'customer' | 'affiliate' | 'admin' | 'website';
