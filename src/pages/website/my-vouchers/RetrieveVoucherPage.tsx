@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiSearch, FiCopy, FiCheck, FiEye, FiEyeOff, FiDownload, FiLock, FiHelpCircle, FiShoppingCart } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
@@ -45,17 +45,6 @@ const RetrieveVoucherPage: React.FC = () => {
     if (cleaned.startsWith('0') && cleaned.length === 10) return true;
     if (cleaned.startsWith('233') && cleaned.length === 12) return true;
     return false;
-  };
-
-  const formatPhone = (value: string): string => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.startsWith('233') && cleaned.length === 12) {
-      return `+233 ${cleaned.slice(3, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8)}`;
-    }
-    if (cleaned.startsWith('0') && cleaned.length === 10) {
-      return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
-    }
-    return value;
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +144,7 @@ const RetrieveVoucherPage: React.FC = () => {
   const maskPin = (pin: string): string => {
     if (isPinVisible) return pin;
     const parts = pin.split('-');
-    return parts.map((part) => '••••').join('-');
+    return parts.map(() => '••••').join('-');
   };
 
   const renderLeftVisual = () => {
@@ -509,7 +498,7 @@ const RetrieveVoucherPage: React.FC = () => {
                 </div>
 
                 {/* States */}
-                {state === 'idle' && (
+                {(state === 'idle' || state === 'loading') && (
                   <form onSubmit={handleSubmit} className="bg-warm rounded-2xl border border-border p-6 sm:p-8 space-y-5">
                     <div>
                       <label htmlFor="phone" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">

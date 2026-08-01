@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiX, FiHelpCircle, FiMessageCircle, FiLock, FiFileText, FiRefreshCw } from 'react-icons/fi';
+import { FiHelpCircle, FiMessageCircle, FiLock, FiFileText, FiRefreshCw } from 'react-icons/fi';
 
 interface MoreBottomSheetProps {
   isOpen: boolean;

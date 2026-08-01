@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
 import { AffiliateLayout } from './components/affilite/AffiliateLayout';
@@ -37,7 +37,7 @@ import {
   FiRefreshCw
 } from 'react-icons/fi';
 
-const AppContent: React.FC = () => {
+export const AppContent: React.FC = () => {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('customer');
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE' | null>(null);
@@ -427,10 +427,6 @@ const AppContent: React.FC = () => {
 };
 
 const AppRoutes: React.FC = () => {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
-  const isWebsiteRoute = location.pathname === '/' || location.pathname.startsWith('/purchase') || location.pathname.startsWith('/retrieve-voucher') || location.pathname.startsWith('/help') || location.pathname.startsWith('/legal') || location.pathname.startsWith('/affiliate');
-
   return (
     <Routes>
       <Route path="/admin/login" element={<AdminLogin />} />

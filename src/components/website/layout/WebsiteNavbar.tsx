@@ -45,9 +45,7 @@ const WebsiteNavbar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const textColor = isScrolled ? 'text-white' : 'text-primary';
   const navTextColor = isScrolled ? 'text-white/70 hover:text-white' : 'text-primary/70 hover:text-primary';
-  const borderColor = isScrolled ? 'border-white/10' : 'border-primary/10';
   const dropdownBg = 'bg-white';
   const dropdownBorder = 'border-border';
   const dropdownShadow = 'shadow-lg shadow-slate-900/10';

@@ -41,7 +41,6 @@ const VoucherCard: React.FC<VoucherCardProps> = ({ title, subtitle, variant, ove
   const textColor = isGold ? 'text-primary' : 'text-white';
   const subtextColor = isGold ? 'text-primary/80' : 'text-white/80';
   const badgeBg = isGold ? 'bg-white/30' : 'bg-white/20';
-  const badgeText = isGold ? 'text-primary' : 'text-white';
   const dotColor = isGold ? 'bg-primary' : 'bg-white';
   const dotText = isGold ? 'text-primary' : 'text-white';
   const shadowColor = isGold ? 'bg-accent/40' : 'bg-secondary/40';
@@ -280,7 +279,7 @@ const HeroSection: React.FC = () => {
   const touchEndX = useRef(0);
 
   const goTo = useCallback((index: number) => {
-    setCurrent((prev) => (index + slides.length) % slides.length);
+    setCurrent((index + slides.length) % slides.length);
   }, []);
 
   const next = useCallback(() => goTo(current + 1), [current, goTo]);

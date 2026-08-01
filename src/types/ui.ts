@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'gradient';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'gradient' | 'accent';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'primary';

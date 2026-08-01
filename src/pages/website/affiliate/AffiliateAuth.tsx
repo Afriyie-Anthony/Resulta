@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiBriefcase, FiPhone, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button } from '../../../components/ui/Button';

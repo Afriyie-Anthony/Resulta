@@ -37,6 +37,7 @@ export const Button: React.FC<ButtonProps> = ({
     ghost: 'text-slate-300 hover:text-white hover:bg-slate-800/60 focus:ring-slate-500 focus:ring-offset-slate-900',
     danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-900/30 focus:ring-rose-500 focus:ring-offset-slate-900',
     gradient: 'bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 hover:from-teal-400 hover:to-emerald-500 text-white shadow-xl shadow-teal-950/50 border border-teal-400/30 focus:ring-teal-400 focus:ring-offset-slate-900',
+    accent: 'bg-[#E2B93B] hover:bg-[#d0a72c] text-slate-900 font-semibold shadow-lg shadow-amber-950/20 focus:ring-[#E2B93B] focus:ring-offset-slate-900',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';

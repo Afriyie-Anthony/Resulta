@@ -53,13 +53,12 @@ const HowItWorksUSSD: React.FC = () => {
   const [phoneVisible, setPhoneVisible] = useState(false);
 
   const goTo = useCallback((index: number) => {
-    setActiveStep((prev) => (index + steps.length) % steps.length);
+    setActiveStep((index + steps.length) % steps.length);
     setPhoneVisible(false);
     setTimeout(() => setPhoneVisible(true), 50);
   }, []);
 
   const next = useCallback(() => goTo(activeStep + 1), [activeStep, goTo]);
-  const prev = useCallback(() => goTo(activeStep - 1), [activeStep, goTo]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -83,12 +82,6 @@ const HowItWorksUSSD: React.FC = () => {
     }
     return d;
   }, []);
-
-  const getStepColor = (index: number) => {
-    if (index < activeStep) return '#0F8B8D';
-    if (index === activeStep) return '#E2B93B';
-    return 'rgba(255,255,255,0.25)';
-  };
 
   const currentPhone = steps[activeStep].phoneContent;
 

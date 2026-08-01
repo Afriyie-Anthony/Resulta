@@ -6,7 +6,6 @@ import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../../components/website/layout/MobileBottomNav';
 import BuyBottomSheet from '../../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../../components/website/layout/MoreBottomSheet';
-import { formatGhanaPhone } from '../../../utils/formatters';
 
 const voucherConfig = {
   wassce: {

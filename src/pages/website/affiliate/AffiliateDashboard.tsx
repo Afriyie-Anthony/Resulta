@@ -1,5 +1,4 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../../components/website/layout/MobileBottomNav';
@@ -11,6 +10,8 @@ import { Button } from '../../../components/ui/Button';
 
 const AffiliateDashboard: React.FC = () => {
   const { user, logout } = useAuth();
+  const [isBuyOpen, setIsBuyOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const referralCode = 'REF-GH-8823';
   const referralLink = `https://resulta.com.gh/?ref=${referralCode}`;
@@ -96,7 +97,9 @@ const AffiliateDashboard: React.FC = () => {
         </section>
       </main>
       <WebsiteFooter />
-      <MobileBottomNav />
+      <MobileBottomNav onBuyClick={() => setIsBuyOpen(true)} onMoreClick={() => setIsMoreOpen(true)} />
+      <BuyBottomSheet isOpen={isBuyOpen} onClose={() => setIsBuyOpen(false)} />
+      <MoreBottomSheet isOpen={isMoreOpen} onClose={() => setIsMoreOpen(false)} />
     </div>
   );
 };
