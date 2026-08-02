@@ -1,111 +1,158 @@
 import React, { useState } from 'react';
-import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { Button } from '../../../components/ui/Button';
-import { formatCedi } from '../../../utils/formatters';
-import { FiUsers, FiSearch, FiDownload, FiMessageSquare, FiSmartphone } from 'react-icons/fi';
+import { useToast } from '../../../components/ui/Toast';
+import type { Customer } from '../../../components/admin/customers';
+import {
+  CustomersHeader,
+  CustomersKpiGrid,
+  CustomersFilterToolbar,
+  CustomersTable,
+  CustomerProfileModal
+} from '../../../components/admin/customers';
 
 export const CustomersView: React.FC = () => {
-  const { isLight } = useAdminTheme();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { addToast } = useToast();
+  const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [selectedNetwork, setSelectedNetwork] = useState<string>('ALL');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [inspectedCustomer, setInspectedCustomer] = useState<Customer | null>(null);
 
-  const customers = [
-    { id: 'CUST-001', phone: '+233 24 551 0921', network: 'MTN MoMo', netColor: 'bg-amber-400 text-slate-950', totalOrders: 12, spent: 300.0, lastActive: '2 mins ago', status: 'VERIFIED' },
-    { id: 'CUST-002', phone: '+233 50 182 3310', network: 'Telecel Cash', netColor: 'bg-rose-600 text-white', totalOrders: 4, spent: 90.0, lastActive: '1 hr ago', status: 'VERIFIED' },
-    { id: 'CUST-003', phone: '+233 27 409 1192', network: 'AirtelTigo', netColor: 'bg-blue-600 text-white', totalOrders: 1, spent: 25.0, lastActive: 'Yesterday', status: 'VERIFIED' },
-    { id: 'CUST-004', phone: '+233 54 902 4418', network: 'MTN MoMo', netColor: 'bg-amber-400 text-slate-950', totalOrders: 28, spent: 685.0, lastActive: '3 days ago', status: 'VIP BUYER' },
-    { id: 'CUST-005', phone: '+233 20 448 9912', network: 'Telecel Cash', netColor: 'bg-rose-600 text-white', totalOrders: 3, spent: 65.0, lastActive: '5 days ago', status: 'VERIFIED' },
-  ];
+  // Realistic telemetry dataset with mock purchase histories
+  const [customers] = useState<Customer[]>([
+    {
+      id: 'CUST-001',
+      phone: '+233 24 551 0921',
+      network: 'MTN MoMo',
+      netColor: 'bg-amber-400 text-slate-950 font-black',
+      totalOrders: 12,
+      spent: 300.0,
+      lastActive: '2 mins ago',
+      status: 'VERIFIED',
+      registeredDate: '12 Jan 2026',
+      purchaseHistory: [
+        { id: 'ORD-9982', examType: 'WASSCE', quantity: 2, totalPaid: 50.0, date: 'Today, 10:14 AM', status: 'DELIVERED' },
+        { id: 'ORD-9104', examType: 'BECE', quantity: 5, totalPaid: 125.0, date: '28 Jul 2026', status: 'DELIVERED' }
+      ]
+    },
+    {
+      id: 'CUST-002',
+      phone: '+233 50 182 3310',
+      network: 'Telecel Cash',
+      netColor: 'bg-rose-600 text-white font-black',
+      totalOrders: 4,
+      spent: 90.0,
+      lastActive: '1 hr ago',
+      status: 'VERIFIED',
+      registeredDate: '04 Mar 2026',
+      purchaseHistory: [
+        { id: 'ORD-8821', examType: 'WASSCE', quantity: 2, totalPaid: 50.0, date: '1 hr ago', status: 'DELIVERED' }
+      ]
+    },
+    {
+      id: 'CUST-003',
+      phone: '+233 27 409 1192',
+      network: 'AirtelTigo',
+      netColor: 'bg-blue-600 text-white font-black',
+      totalOrders: 1,
+      spent: 25.0,
+      lastActive: 'Yesterday',
+      status: 'VERIFIED',
+      registeredDate: '01 Aug 2026',
+      purchaseHistory: [
+        { id: 'ORD-8719', examType: 'WASSCE', quantity: 1, totalPaid: 25.0, date: 'Yesterday', status: 'DELIVERED' }
+      ]
+    },
+    {
+      id: 'CUST-004',
+      phone: '+233 54 902 4418',
+      network: 'MTN MoMo',
+      netColor: 'bg-amber-400 text-slate-950 font-black',
+      totalOrders: 28,
+      spent: 685.0,
+      lastActive: '3 days ago',
+      status: 'VIP BUYER',
+      registeredDate: '15 Nov 2025',
+      purchaseHistory: [
+        { id: 'ORD-8100', examType: 'WASSCE', quantity: 10, totalPaid: 250.0, date: '3 days ago', status: 'DELIVERED' },
+        { id: 'ORD-7651', examType: 'NOV_DEC', quantity: 8, totalPaid: 200.0, date: '15 Jul 2026', status: 'DELIVERED' },
+        { id: 'ORD-6912', examType: 'BECE', quantity: 6, totalPaid: 150.0, date: '02 Jun 2026', status: 'DELIVERED' }
+      ]
+    },
+    {
+      id: 'CUST-005',
+      phone: '+233 20 448 9912',
+      network: 'Telecel Cash',
+      netColor: 'bg-rose-600 text-white font-black',
+      totalOrders: 3,
+      spent: 65.0,
+      lastActive: '5 days ago',
+      status: 'VERIFIED',
+      registeredDate: '22 May 2026',
+      purchaseHistory: [
+        { id: 'ORD-7501', examType: 'BECE', quantity: 2, totalPaid: 50.0, date: '5 days ago', status: 'DELIVERED' }
+      ]
+    }
+  ]);
 
-  const filtered = customers.filter(c => c.phone.includes(searchTerm) || c.id.toLowerCase().includes(searchTerm.toLowerCase()));
+  const handleFilterFromKpi = (status: string, network: string) => {
+    setSelectedStatus(status);
+    setSelectedNetwork(network);
+  };
+
+  const handleSendSMS = (cust: Customer) => {
+    addToast({
+      title: 'SMS Message Dispatched',
+      message: `Promotional update sent to ${cust.phone} via ${cust.network} gateway.`,
+      type: 'success',
+      duration: 3500
+    });
+  };
+
+  // Apply filters
+  const filteredCustomers = customers.filter((cust) => {
+    const matchesStatus = selectedStatus === 'ALL' || cust.status === selectedStatus;
+    const matchesNetwork = selectedNetwork === 'ALL' || cust.network === selectedNetwork;
+    const matchesSearch =
+      cust.phone.includes(searchTerm) ||
+      cust.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cust.network.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesNetwork && matchesSearch;
+  });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/50">
-        <div>
-          <div className="flex items-center gap-2">
-            <FiUsers className={`w-6 h-6 ${isLight ? 'text-secondary' : 'text-teal-400'}`} />
-            <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>
-              Customer Directory & Telemetry
-            </h1>
-          </div>
-          <p className={`text-xs mt-1 ${isLight ? 'text-slate-500 font-semibold' : 'text-slate-400'}`}>
-            Manage registered MoMo phone numbers and voucher purchase histories across all networks
-          </p>
-        </div>
-        <Button variant={isLight ? 'primary' : 'secondary'} size="sm" leftIcon={<FiDownload />}>
-          Export Customer List (CSV)
-        </Button>
-      </div>
+      {/* Divider-free Header */}
+      <CustomersHeader />
 
-      <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 ${
-        isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-900 border-slate-800'
-      }`}>
-        <div className="relative w-full sm:w-80">
-          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search phone number or ID..."
-            className={`w-full rounded-xl pl-10 pr-4 py-2 text-xs font-semibold focus:outline-none border ${
-              isLight ? 'bg-slate-50 border-slate-200 text-primary focus:border-secondary' : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500'
-            }`}
-          />
-        </div>
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-          <span>Total Records: <strong className={isLight ? 'text-primary' : 'text-white'}>4,227 Customers</strong></span>
-        </div>
-      </div>
+      {/* 4 Subtle Pastel KPI Telemetry Cards */}
+      <CustomersKpiGrid
+        customers={customers}
+        onSelectFilter={handleFilterFromKpi}
+      />
 
-      <div className={`rounded-3xl border overflow-hidden transition-colors ${
-        isLight ? 'bg-white border-slate-200/90 shadow-md' : 'bg-slate-900/90 border-slate-800 shadow-xl'
-      }`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className={`border-b text-[11px] uppercase font-extrabold ${
-                isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/50 text-slate-400'
-              }`}>
-                <th className="py-3.5 px-4">Customer ID</th>
-                <th className="py-3.5 px-4">MoMo Phone</th>
-                <th className="py-3.5 px-4">Network</th>
-                <th className="py-3.5 px-4">Voucher Orders</th>
-                <th className="py-3.5 px-4">Total Value</th>
-                <th className="py-3.5 px-4">Last Active</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y text-xs font-medium ${isLight ? 'divide-slate-200/80' : 'divide-slate-800/60'}`}>
-              {filtered.map((cust) => (
-                <tr key={cust.id} className={`transition-colors ${isLight ? 'hover:bg-slate-50/80' : 'hover:bg-slate-950/40'}`}>
-                  <td className={`py-3.5 px-4 font-mono font-black ${isLight ? 'text-secondary' : 'text-teal-400'}`}>{cust.id}</td>
-                  <td className={`py-3.5 px-4 font-bold flex items-center gap-2 ${isLight ? 'text-primary' : 'text-white'}`}>
-                    <FiSmartphone className="text-slate-400" /> {cust.phone}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${cust.netColor}`}>
-                      {cust.network}
-                    </span>
-                  </td>
-                  <td className={`py-3.5 px-4 font-black ${isLight ? 'text-primary' : 'text-slate-200'}`}>{cust.totalOrders} PINs</td>
-                  <td className="py-3.5 px-4 font-extrabold text-emerald-600 dark:text-emerald-400">{formatCedi(cust.spent)}</td>
-                  <td className="py-3.5 px-4 text-slate-400 font-semibold">{cust.lastActive}</td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      onClick={() => alert(`Initiated bulk SMS message to customer ${cust.phone}`)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black border transition-all ${
-                        isLight ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white'
-                      }`}
-                    >
-                      <FiMessageSquare className="w-3.5 h-3.5 text-secondary dark:text-teal-400" /> Send SMS
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Multi-Dimensional Filter Toolbar */}
+      <CustomersFilterToolbar
+        customers={customers}
+        selectedStatus={selectedStatus}
+        onSelectStatus={setSelectedStatus}
+        selectedNetwork={selectedNetwork}
+        onSelectNetwork={setSelectedNetwork}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
+
+      {/* Main Customers Table */}
+      <CustomersTable
+        customers={filteredCustomers}
+        onInspectCustomer={(cust) => setInspectedCustomer(cust)}
+        onSendSMS={handleSendSMS}
+      />
+
+      {/* Customer Profile & Purchase Timeline Modal */}
+      <CustomerProfileModal
+        customer={inspectedCustomer}
+        onClose={() => setInspectedCustomer(null)}
+        onTriggerSMS={handleSendSMS}
+      />
     </div>
   );
 };
