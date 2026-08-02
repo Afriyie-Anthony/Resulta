@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { BaseComponentProps } from '../../types/ui';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
 import { AdminThemeProvider, useAdminTheme } from '../../contexts/AdminThemeContext';
 import {
   FiGrid,
-  FiBox,
+  FiTag,
   FiShoppingBag,
-  FiDollarSign,
   FiUsers,
-  FiCreditCard,
+  FiCalendar,
+  FiUserCheck,
+  FiUserPlus,
+  FiMessageSquare,
   FiBarChart2,
-  FiShield,
   FiSettings,
   FiBell,
   FiSearch,
@@ -40,30 +40,32 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
   const { addToast } = useToast();
   const { isLight, toggleTheme } = useAdminTheme();
 
-  // Grouped Navigation Structure
+  // Grouped Navigation Structure matching reference specification
   const navGroups = [
     {
-      title: 'Core & Commerce',
+      title: 'GENERAL',
       items: [
-        { id: 'overview', path: '/admin/overview', label: 'Dashboard Overview', icon: FiGrid },
-        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Inventory', icon: FiBox, badge: 'Low Stock', badgeColor: 'warning' as const },
-        { id: 'orders', path: '/admin/orders', label: 'Orders & Fulfillment', icon: FiShoppingBag },
-        { id: 'payments', path: '/admin/payments', label: 'Payments & Callbacks', icon: FiDollarSign },
+        { id: 'overview', path: '/admin/overview', label: 'Dashboard', icon: FiGrid },
       ],
     },
     {
-      title: 'Partners & Finance',
+      title: 'MANAGEMENT',
       items: [
-        { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates & Partners', icon: FiUsers, badge: '4 Pending', badgeColor: 'info' as const },
-        { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawal Approvals', icon: FiCreditCard, badge: '2 Requests', badgeColor: 'warning' as const },
+        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Stock', icon: FiTag },
+        { id: 'orders', path: '/admin/orders', label: 'Orders', icon: FiShoppingBag },
+        { id: 'customers', path: '/admin/customers', label: 'Customers', icon: FiUsers },
+        { id: 'timetables', path: '/admin/timetables', label: 'Timetables', icon: FiCalendar },
+        { id: 'users', path: '/admin/users', label: 'Users', icon: FiUserCheck },
+        { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates', icon: FiUserPlus },
       ],
     },
     {
-      title: 'System & Security',
+      title: 'TOOLS & REPORTS',
       items: [
-        { id: 'reports', path: '/admin/reports', label: 'Reports & Analytics', icon: FiBarChart2 },
-        { id: 'audit', path: '/admin/audit', label: 'Audit Logs & Security', icon: FiShield },
-        { id: 'settings', path: '/admin/settings', label: 'System Settings', icon: FiSettings },
+        { id: 'sms', path: '/admin/sms', label: 'SMS Module', icon: FiMessageSquare },
+        { id: 'reports', path: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
+        { id: 'settings', path: '/admin/settings', label: 'Settings', icon: FiSettings },
+        { id: 'notifications', path: '/admin/notifications', label: 'Notifications', icon: FiBell },
       ],
     },
   ];
@@ -82,7 +84,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
     <div
       className={`min-h-screen flex transition-colors duration-300 relative ${
         isLight
-          ? 'bg-warm text-text-primary selection:bg-secondary selection:text-white font-primary'
+          ? 'bg-slate-200/80 text-text-primary selection:bg-secondary selection:text-white font-primary'
           : 'bg-slate-950 text-slate-100 selection:bg-teal-500 selection:text-white font-primary'
       }`}
     >
@@ -96,7 +98,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
 
       {/* Fixed Admin Sidebar Navigation – W-[300PX] to prevent item wrapping */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[300px] flex flex-col justify-between overflow-y-auto transition-transform duration-300 transform border-r ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col justify-between overflow-y-auto transition-transform duration-300 transform border-r ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } ${
           isLight
@@ -136,12 +138,12 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
           </div>
 
           {/* Grouped Navigation Items */}
-          <div className="p-4 space-y-6">
+          <div className="p-3 space-y-6">
             {navGroups.map((group, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div
-                  className={`px-3 py-1 text-[11px] font-black uppercase tracking-wider ${
-                    isLight ? 'text-white/60' : 'text-slate-500'
+                  className={`px-4 py-1 text-[11px] font-extrabold uppercase tracking-wider ${
+                    isLight ? 'text-white/65' : 'text-slate-400'
                   }`}
                 >
                   {group.title}
@@ -160,28 +162,18 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
                           navigate(item.path);
                           setIsSidebarOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        className={`w-full flex items-center justify-between px-3.5 py-2 rounded-r-xl text-sm font-semibold transition-all ${
                           isActive
-                            ? isLight
-                              ? 'bg-secondary text-white font-extrabold shadow-md shadow-black/30 border border-white/20'
-                              : 'bg-teal-500/15 text-teal-400 border border-teal-500/30 shadow-sm shadow-teal-950/50'
+                            ? 'bg-black/20 text-[#F2C14E] font-black border-l-4 border-[#F2C14E] shadow-sm'
                             : isLight
-                            ? 'text-white/80 hover:text-white hover:bg-white/10'
-                            : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                            ? 'text-white/90 hover:text-white hover:bg-white/10 border-l-4 border-transparent'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-800/60 border-l-4 border-transparent'
                         }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
-                          <Icon className={`w-4 h-4 shrink-0 ${isActive ? (isLight ? 'text-white' : 'text-teal-400') : (isLight ? 'text-white/70' : 'text-slate-400')}`} />
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-[#F2C14E]' : (isLight ? 'text-white/80' : 'text-slate-400')}`} />
                           <span className="text-left whitespace-nowrap truncate">{item.label}</span>
                         </div>
-                        {item.badge && (
-                          <Badge
-                            variant={item.badgeColor || 'neutral'}
-                            className="text-[10px] shrink-0 whitespace-nowrap !px-2 !py-0.5 font-bold shadow-2xs"
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
                       </button>
                     );
                   })}
@@ -203,15 +195,15 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
             fullWidth
             leftIcon={<FiLogOut className="shrink-0" />}
             onClick={handleLogout}
-            className="!bg-rose-600 hover:!bg-rose-500 !text-white font-bold shadow-md shadow-rose-950/50 border border-rose-400/20 transition-all"
+            className="bg-rose-600! hover:bg-rose-500! text-white! font-bold shadow-md shadow-rose-950/50 border border-rose-400/20 transition-all"
           >
             Logout Admin
           </Button>
         </div>
       </aside>
 
-      {/* Main Admin Content Container (with lg:pl-[300px] offset to accommodate widened fixed sidebar) */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-[300px]">
+      {/* Main Admin Content Container (with lg:pl-64 offset to accommodate fixed w-64 sidebar) */}
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
         {/* Admin Topbar */}
         <header
           className={`sticky top-0 z-30 h-16 border-b px-4 sm:px-6 flex items-center justify-between gap-4 transition-all duration-300 ${
@@ -234,7 +226,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
                 placeholder="Search orders, phone numbers, vouchers, affiliates..."
                 className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-medium focus:outline-none transition-all border ${
                   isLight
-                    ? 'bg-warm border-border text-text-primary placeholder-text-secondary/60 focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/15'
+                    ? 'bg-slate-100 border-border text-text-primary placeholder-text-secondary/60 focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/15'
                     : 'bg-slate-900 border-slate-800 text-slate-200 placeholder-slate-500 focus:border-teal-500'
                 }`}
               />
@@ -249,7 +241,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
               onClick={toggleTheme}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-2xs ${
                 isLight
-                  ? 'bg-warm border-border text-text-primary hover:bg-slate-200/60'
+                  ? 'bg-slate-100 border-border text-text-primary hover:bg-slate-200/60'
                   : 'bg-slate-800 border-slate-700 text-amber-300 hover:bg-slate-700'
               }`}
               title={isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
