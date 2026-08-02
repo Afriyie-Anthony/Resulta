@@ -4,6 +4,7 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatCedi } from '../../../utils/formatters';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import {
   FiBox,
   FiShoppingBag,
@@ -21,6 +22,7 @@ import {
 
 export const DashboardOverviewView: React.FC = () => {
   const navigate = useNavigate();
+  const { isLight } = useAdminTheme();
 
   const recentOrders = [
     { id: 'RSL-2026-981A', phone: '+233 24 551 0921', network: 'MTN MoMo', product: 'WASSCE 2026', amount: 25.0, status: 'FULFILLED', time: '2 mins ago' },
@@ -35,16 +37,18 @@ export const DashboardOverviewView: React.FC = () => {
       {/* Top Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">System Control & Telemetry</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className={`text-2xl font-black tracking-tight transition-colors ${isLight ? 'text-text-primary' : 'text-white'}`}>
+            System Control & Telemetry
+          </h1>
+          <p className={`text-xs mt-1 transition-colors ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
             Real-time commercial metrics, automated fulfillment queue, and gateway monitoring.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" size="sm" leftIcon={<FiRefreshCw />} onClick={() => window.location.reload()}>
+          <Button variant="outline" size="sm" leftIcon={<FiRefreshCw />} onClick={() => window.location.reload()}>
             Refresh Telemetry
           </Button>
-          <Button variant="gradient" size="sm" leftIcon={<FiBox />} onClick={() => navigate('/admin/inventory')}>
+          <Button variant={isLight ? 'primary' : 'gradient'} size="sm" leftIcon={<FiBox />} onClick={() => navigate('/admin/inventory')}>
             Manage Inventory
           </Button>
         </div>
@@ -52,79 +56,151 @@ export const DashboardOverviewView: React.FC = () => {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <Card glass className="relative overflow-hidden border-slate-800/80 hover:border-teal-500/30 transition-all group">
+        {/* Card 1: WASSCE Stock */}
+        <Card
+          glass={!isLight}
+          className={`relative overflow-hidden transition-all group ${
+            isLight
+              ? 'bg-white border border-border shadow-sm hover:shadow-md hover:border-secondary text-text-primary'
+              : 'border-slate-800/80 hover:border-teal-500/30 text-white'
+          }`}
+        >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">WASSCE Stock Available</p>
-              <p className="text-3xl font-black text-white mt-2 group-hover:scale-105 transition-transform origin-left">1,420</p>
-              <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                <FiCheckCircle className="text-emerald-400 w-3.5 h-3.5 inline" /> Above threshold (500)
+              <p className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                WASSCE Stock Available
+              </p>
+              <p className={`text-3xl font-black mt-2 group-hover:scale-105 transition-transform origin-left ${isLight ? 'text-text-primary' : 'text-white'}`}>
+                1,420
+              </p>
+              <p className={`text-xs mt-1 flex items-center gap-1 font-semibold ${isLight ? 'text-emerald-700' : 'text-slate-500'}`}>
+                <FiCheckCircle className="text-emerald-500 w-3.5 h-3.5 inline" /> Above threshold (500)
               </p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+              isLight ? 'bg-emerald-50 border border-emerald-200 text-emerald-600 shadow-2xs' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+            }`}>
               <FiBox />
             </div>
           </div>
         </Card>
 
-        <Card glass className="relative overflow-hidden border-amber-500/30 bg-amber-950/10 hover:border-amber-500/60 transition-all group">
+        {/* Card 2: BECE Stock (Low Stock Warning) */}
+        <Card
+          glass={!isLight}
+          className={`relative overflow-hidden transition-all group ${
+            isLight
+              ? 'bg-amber-50/90 border border-amber-300 shadow-sm hover:shadow-md hover:border-amber-400 text-amber-950'
+              : 'border-amber-500/30 bg-amber-950/10 hover:border-amber-500/60 text-white'
+          }`}
+        >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[11px] text-amber-300/80 font-bold uppercase tracking-wider">BECE Stock Available</p>
-              <p className="text-3xl font-black text-amber-400 mt-2 group-hover:scale-105 transition-transform origin-left">180</p>
-              <p className="text-xs text-amber-500/80 mt-1 flex items-center gap-1 font-semibold">
-                <FiAlertTriangle className="text-amber-400 w-3.5 h-3.5 inline animate-pulse" /> Low Stock Warning (&lt; 200)
+              <p className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-amber-800' : 'text-amber-300/80'}`}>
+                BECE Stock Available
+              </p>
+              <p className={`text-3xl font-black mt-2 group-hover:scale-105 transition-transform origin-left ${isLight ? 'text-warning' : 'text-amber-400'}`}>
+                180
+              </p>
+              <p className={`text-xs mt-1 flex items-center gap-1 font-semibold ${isLight ? 'text-amber-800' : 'text-amber-500/80'}`}>
+                <FiAlertTriangle className="text-warning w-3.5 h-3.5 inline animate-pulse" /> Low Stock Warning (&lt; 200)
               </p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-lg">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+              isLight ? 'bg-amber-100 border border-amber-300 text-warning shadow-2xs' : 'bg-amber-500/20 border border-amber-500/30 text-amber-400'
+            }`}>
               <FiBox />
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-amber-500/20 flex justify-end">
+          <div className={`mt-3 pt-3 border-t flex justify-end ${isLight ? 'border-amber-200' : 'border-amber-500/20'}`}>
             <button
               type="button"
               onClick={() => navigate('/admin/inventory')}
-              className="text-[11px] font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-1"
+              className={`text-[11px] font-bold inline-flex items-center gap-1 transition-colors ${
+                isLight ? 'text-warning hover:text-amber-900' : 'text-amber-300 hover:text-amber-200'
+              }`}
             >
               Replenish Batch <FiArrowUpRight />
             </button>
           </div>
         </Card>
 
-        <Card glass className="relative overflow-hidden border-slate-800/80 hover:border-teal-500/30 transition-all group">
+        {/* Card 3: Gross Revenue */}
+        <Card
+          glass={!isLight}
+          className={`relative overflow-hidden transition-all group ${
+            isLight
+              ? 'bg-white border border-border shadow-sm hover:shadow-md hover:border-secondary text-text-primary'
+              : 'border-slate-800/80 hover:border-teal-500/30 text-white'
+          }`}
+        >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Today's Gross Revenue</p>
-              <p className="text-3xl font-black text-emerald-400 mt-2 group-hover:scale-105 transition-transform origin-left">{formatCedi(8450.0)}</p>
-              <p className="text-xs text-emerald-400/80 mt-1 flex items-center gap-1 font-medium">
+              <p className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                Today's Gross Revenue
+              </p>
+              <p className={`text-3xl font-black mt-2 group-hover:scale-105 transition-transform origin-left ${isLight ? 'text-[#0F8B8D]' : 'text-emerald-400'}`}>
+                {formatCedi(8450.0)}
+              </p>
+              <p className={`text-xs mt-1 flex items-center gap-1 font-semibold ${isLight ? 'text-[#0F8B8D]' : 'text-emerald-400/80'}`}>
                 <FiTrendingUp className="w-3.5 h-3.5 inline" /> +18.4% vs yesterday
               </p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-lg">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+              isLight ? 'bg-[#0F8B8D]/10 border border-[#0F8B8D]/20 text-[#0F8B8D] shadow-2xs' : 'bg-teal-500/10 border border-teal-500/20 text-teal-400'
+            }`}>
               <FiShoppingBag />
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+          <div className={`mt-3 pt-3 border-t flex justify-between items-center text-xs font-medium ${
+            isLight ? 'border-border text-text-secondary' : 'border-slate-800 text-slate-400'
+          }`}>
             <span>338 Vouchers Fulfilled</span>
-            <button type="button" onClick={() => navigate('/admin/orders')} className="text-teal-400 hover:underline font-semibold text-[11px]">View All</button>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/orders')}
+              className={`font-bold text-[11px] hover:underline ${isLight ? 'text-secondary' : 'text-teal-400'}`}
+            >
+              View All
+            </button>
           </div>
         </Card>
 
-        <Card glass className="relative overflow-hidden border-slate-800/80 hover:border-rose-500/30 transition-all group">
+        {/* Card 4: Pending Withdrawals */}
+        <Card
+          glass={!isLight}
+          className={`relative overflow-hidden transition-all group ${
+            isLight
+              ? 'bg-white border border-border shadow-sm hover:shadow-md hover:border-error/50 text-text-primary'
+              : 'border-slate-800/80 hover:border-rose-500/30 text-white'
+          }`}
+        >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending Withdrawals</p>
-              <p className="text-3xl font-black text-rose-400 mt-2 group-hover:scale-105 transition-transform origin-left">{formatCedi(640.0)}</p>
-              <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                <FiClock className="text-rose-400 w-3.5 h-3.5 inline" /> 2 Affiliates waiting
+              <p className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                Pending Withdrawals
+              </p>
+              <p className={`text-3xl font-black mt-2 group-hover:scale-105 transition-transform origin-left ${isLight ? 'text-error' : 'text-rose-400'}`}>
+                {formatCedi(640.0)}
+              </p>
+              <p className={`text-xs mt-1 flex items-center gap-1 font-medium ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                <FiClock className={`w-3.5 h-3.5 inline ${isLight ? 'text-error' : 'text-rose-400'}`} /> 2 Affiliates waiting
               </p>
             </div>
-            <div className="w-11 h-11 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+              isLight ? 'bg-rose-50 border border-rose-200 text-error shadow-2xs' : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+            }`}>
               <FiCreditCard />
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-800 flex justify-end">
-            <button type="button" onClick={() => navigate('/admin/withdrawals')} className="text-[11px] font-bold text-rose-300 hover:text-white inline-flex items-center gap-1">
+          <div className={`mt-3 pt-3 border-t flex justify-end ${isLight ? 'border-border' : 'border-slate-800'}`}>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/withdrawals')}
+              className={`text-[11px] font-bold inline-flex items-center gap-1 transition-colors ${
+                isLight ? 'text-error hover:text-rose-700' : 'text-rose-300 hover:text-white'
+              }`}
+            >
               Process Payouts <FiArrowUpRight />
             </button>
           </div>
@@ -134,12 +210,21 @@ export const DashboardOverviewView: React.FC = () => {
       {/* Analytics & Distribution Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Fulfillment Feed */}
-        <Card glass className="lg:col-span-2 border-slate-800/80 p-6 flex flex-col justify-between">
+        <Card
+          glass={!isLight}
+          className={`lg:col-span-2 p-6 flex flex-col justify-between ${
+            isLight ? 'bg-white border border-border shadow-sm text-text-primary' : 'border-slate-800/80 text-white'
+          }`}
+        >
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-bold text-white">Live Order Fulfillment Queue</h3>
-                <p className="text-xs text-slate-400">Automated instant delivery via SMS & Web callback</p>
+                <h3 className={`text-base font-bold ${isLight ? 'text-text-primary' : 'text-white'}`}>
+                  Live Order Fulfillment Queue
+                </h3>
+                <p className={`text-xs ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                  Automated instant delivery via SMS & Web callback
+                </p>
               </div>
               <Badge variant="success" pulse>Live Ingest</Badge>
             </div>
@@ -147,7 +232,7 @@ export const DashboardOverviewView: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-[11px] uppercase text-slate-400 font-bold">
+                  <tr className={`border-b text-[11px] uppercase font-bold ${isLight ? 'border-border text-text-secondary' : 'border-slate-800 text-slate-400'}`}>
                     <th className="py-3 px-3">Order Ref</th>
                     <th className="py-3 px-3">Customer MoMo</th>
                     <th className="py-3 px-3">Product</th>
@@ -156,33 +241,44 @@ export const DashboardOverviewView: React.FC = () => {
                     <th className="py-3 px-3 text-right">Time</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50 text-xs font-medium">
+                <tbody className={`divide-y text-xs font-medium ${isLight ? 'divide-border/60' : 'divide-slate-800/50'}`}>
                   {recentOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-slate-900/50 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-teal-400">{order.id}</td>
-                      <td className="py-3 px-3 text-slate-200">
-                        {order.phone} <span className="block text-[10px] text-slate-500 font-semibold">{order.network}</span>
+                    <tr key={order.id} className={`transition-colors ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-900/50'}`}>
+                      <td className={`py-3 px-3 font-mono font-bold ${isLight ? 'text-secondary' : 'text-teal-400'}`}>
+                        {order.id}
+                      </td>
+                      <td className={`py-3 px-3 ${isLight ? 'text-text-primary font-bold' : 'text-slate-200'}`}>
+                        {order.phone}{' '}
+                        <span className={`block text-[10px] font-semibold ${isLight ? 'text-text-secondary' : 'text-slate-500'}`}>
+                          {order.network}
+                        </span>
                       </td>
                       <td className="py-3 px-3">
                         <Badge variant={order.product.includes('WASSCE') ? 'primary' : 'warning'} className="text-[10px]">
                           {order.product}
                         </Badge>
                       </td>
-                      <td className="py-3 px-3 font-semibold text-slate-200">{formatCedi(order.amount)}</td>
+                      <td className={`py-3 px-3 font-bold ${isLight ? 'text-text-primary' : 'text-slate-200'}`}>
+                        {formatCedi(order.amount)}
+                      </td>
                       <td className="py-3 px-3">
                         <Badge variant={order.status === 'FULFILLED' ? 'success' : 'warning'} className="text-[10px]">
                           {order.status}
                         </Badge>
                       </td>
-                      <td className="py-3 px-3 text-right text-slate-500 text-[11px]">{order.time}</td>
+                      <td className={`py-3 px-3 text-right text-[11px] font-semibold ${isLight ? 'text-text-secondary' : 'text-slate-500'}`}>
+                        {order.time}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
-          <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-xs">
-            <span className="text-slate-400">Showing latest 5 real-time transactions</span>
+          <div className={`mt-6 pt-4 border-t flex justify-between items-center text-xs ${isLight ? 'border-border' : 'border-slate-800'}`}>
+            <span className={`font-medium ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+              Showing latest 5 real-time transactions
+            </span>
             <Button variant="ghost" size="sm" onClick={() => navigate('/admin/orders')} rightIcon={<FiArrowUpRight />}>
               View All Orders Database
             </Button>
@@ -191,52 +287,72 @@ export const DashboardOverviewView: React.FC = () => {
 
         {/* Channel & Gateway Telemetry */}
         <div className="space-y-6 flex flex-col justify-between">
-          <Card glass className="border-slate-800/80 p-6">
-            <h3 className="text-base font-bold text-white mb-1">Sales Channels Distribution</h3>
-            <p className="text-xs text-slate-400 mb-5">Volume split between Web Portal & USSD Code</p>
+          <Card
+            glass={!isLight}
+            className={`p-6 ${isLight ? 'bg-white border border-border shadow-sm text-text-primary' : 'border-slate-800/80 text-white'}`}
+          >
+            <h3 className={`text-base font-bold mb-1 ${isLight ? 'text-text-primary' : 'text-white'}`}>
+              Sales Channels Distribution
+            </h3>
+            <p className={`text-xs mb-5 ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+              Volume split between Web Portal & USSD Code
+            </p>
             
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-xs font-bold mb-1.5">
-                  <span className="text-slate-200 flex items-center gap-2">
-                    <FiGlobe className="text-teal-400" /> Web Storefront (HTTPS)
+                  <span className={`flex items-center gap-2 ${isLight ? 'text-text-primary font-bold' : 'text-slate-200'}`}>
+                    <FiGlobe className={isLight ? 'text-secondary' : 'text-teal-400'} /> Web Storefront (HTTPS)
                   </span>
-                  <span className="text-teal-400">68.4%</span>
+                  <span className={isLight ? 'text-secondary font-black' : 'text-teal-400'}>68.4%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full" style={{ width: '68.4%' }} />
+                <div className={`w-full h-2 rounded-full overflow-hidden ${isLight ? 'bg-slate-100 border border-slate-200' : 'bg-slate-800'}`}>
+                  <div className={`h-full rounded-full ${isLight ? 'bg-secondary' : 'bg-gradient-to-r from-teal-500 to-emerald-400'}`} style={{ width: '68.4%' }} />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">231 Orders via Smart Mobile & Desktop</span>
+                <span className={`text-[11px] font-semibold mt-1 block ${isLight ? 'text-text-secondary' : 'text-slate-500'}`}>
+                  231 Orders via Smart Mobile & Desktop
+                </span>
               </div>
 
               <div>
                 <div className="flex justify-between text-xs font-bold mb-1.5">
-                  <span className="text-slate-200 flex items-center gap-2">
-                    <FiSmartphone className="text-amber-400" /> USSD Code (*882#)
+                  <span className={`flex items-center gap-2 ${isLight ? 'text-text-primary font-bold' : 'text-slate-200'}`}>
+                    <FiSmartphone className={isLight ? 'text-warning' : 'text-amber-400'} /> USSD Code (*882#)
                   </span>
-                  <span className="text-amber-400">31.6%</span>
+                  <span className={isLight ? 'text-warning font-black' : 'text-amber-400'}>31.6%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                  <div className="h-full bg-amber-400 rounded-full" style={{ width: '31.6%' }} />
+                <div className={`w-full h-2 rounded-full overflow-hidden ${isLight ? 'bg-slate-100 border border-slate-200' : 'bg-slate-800'}`}>
+                  <div className={`h-full rounded-full ${isLight ? 'bg-warning' : 'bg-amber-400'}`} style={{ width: '31.6%' }} />
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">107 Orders via Offline GSM Feature Phones</span>
+                <span className={`text-[11px] font-semibold mt-1 block ${isLight ? 'text-text-secondary' : 'text-slate-500'}`}>
+                  107 Orders via Offline GSM Feature Phones
+                </span>
               </div>
             </div>
           </Card>
 
-          <Card glass className="border-slate-800/80 p-6">
-            <h3 className="text-base font-bold text-white mb-3">Partner Referral Telemetry</h3>
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 mb-3">
+          <Card
+            glass={!isLight}
+            className={`p-6 ${isLight ? 'bg-white border border-border shadow-sm text-text-primary' : 'border-slate-800/80 text-white'}`}
+          >
+            <h3 className={`text-base font-bold mb-3 ${isLight ? 'text-text-primary' : 'text-white'}`}>
+              Partner Referral Telemetry
+            </h3>
+            <div className={`flex items-center justify-between p-3.5 rounded-xl border mb-3 ${
+              isLight ? 'bg-warm border-border' : 'bg-slate-900/90 border-slate-800'
+            }`}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center font-bold text-sm">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm ${
+                  isLight ? 'bg-secondary/10 text-secondary border border-secondary/20 shadow-2xs' : 'bg-teal-500/10 border border-teal-500/30 text-teal-400'
+                }`}>
                   <FiUsers />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">Active Affiliates</p>
-                  <p className="text-[11px] text-slate-400">28 approved partners</p>
+                  <p className={`text-xs font-bold ${isLight ? 'text-text-primary' : 'text-white'}`}>Active Affiliates</p>
+                  <p className={`text-[11px] font-semibold ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>28 approved partners</p>
                 </div>
               </div>
-              <span className="text-sm font-black text-emerald-400">GH₵ 1,840 comm</span>
+              <span className={`text-sm font-black ${isLight ? 'text-secondary' : 'text-emerald-400'}`}>GH₵ 1,840 comm</span>
             </div>
             <Button variant="outline" size="sm" fullWidth onClick={() => navigate('/admin/affiliates')}>
               Manage Affiliate Network
