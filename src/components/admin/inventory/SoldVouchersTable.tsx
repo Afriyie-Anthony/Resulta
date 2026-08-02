@@ -22,10 +22,19 @@ const mockSoldVouchers: SoldItem[] = [
   { orderRef: 'ORD-88236', serial: 'W26001977', product: 'WASSCE 2026', customerPhone: '020****119', channel: 'Web (Card Payment)', dispatchedAt: '35 mins ago', amount: 'GH₵ 25.00' },
 ];
 
-export const SoldVouchersTable: React.FC = () => {
+interface SoldVouchersTableProps {
+  initialFilter?: string;
+}
+
+export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFilter }) => {
   const { isLight } = useAdminTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [channelFilter, setChannelFilter] = useState('ALL');
+  const [productFilter, setProductFilter] = useState(
+    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
+      ? initialFilter.includes('WASSCE') ? 'WASSCE' : 'BECE'
+      : 'ALL'
+  );
 
   const filteredSold = mockSoldVouchers.filter((item) => {
     const matchesSearch =
@@ -35,6 +44,7 @@ export const SoldVouchersTable: React.FC = () => {
     
     if (!matchesSearch) return false;
     if (channelFilter !== 'ALL' && !item.channel.includes(channelFilter)) return false;
+    if (productFilter !== 'ALL' && !item.product.includes(productFilter)) return false;
     return true;
   });
 
@@ -42,7 +52,7 @@ export const SoldVouchersTable: React.FC = () => {
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
       isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
     }`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
         <div>
           <h3 className={`text-base font-black tracking-tight flex items-center gap-2 ${
             isLight ? 'text-primary' : 'text-white'
@@ -54,17 +64,39 @@ export const SoldVouchersTable: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap">
+          {/* Exam Product Filter Chips */}
+          <div className="flex items-center gap-1.5">
+            {['ALL', 'WASSCE', 'BECE'].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setProductFilter(filter)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
+                  productFilter === filter
+                    ? isLight
+                      ? 'bg-secondary text-white border-secondary shadow-2xs'
+                      : 'bg-teal-500 text-slate-950 border-teal-400 font-black'
+                    : isLight
+                    ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
+                }`}
+              >
+                {filter === 'ALL' ? 'ALL EXAMS' : filter}
+              </button>
+            ))}
+          </div>
+
+          {/* Channel Filter Chips */}
           <div className="flex items-center gap-1.5">
             {['ALL', 'USSD', 'Web'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setChannelFilter(filter)}
-                className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all border ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
                   channelFilter === filter
                     ? isLight
                       ? 'bg-[#0F8B8D] text-white border-[#0F8B8D]'
-                      : 'bg-teal-500 text-slate-950 border-teal-400 font-black'
+                      : 'bg-slate-700 text-white border-slate-600 font-black'
                     : isLight
                     ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
@@ -75,7 +107,7 @@ export const SoldVouchersTable: React.FC = () => {
             ))}
           </div>
 
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-56">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"

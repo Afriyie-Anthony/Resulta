@@ -67,7 +67,7 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || description) && (
-          <div className={`flex items-start justify-between px-6 py-5 border-b ${
+          <div className={`flex items-start justify-between px-6 py-4 border-b ${
             isLight ? 'border-slate-200/80' : 'border-slate-800'
           }`}>
             <div>
@@ -90,7 +90,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-6">{children}</div>
+        <div className="p-5 sm:p-6">{children}</div>
       </div>
     </div>
   );

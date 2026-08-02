@@ -17,6 +17,7 @@ import {
 
 export const VoucherInventoryView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<InventoryTabId>('overview');
+  const [tabFilter, setTabFilter] = useState<string | undefined>(undefined);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>('WASSCE');
 
@@ -48,19 +49,27 @@ export const VoucherInventoryView: React.FC = () => {
     }));
   };
 
+  const handleNavigateTab = (targetTab: InventoryTabId, filter?: string) => {
+    setTabFilter(filter);
+    setActiveTab(targetTab);
+  };
+
   // Calculate active alert count
   const alertCount = (inventoryStats.bece.available <= inventoryStats.bece.threshold ? 1 : 0) +
                      (inventoryStats.wassce.available <= inventoryStats.wassce.threshold ? 1 : 0);
 
   return (
     <div className="space-y-6 pb-14">
-      {/* 1. Page Header & Primary Actions */}
-      <InventoryHeader onOpenImport={() => { setSelectedProduct('WASSCE'); setIsImportOpen(true); }} />
+      {/* 1. Page Header & Primary Actions with Live Valuation Ticker */}
+      <InventoryHeader
+        stats={inventoryStats}
+        onOpenImport={() => { setSelectedProduct('WASSCE'); setIsImportOpen(true); }}
+      />
 
       {/* 2. Redesigned Premium Segmented Navigation Tabs */}
       <InventoryTabs
         activeTab={activeTab}
-        onChangeTab={setActiveTab}
+        onChangeTab={(tab) => { setTabFilter(undefined); setActiveTab(tab); }}
         alertCount={alertCount}
       />
 
@@ -68,8 +77,15 @@ export const VoucherInventoryView: React.FC = () => {
       <div className="pt-2 transition-all">
         {activeTab === 'overview' && (
           <div className="space-y-8">
-            <PoolHealthCards stats={inventoryStats} onReplenish={handleOpenReplenish} />
-            <BatchHistoryTable batches={batches.slice(0, 3)} />
+            <PoolHealthCards
+              stats={inventoryStats}
+              onReplenish={handleOpenReplenish}
+              onNavigateTab={handleNavigateTab}
+            />
+            <BatchHistoryTable
+              batches={batches.slice(0, 3)}
+              onInspectBatch={(batchId) => handleNavigateTab('registry', batchId)}
+            />
             <SecurityComplianceFooter />
           </div>
         )}
@@ -78,21 +94,24 @@ export const VoucherInventoryView: React.FC = () => {
           <InlineStockUpload
             currentStats={inventoryStats}
             onBatchIngested={handleBatchIngested}
-            onNavigateToHistory={() => setActiveTab('history')}
+            onNavigateToHistory={() => handleNavigateTab('history')}
           />
         )}
 
         {activeTab === 'registry' && (
-          <InventoryRegistryTable />
+          <InventoryRegistryTable key={tabFilter || 'all'} initialFilter={tabFilter} />
         )}
 
         {activeTab === 'sold' && (
-          <SoldVouchersTable />
+          <SoldVouchersTable key={tabFilter || 'all'} initialFilter={tabFilter} />
         )}
 
         {activeTab === 'history' && (
           <div className="space-y-6">
-            <BatchHistoryTable batches={batches} />
+            <BatchHistoryTable
+              batches={batches}
+              onInspectBatch={(batchId) => handleNavigateTab('registry', batchId)}
+            />
             <SecurityComplianceFooter />
           </div>
         )}

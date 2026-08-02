@@ -22,10 +22,20 @@ const mockRegistryItems: RegistryItem[] = [
   { serial: 'B26000983', product: 'BECE 2026', batchRef: 'BATCH-2026-B04', hashSignature: 'SHA256: 2d3e4f5a6b7c...', ingestedDate: '2026-07-20', status: 'RESERVED' },
 ];
 
-export const InventoryRegistryTable: React.FC = () => {
+interface InventoryRegistryTableProps {
+  initialFilter?: string;
+}
+
+export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ initialFilter }) => {
   const { isLight } = useAdminTheme();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProductFilter, setSelectedProductFilter] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState(
+    initialFilter && initialFilter.startsWith('BATCH-') ? initialFilter : ''
+  );
+  const [selectedProductFilter, setSelectedProductFilter] = useState<string>(
+    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
+      ? initialFilter.includes('WASSCE') ? 'WASSCE' : 'BECE'
+      : 'ALL'
+  );
 
   const filteredItems = mockRegistryItems.filter((item) => {
     const matchesSearch =

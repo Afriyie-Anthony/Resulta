@@ -9,7 +9,7 @@ export const DashboardHeader: React.FC = () => {
   const { isLight } = useAdminTheme();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-border/50">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <div className="flex items-center gap-2">
           <span className={`text-xs font-black uppercase px-2 py-0.5 rounded-md tracking-wider ${
