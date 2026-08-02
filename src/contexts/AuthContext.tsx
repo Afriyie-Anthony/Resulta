@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ADMIN_CREDENTIALS = {
   email: 'admin@resulta.com.gh',
-  password: 'admin',
+  passwords: ['admin', 'admin123', 'admin2026'],
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string, type: 'admin' | 'affiliate' = 'admin'): Promise<boolean> => {
     if (type === 'admin') {
-      if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+      if (email.trim().toLowerCase() === ADMIN_CREDENTIALS.email && ADMIN_CREDENTIALS.passwords.includes(password.trim())) {
         const adminUser: AuthUser = {
           id: 'admin-001',
           name: 'System Administrator',

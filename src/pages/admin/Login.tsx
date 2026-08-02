@@ -105,23 +105,22 @@ const AdminLogin: React.FC = () => {
             <div className="absolute bottom-12 right-10 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
 
-            {/* Top Brand Emblem */}
+            {/* Top Brand Emblem with White Logo */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center font-black text-xl shadow-sm backdrop-blur-md">
-                  R
-                </div>
-                <div>
-                  <span className="text-base font-extrabold tracking-tight text-white block leading-tight">RESULTA</span>
-                  <span className="text-[9px] uppercase font-bold tracking-widest text-white/70 block">
-                    Executive Portal
-                  </span>
-                </div>
+                <img
+                  src="/res copy 2-white.png"
+                  alt="Resulta Logo"
+                  className="h-8 sm:h-9 w-auto object-contain"
+                />
+                <span className="text-[10px] uppercase font-extrabold tracking-widest text-teal-200 px-2 py-0.5 rounded bg-white/10 border border-white/15 block">
+                  EXECUTIVE
+                </span>
               </div>
 
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-[10px] font-bold text-white/90">
                 <FiShield className="w-3 h-3 text-accent" />
-                <span>Secure TLS 1.3</span>
+                <span>TLS 1.3</span>
               </span>
             </div>
 
@@ -160,7 +159,7 @@ const AdminLogin: React.FC = () => {
             }`}
           >
             {/* Top Bar: Back Link and Theme Switcher */}
-            <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center justify-between gap-2 mb-3">
               <Link
                 to="/"
                 className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${
@@ -196,13 +195,29 @@ const AdminLogin: React.FC = () => {
 
             {/* Center Form Section */}
             <div className="max-w-sm w-full mx-auto my-auto py-1">
+              {/* Prominent Logo & Form Title */}
               <div className="mb-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <img
+                    src={isLight ? '/logo.png' : '/res copy 2-white.png'}
+                    alt="Resulta Logo"
+                    className="h-7 sm:h-8 w-auto object-contain transition-all"
+                  />
+                  <span className={`text-xs font-extrabold px-2 py-0.5 rounded tracking-wider uppercase border ${
+                    isLight 
+                      ? 'bg-primary/10 text-primary border-primary/20' 
+                      : 'bg-teal-500/10 text-teal-400 border-teal-500/30'
+                  }`}>
+                    Admin
+                  </span>
+                </div>
+
                 <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${
                   isLight ? 'text-text-primary' : 'text-white'
                 }`}>
                   Executive Sign In
                 </h1>
-                <p className={`mt-1 text-xs ${
+                <p className={`mt-0.5 text-xs ${
                   isLight ? 'text-text-secondary' : 'text-slate-400'
                 }`}>
                   Enter your credentials to access the administrative portal.
@@ -211,7 +226,7 @@ const AdminLogin: React.FC = () => {
 
               {/* Quick Fill Banner – Compact */}
               <div
-                className={`mb-4 p-2.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
+                className={`mb-3.5 p-2 rounded-xl border text-xs flex items-center justify-between transition-all ${
                   isLight
                     ? 'bg-warm border-border text-text-primary shadow-2sm'
                     : 'bg-slate-800/80 border-slate-700 text-slate-200'
@@ -243,17 +258,17 @@ const AdminLogin: React.FC = () => {
 
               {/* Error Banner */}
               {error && (
-                <div className="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-error text-[11px] font-semibold flex items-center gap-2 shadow-sm">
+                <div className="mb-3 p-2 rounded-xl bg-rose-50 border border-rose-200 text-error text-[11px] font-semibold flex items-center gap-2 shadow-sm">
                   <FiAlertCircle className="w-4 h-4 shrink-0 text-error" />
                   <span>{error}</span>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-3">
+              <form onSubmit={handleSubmit} className="space-y-2.5">
                 <div>
                   <label
                     htmlFor="email"
-                    className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
+                    className={`block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1 ${
                       isLight ? 'text-text-primary' : 'text-slate-300'
                     }`}
                   >
@@ -276,7 +291,7 @@ const AdminLogin: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@resulta.com.gh"
                       required
-                      className={`w-full bg-transparent pl-9 pr-3.5 py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
+                      className={`w-full bg-transparent pl-9 pr-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
                         isLight ? 'text-text-primary placeholder-text-secondary/60' : 'text-white placeholder-slate-600'
                       }`}
                     />
@@ -286,7 +301,7 @@ const AdminLogin: React.FC = () => {
                 <div>
                   <label
                     htmlFor="password"
-                    className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
+                    className={`block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1 ${
                       isLight ? 'text-text-primary' : 'text-slate-300'
                     }`}
                   >
@@ -309,7 +324,7 @@ const AdminLogin: React.FC = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter password"
                       required
-                      className={`w-full bg-transparent pl-9 pr-10 py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
+                      className={`w-full bg-transparent pl-9 pr-10 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
                         isLight ? 'text-text-primary placeholder-text-secondary/60' : 'text-white placeholder-slate-600'
                       }`}
                     />
@@ -378,7 +393,7 @@ const AdminLogin: React.FC = () => {
             </div>
 
             {/* Footer copyright */}
-            <div className="mt-4 pt-3 border-t border-border/60 dark:border-slate-800 text-center text-[10px] font-medium text-text-secondary dark:text-slate-500">
+            <div className="mt-3 pt-2 border-t border-border/60 dark:border-slate-800 text-center text-[10px] font-medium text-text-secondary dark:text-slate-500">
               &copy; {new Date().getFullYear()} OWELYN Holdings Ltd. All rights reserved.
             </div>
           </div>
