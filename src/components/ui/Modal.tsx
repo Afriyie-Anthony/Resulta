@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
+import { AdminThemeContext } from '../../contexts/AdminThemeContext';
 
 export interface ModalProps extends BaseComponentProps {
   isOpen: boolean;
@@ -18,6 +19,9 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'md',
   className = '',
 }) => {
+  const adminTheme = useContext(AdminThemeContext);
+  const isLight = adminTheme?.isLight ?? false;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -49,24 +53,34 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-950/75 transition-opacity animate-fade-in"
         onClick={onClose}
       />
 
       {/* Modal Container */}
       <div
-        className={`relative w-full ${sizeMap[size]} bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10 animate-scale-up ${className}`}
+        className={`relative w-full ${sizeMap[size]} ${
+          isLight
+            ? 'bg-white border border-slate-200/90 shadow-2xl text-slate-900'
+            : 'bg-slate-900 border border-slate-800 shadow-2xl text-white'
+        } rounded-3xl overflow-hidden z-10 animate-scale-up ${className}`}
       >
         {/* Header */}
         {(title || description) && (
-          <div className="flex items-start justify-between p-5 border-b border-slate-800">
+          <div className={`flex items-start justify-between px-6 py-5 border-b ${
+            isLight ? 'border-slate-200/80' : 'border-slate-800'
+          }`}>
             <div>
-              {title && <h3 className="text-lg font-bold text-white">{title}</h3>}
-              {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
+              {title && <h3 className={`text-lg font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>{title}</h3>}
+              {description && <p className={`text-xs font-medium mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{description}</p>}
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className={`p-1.5 rounded-xl transition-colors ${
+                isLight
+                  ? 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

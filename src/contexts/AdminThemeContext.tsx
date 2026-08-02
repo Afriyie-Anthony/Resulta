@@ -7,7 +7,7 @@ interface AdminThemeContextType {
   setTheme: (theme: 'light' | 'dark') => void;
 }
 
-const AdminThemeContext = createContext<AdminThemeContextType | undefined>(undefined);
+export const AdminThemeContext = createContext<AdminThemeContextType | undefined>(undefined);
 
 export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<'light' | 'dark'>(() => {

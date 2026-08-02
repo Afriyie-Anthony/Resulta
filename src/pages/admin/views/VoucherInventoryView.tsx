@@ -5,10 +5,18 @@ import {
   BatchHistoryTable,
   SecurityComplianceFooter,
   BatchIngestModal,
+  InventoryTabs,
+  InlineStockUpload,
+  InventoryRegistryTable,
+  SoldVouchersTable,
+  StockAlertsView,
+  InventorySetupConfig,
   type BatchRecord,
+  type InventoryTabId,
 } from '../../../components/admin/inventory';
 
 export const VoucherInventoryView: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<InventoryTabId>('overview');
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>('WASSCE');
 
@@ -33,21 +41,78 @@ export const VoucherInventoryView: React.FC = () => {
     setInventoryStats(updatedStats);
   };
 
+  const handleUpdateThresholds = (wassceThreshold: number, beceThreshold: number) => {
+    setInventoryStats(prev => ({
+      wassce: { ...prev.wassce, threshold: wassceThreshold },
+      bece: { ...prev.bece, threshold: beceThreshold },
+    }));
+  };
+
+  // Calculate active alert count
+  const alertCount = (inventoryStats.bece.available <= inventoryStats.bece.threshold ? 1 : 0) +
+                     (inventoryStats.wassce.available <= inventoryStats.wassce.threshold ? 1 : 0);
+
   return (
-    <div className="space-y-8 pb-12">
-      {/* 1. Page Header & Actions */}
+    <div className="space-y-6 pb-14">
+      {/* 1. Page Header & Primary Actions */}
       <InventoryHeader onOpenImport={() => { setSelectedProduct('WASSCE'); setIsImportOpen(true); }} />
 
-      {/* 2. Primary Pool Health Cards (WASSCE vs BECE) */}
-      <PoolHealthCards stats={inventoryStats} onReplenish={handleOpenReplenish} />
+      {/* 2. Redesigned Premium Segmented Navigation Tabs */}
+      <InventoryTabs
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        alertCount={alertCount}
+      />
 
-      {/* 3. Filterable & Searchable Cryptographic Batch Logs */}
-      <BatchHistoryTable batches={batches} />
+      {/* 3. Dynamic Tab Content View Architecture */}
+      <div className="pt-2 transition-all">
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            <PoolHealthCards stats={inventoryStats} onReplenish={handleOpenReplenish} />
+            <BatchHistoryTable batches={batches.slice(0, 3)} />
+            <SecurityComplianceFooter />
+          </div>
+        )}
 
-      {/* 4. Specification Compliance Banner */}
-      <SecurityComplianceFooter />
+        {activeTab === 'upload' && (
+          <InlineStockUpload
+            currentStats={inventoryStats}
+            onBatchIngested={handleBatchIngested}
+            onNavigateToHistory={() => setActiveTab('history')}
+          />
+        )}
 
-      {/* 5. Isolated Batch Import Modal */}
+        {activeTab === 'registry' && (
+          <InventoryRegistryTable />
+        )}
+
+        {activeTab === 'sold' && (
+          <SoldVouchersTable />
+        )}
+
+        {activeTab === 'history' && (
+          <div className="space-y-6">
+            <BatchHistoryTable batches={batches} />
+            <SecurityComplianceFooter />
+          </div>
+        )}
+
+        {activeTab === 'alerts' && (
+          <StockAlertsView
+            stats={inventoryStats}
+            onReplenish={handleOpenReplenish}
+          />
+        )}
+
+        {activeTab === 'config' && (
+          <InventorySetupConfig
+            stats={inventoryStats}
+            onUpdateThresholds={handleUpdateThresholds}
+          />
+        )}
+      </div>
+
+      {/* 4. Quick-Action Replenishment Popup Modal */}
       <BatchIngestModal
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
