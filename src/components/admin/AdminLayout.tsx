@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { BaseComponentProps } from '../../types/ui';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../ui/Toast';
 import {
   FiGrid,
   FiBox,
@@ -28,19 +31,32 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   userRole = 'SUPER_ADMIN',
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const { addToast } = useToast();
 
   const adminNav = [
-    { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
-    { id: 'inventory', label: 'Voucher Inventory', icon: FiBox, badge: 'Low Stock', badgeColor: 'warning' as const },
-    { id: 'orders', label: 'Orders & Fulfillment', icon: FiShoppingBag },
-    { id: 'payments', label: 'Payments & Callbacks', icon: FiDollarSign },
-    { id: 'affiliates', label: 'Affiliates & Partners', icon: FiUsers, badge: '4 Pending', badgeColor: 'info' as const },
-    { id: 'withdrawals', label: 'Withdrawal Approvals', icon: FiCreditCard, badge: '2 Requests', badgeColor: 'warning' as const },
-    { id: 'reports', label: 'Reports & Analytics', icon: FiBarChart2 },
-    { id: 'audit', label: 'Audit Logs & Security', icon: FiShield },
-    { id: 'settings', label: 'System Settings', icon: FiSettings },
+    { id: 'overview', path: '/admin/overview', label: 'Dashboard Overview', icon: FiGrid },
+    { id: 'inventory', path: '/admin/inventory', label: 'Voucher Inventory', icon: FiBox, badge: 'Low Stock', badgeColor: 'warning' as const },
+    { id: 'orders', path: '/admin/orders', label: 'Orders & Fulfillment', icon: FiShoppingBag },
+    { id: 'payments', path: '/admin/payments', label: 'Payments & Callbacks', icon: FiDollarSign },
+    { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates & Partners', icon: FiUsers, badge: '4 Pending', badgeColor: 'info' as const },
+    { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawal Approvals', icon: FiCreditCard, badge: '2 Requests', badgeColor: 'warning' as const },
+    { id: 'reports', path: '/admin/reports', label: 'Reports & Analytics', icon: FiBarChart2 },
+    { id: 'audit', path: '/admin/audit', label: 'Audit Logs & Security', icon: FiShield },
+    { id: 'settings', path: '/admin/settings', label: 'System Settings', icon: FiSettings },
   ];
+
+  const handleLogout = () => {
+    logout();
+    addToast({
+      title: 'Admin Signed Out',
+      message: 'You have securely logged out of the Control Center.',
+      type: 'info',
+    });
+    navigate('/admin/login');
+  };
 
   return (
     <div className="min-h-screen flex bg-slate-950 text-slate-100 relative selection:bg-teal-500 selection:text-white">
@@ -87,17 +103,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </div>
             {adminNav.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = location.pathname === item.path || (item.id === 'overview' && (location.pathname === '/admin' || location.pathname === '/admin/'));
               return (
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveTab(item.id);
+                    navigate(item.path);
                     setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-teal-500/10 text-teal-400 border border-teal-500/30'
+                      ? 'bg-teal-500/10 text-teal-400 border border-teal-500/30 shadow-sm shadow-teal-950/50'
                       : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                   }`}
                 >
@@ -123,14 +139,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               SA
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-white truncate">System Administrator</p>
+              <p className="text-xs font-bold text-white truncate">{user?.name || 'System Administrator'}</p>
               <Badge variant="primary" className="text-[9px] mt-0.5">
                 {userRole}
               </Badge>
             </div>
           </div>
 
-          <Button variant="ghost" size="sm" fullWidth leftIcon={<FiLogOut />}>
+          <Button variant="ghost" size="sm" fullWidth leftIcon={<FiLogOut />} onClick={handleLogout}>
             Logout Admin
           </Button>
         </div>

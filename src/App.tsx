@@ -26,6 +26,7 @@ import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
 import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
 import AdminLogin from './pages/admin/Login';
+import { AdminRouter } from './pages/admin/AdminRouter';
 import type { LayoutMode } from './types/ui';
 import {
   FiCheckCircle,
@@ -434,58 +435,7 @@ const AppRoutes: React.FC = () => {
         path="/admin/*"
         element={
           <ProtectedRoute>
-            <AdminLayout>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card glass>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-xs text-slate-400 font-semibold uppercase">WASSCE Stock Available</p>
-                        <p className="text-2xl font-black text-white mt-1">1,420</p>
-                      </div>
-                      <Badge variant="success">Healthy</Badge>
-                    </div>
-                  </Card>
-                  <Card glass>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-xs text-slate-400 font-semibold uppercase">BECE Stock Available</p>
-                        <p className="text-2xl font-black text-amber-400 mt-1">180</p>
-                      </div>
-                      <Badge variant="warning" pulse>Low Stock</Badge>
-                    </div>
-                  </Card>
-                  <Card glass>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-xs text-slate-400 font-semibold uppercase">Today's Revenue</p>
-                        <p className="text-2xl font-black text-emerald-400 mt-1">{formatCedi(8450.0)}</p>
-                      </div>
-                      <Badge variant="primary">338 Orders</Badge>
-                    </div>
-                  </Card>
-                  <Card glass>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-xs text-slate-400 font-semibold uppercase">Pending Withdrawals</p>
-                        <p className="text-2xl font-black text-rose-400 mt-1">{formatCedi(640.0)}</p>
-                      </div>
-                      <Badge variant="error">2 Payouts</Badge>
-                    </div>
-                  </Card>
-                </div>
-                <Card glass header={<h3 className="font-bold text-white">Voucher Inventory Batch Operations</h3>}>
-                  <div className="flex flex-wrap gap-3">
-                    <Button variant="gradient" leftIcon={<FiBox />}>
-                      Import Voucher Batch (CSV / Excel)
-                    </Button>
-                    <Button variant="secondary" leftIcon={<FiRefreshCw />}>
-                      Trigger MoMo Reconciliation
-                    </Button>
-                  </div>
-                </Card>
-              </div>
-            </AdminLayout>
+            <AdminRouter />
           </ProtectedRoute>
         }
       />
