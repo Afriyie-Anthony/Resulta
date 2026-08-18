@@ -81,10 +81,10 @@ export const TimetablesView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header without horizontal dividers */}
+      {/* Theme-aware Header */}
       <TimetablesHeader onAddSchedule={handleAddSchedule} />
 
-      {/* Grid of Schedules Color-coded by status */}
+      {/* Main Exam Schedule Cards */}
       <TimetablesGrid
         schedules={schedules}
         onConfigureSchedule={handleConfigureSchedule}

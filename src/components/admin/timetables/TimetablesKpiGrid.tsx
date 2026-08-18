@@ -15,7 +15,7 @@ export const TimetablesKpiGrid: React.FC<TimetablesKpiGridProps> = ({ schedules 
   const totalDownloads = schedules.reduce((sum, s) => sum + s.downloads, 0);
   const draftCount = schedules.filter(s => s.portalStatus === 'DRAFT').length;
 
-  // Approximate bandwidth consumed (MB to GB conversion)
+  // Approximate bandwidth consumed
   const calcBandwidth = () => {
     let totalMB = 0;
     schedules.forEach(s => {
@@ -29,98 +29,98 @@ export const TimetablesKpiGrid: React.FC<TimetablesKpiGridProps> = ({ schedules 
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* 1. Timetables Hosted (Subtle Cyan / Teal Tint) */}
-      <div className={`p-5 rounded-3xl border transition-all shadow-sm ${
-        isLight ? 'bg-cyan-50/50 border-cyan-200/70' : 'bg-teal-950/20 border-teal-500/30'
+      {/* 1. Timetables Hosted */}
+      <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs hover:shadow-sm ${
+        isLight ? 'bg-white border-slate-300 border-t-cyan-500 hover:border-slate-400' : 'bg-slate-900/90 border-slate-800 border-t-cyan-500'
       }`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-cyan-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
             Timetables Hosted
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-cyan-600/15 text-cyan-800' : 'bg-teal-500/20 text-teal-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-cyan-100/80 text-cyan-800 border border-cyan-200' : 'bg-teal-500/20 text-teal-400 font-black'
           }`}>
-            <FiFileText className="w-4 h-4" />
+            <FiFileText className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-cyan-950' : 'text-white'}`}>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
           {totalUploads} Documents
         </p>
-        <p className="text-xs font-semibold text-slate-400 mt-2.5">
+        <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
           Active GES releases on site
         </p>
       </div>
 
-      {/* 2. Total Downloads (Subtle Emerald / Mint Tint) */}
-      <div className={`p-5 rounded-3xl border transition-all shadow-sm ${
-        isLight ? 'bg-emerald-50/50 border-emerald-200/70' : 'bg-emerald-950/20 border-emerald-500/30'
+      {/* 2. Total Downloads */}
+      <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs hover:shadow-sm ${
+        isLight ? 'bg-white border-slate-300 border-t-emerald-500 hover:border-slate-400' : 'bg-slate-900/90 border-slate-800 border-t-emerald-500'
       }`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-emerald-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
             Student Downloads
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-emerald-600/15 text-emerald-800' : 'bg-emerald-500/20 text-emerald-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-emerald-100/80 text-emerald-800 border border-emerald-200' : 'bg-emerald-500/20 text-emerald-400 font-black'
           }`}>
-            <FiDownloadCloud className="w-4 h-4" />
+            <FiDownloadCloud className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-emerald-950' : 'text-emerald-400'}`}>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-emerald-950' : 'text-emerald-400'}`}>
           {totalDownloads.toLocaleString()} Hits
         </p>
-        <p className="text-xs font-semibold text-slate-400 mt-2.5">
+        <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
           Direct website PDF downloads
         </p>
       </div>
 
-      {/* 3. Draft Campaigns (Subtle Amber / Warm Cream Tint) */}
-      <div className={`p-5 rounded-3xl border transition-all shadow-sm ${
-        isLight ? 'bg-amber-50/50 border-amber-200/70' : 'bg-amber-950/20 border-amber-500/30'
+      {/* 3. Draft Schedules */}
+      <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs hover:shadow-sm ${
+        isLight ? 'bg-white border-slate-300 border-t-amber-500 hover:border-slate-400' : 'bg-slate-900/90 border-slate-800 border-t-amber-500'
       }`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-amber-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
             Draft Schedules
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-amber-500/15 text-amber-800' : 'bg-amber-500/20 text-amber-400'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-amber-100/80 text-amber-800 border border-amber-200' : 'bg-amber-500/20 text-amber-400'
           }`}>
-            <FiAlertCircle className="w-4 h-4" />
+            <FiAlertCircle className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>
           {draftCount} Pending
         </p>
-        <p className="text-xs font-semibold text-slate-400 mt-2.5">
+        <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
           Awaiting GES official upload
         </p>
       </div>
 
-      {/* 4. Estimated Traffic (Subtle Sky Blue / Indigo Tint) */}
-      <div className={`p-5 rounded-3xl border transition-all shadow-sm ${
-        isLight ? 'bg-blue-50/40 border-blue-200/60' : 'bg-blue-950/20 border-blue-500/30'
+      {/* 4. Traffic Distributed */}
+      <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs hover:shadow-sm ${
+        isLight ? 'bg-white border-slate-300 border-t-purple-500 hover:border-slate-400' : 'bg-slate-900/90 border-slate-800 border-t-purple-500'
       }`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-blue-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
             Traffic Distributed
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-blue-600/15 text-blue-800' : 'bg-blue-500/20 text-blue-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-purple-100/80 text-purple-800 border border-purple-200' : 'bg-purple-500/20 text-purple-400 font-black'
           }`}>
-            <FiActivity className="w-4 h-4" />
+            <FiActivity className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-blue-950' : 'text-white'}`}>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
           {calcBandwidth()}
         </p>
-        <p className="text-xs font-semibold text-slate-400 mt-2.5">
+        <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
           Timetable document bandwidth
         </p>
       </div>
