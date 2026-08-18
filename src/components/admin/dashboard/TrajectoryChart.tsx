@@ -22,7 +22,7 @@ export const TrajectoryChart: React.FC = () => {
     '7d': [
       { label: 'Mon', revenue: 5400, orders: 216, ussdPct: 32 },
       { label: 'Tue', revenue: 6800, orders: 272, ussdPct: 30 },
-      { label: 'Wed (Today)', revenue: 8450, orders: 338, ussdPct: 28 },
+      { label: 'Wed', revenue: 8450, orders: 338, ussdPct: 28 },
       { label: 'Thu', revenue: 7100, orders: 284, ussdPct: 33 },
       { label: 'Fri', revenue: 9200, orders: 368, ussdPct: 26 },
       { label: 'Sat', revenue: 11400, orders: 456, ussdPct: 35 },
@@ -42,34 +42,35 @@ export const TrajectoryChart: React.FC = () => {
   const totalOrders = activeData.reduce((acc, d) => acc + d.orders, 0);
 
   return (
-    <div className={`p-6 rounded-3xl border flex flex-col justify-between h-full transition-colors ${
-      isLight ? 'bg-white border-slate-200/90 shadow-md text-primary' : 'bg-slate-900/90 border-slate-800 text-white shadow-xl'
+    <div className={`p-4 sm:p-6 rounded-3xl border flex flex-col justify-between h-full transition-colors shadow-sm ${
+      isLight ? 'bg-white border-slate-300 text-slate-950' : 'bg-slate-900/90 border-slate-800 text-white shadow-xl'
     }`}>
       <div>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        {/* Header & Timeframe Selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div>
             <div className="flex items-center gap-2">
-              <FiBarChart2 className={`w-5 h-5 ${isLight ? 'text-secondary' : 'text-teal-400'}`} />
-              <h2 className={`text-lg font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>
+              <FiBarChart2 className={`w-5 h-5 ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`} />
+              <h2 className={`text-base sm:text-lg font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
                 Voucher Volume & Revenue Trajectory
               </h2>
             </div>
-            <p className={`text-xs mt-1 ${isLight ? 'text-slate-500 font-semibold' : 'text-slate-400'}`}>
-              Aggregated real-time sales performance across HTTPS Web & USSD (*882#) channels
+            <p className={`text-xs mt-0.5 font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+              Aggregated real-time sales performance across Web & USSD (*713#) channels
             </p>
           </div>
 
-          <div className={`inline-flex items-center p-1 rounded-xl border shrink-0 ${
-            isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
+          <div className={`inline-flex items-center p-1 rounded-2xl border shrink-0 ${
+            isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-950 border-slate-800'
           }`}>
             {(['24h', '7d', '30d'] as TimeFrame[]).map((tf) => (
               <button
                 key={tf}
                 onClick={() => { setTimeframe(tf); setSelectedBarIndex(0); }}
-                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all ${
                   timeframe === tf
-                    ? isLight ? 'bg-primary text-white shadow-sm' : 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950'
-                    : isLight ? 'text-slate-600 hover:text-primary' : 'text-slate-400 hover:text-white'
+                    ? isLight ? 'bg-[#0F8B8D] text-white shadow-xs' : 'bg-teal-500 text-slate-950 shadow-md'
+                    : isLight ? 'text-slate-700 hover:text-slate-950' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {tf === '24h' ? 'Last 24 Hours' : tf === '7d' ? 'Past 7 Days' : '30 Days Range'}
@@ -78,65 +79,76 @@ export const TrajectoryChart: React.FC = () => {
           </div>
         </div>
 
-        <div className={`grid grid-cols-2 xl:grid-cols-4 gap-3.5 p-4 rounded-2xl border mb-6 ${
-          isLight ? 'bg-slate-50/80 border-slate-200 text-primary' : 'bg-slate-950/60 border-slate-800 text-white'
+        {/* Top 4 KPI Metrics Grid */}
+        <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 sm:p-4 rounded-2xl border mb-5 ${
+          isLight ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-slate-950/60 border-slate-800 text-white'
         }`}>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Period Revenue</span>
-            <span className={`text-xl font-black ${isLight ? 'text-secondary' : 'text-teal-400'}`}>{formatCedi(totalRevenue)}</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Total Period Revenue</span>
+            <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
+              {formatCedi(totalRevenue)}
+            </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Vouchers Dispensed</span>
-            <span className={`text-xl font-black ${isLight ? 'text-primary' : 'text-white'}`}>{totalOrders} <span className="text-xs font-normal">PINS</span></span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Vouchers Dispensed</span>
+            <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-slate-950' : 'text-white'}`}>
+              {totalOrders} <span className="text-xs font-bold text-slate-500">PINs</span>
+            </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Average Order Value</span>
-            <span className={`text-xl font-black ${isLight ? 'text-primary' : 'text-white'}`}>{formatCedi(totalOrders > 0 ? totalRevenue / totalOrders : 0)}</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Average Order Value</span>
+            <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-slate-950' : 'text-white'}`}>
+              {formatCedi(totalOrders > 0 ? totalRevenue / totalOrders : 0)}
+            </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">USSD vs Web Ratio</span>
-            <span className={`text-xl font-black ${isLight ? 'text-warning' : 'text-amber-400'}`}>31% / 69%</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">USSD vs Web Ratio</span>
+            <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400 block truncate">
+              31% / 69%
+            </span>
           </div>
         </div>
 
-        <div className="relative pt-4 pb-2">
-          <div className="h-56 flex items-end justify-between gap-2.5 sm:gap-5 px-2 pt-6 pb-2 border-b border-dashed border-slate-300 dark:border-slate-800">
+        {/* Responsive Bar Chart Container */}
+        <div className="relative pt-2 pb-2 overflow-x-auto no-scrollbar">
+          <div className="h-52 min-w-[300px] sm:min-w-0 flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-2 pt-6 pb-2 border-b border-dashed border-slate-300 dark:border-slate-800">
             {activeData.map((data, idx) => {
               const heightPct = Math.max(15, (data.revenue / maxRevenue) * 100);
               const isSelected = selectedBarIndex === idx;
-              
+
               return (
                 <div
                   key={data.label}
                   onClick={() => setSelectedBarIndex(idx)}
-                  className="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer"
+                  className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group cursor-pointer"
                 >
-                  <span className={`text-[10px] font-black tracking-tight px-1.5 py-0.5 rounded transition-all duration-200 ${
+                  <span className={`text-[9px] sm:text-[10px] font-black tracking-tight px-1.5 py-0.5 rounded transition-all duration-200 whitespace-nowrap ${
                     isSelected
-                      ? isLight ? 'bg-primary text-white opacity-100 scale-105' : 'bg-teal-400 text-slate-950 opacity-100 scale-105 font-black'
-                      : 'opacity-0 group-hover:opacity-100 bg-slate-800 text-white'
+                      ? isLight ? 'bg-slate-950 text-white opacity-100 scale-105' : 'bg-teal-400 text-slate-950 opacity-100 scale-105 font-black'
+                      : 'opacity-0 group-hover:opacity-100 bg-slate-950 text-white'
                   }`}>
                     {formatCedi(data.revenue)}
                   </span>
 
-                  <div className={`w-full max-w-[46px] rounded-t-xl transition-all duration-300 relative overflow-hidden ${
-                    isSelected
-                      ? isLight
-                        ? 'bg-secondary shadow-lg shadow-secondary/30 ring-2 ring-secondary/40'
-                        : 'bg-gradient-to-t from-teal-600 to-emerald-400 shadow-lg shadow-teal-500/30'
-                      : isLight
-                      ? 'bg-slate-200 hover:bg-secondary/70'
-                      : 'bg-slate-800 hover:bg-teal-500/60'
-                  }`}
-                  style={{ height: `${heightPct}%` }}
+                  <div
+                    className={`w-full max-w-[36px] sm:max-w-[46px] rounded-t-xl transition-all duration-300 relative overflow-hidden ${
+                      isSelected
+                        ? isLight
+                          ? 'bg-[#0F8B8D] shadow-md shadow-[#0F8B8D]/30 ring-2 ring-[#0F8B8D]/40'
+                          : 'bg-gradient-to-t from-teal-600 to-emerald-400 shadow-md shadow-teal-500/30'
+                        : isLight
+                        ? 'bg-slate-200 hover:bg-[#0F8B8D]/70'
+                        : 'bg-slate-800 hover:bg-teal-500/60'
+                    }`}
+                    style={{ height: `${heightPct}%` }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-40" />
                   </div>
 
-                  <span className={`text-[11px] font-extrabold truncate w-full text-center transition-colors ${
+                  <span className={`text-[10px] sm:text-[11px] font-black truncate w-full text-center transition-colors ${
                     isSelected
-                      ? isLight ? 'text-secondary font-black scale-105' : 'text-teal-400 font-black'
-                      : isLight ? 'text-slate-600 group-hover:text-primary' : 'text-slate-400 group-hover:text-white'
+                      ? isLight ? 'text-[#0F8B8D] font-black scale-105' : 'text-teal-400 font-black'
+                      : isLight ? 'text-slate-700 group-hover:text-slate-950' : 'text-slate-400 group-hover:text-white'
                   }`}>
                     {data.label}
                   </span>
@@ -145,37 +157,38 @@ export const TrajectoryChart: React.FC = () => {
             })}
           </div>
 
+          {/* Telemetry Spotlight Card */}
           {selectedBarIndex !== null && activeData[selectedBarIndex] && (
-            <div className={`mt-4 p-4 rounded-2xl border flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 animate-fadeIn ${
-              isLight ? 'bg-[#0F8B8D]/5 border-[#0F8B8D]/20' : 'bg-teal-950/30 border-teal-500/30'
+            <div className={`mt-4 p-3.5 sm:p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-colors ${
+              isLight ? 'bg-[#0F8B8D]/10 border-[#0F8B8D]/30' : 'bg-teal-950/40 border-teal-500/30'
             }`}>
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold shrink-0 ${
-                  isLight ? 'bg-secondary text-white' : 'bg-teal-500 text-slate-950 font-black'
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold shrink-0 ${
+                  isLight ? 'bg-[#0F8B8D] text-white' : 'bg-teal-500 text-slate-950 font-black'
                 }`}>
-                  <FiCalendar />
+                  <FiCalendar className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className={`text-sm font-black ${isLight ? 'text-primary' : 'text-white'}`}>
-                    Telemetry Spotlight: <span className={isLight ? 'text-secondary' : 'text-teal-400'}>{activeData[selectedBarIndex].label}</span>
+                  <h4 className={`text-xs sm:text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
+                    Telemetry Spotlight: <span className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}>{activeData[selectedBarIndex].label}</span>
                   </h4>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                     {activeData[selectedBarIndex].orders} successful transactions processed without manual intervention.
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 shrink-0 text-right">
+              <div className="flex items-center gap-4 shrink-0 text-right w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-slate-800">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Web vs USSD</span>
-                  <span className={`text-xs font-black ${isLight ? 'text-primary' : 'text-slate-200'}`}>
+                  <span className="text-[9px] uppercase font-black text-slate-500 block">Web vs USSD</span>
+                  <span className={`text-xs font-black ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
                     {100 - activeData[selectedBarIndex].ussdPct}% Web / {activeData[selectedBarIndex].ussdPct}% USSD
                   </span>
                 </div>
-                <div className="hidden sm:block h-8 w-px bg-slate-300 dark:bg-slate-700" />
+                <div className="h-7 w-px bg-slate-300 dark:bg-slate-700" />
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Spotlight Revenue</span>
-                  <span className={`text-base font-black ${isLight ? 'text-secondary' : 'text-teal-400'}`}>
+                  <span className="text-[9px] uppercase font-black text-slate-500 block">Spotlight Revenue</span>
+                  <span className={`text-xs sm:text-sm font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
                     {formatCedi(activeData[selectedBarIndex].revenue)}
                   </span>
                 </div>
