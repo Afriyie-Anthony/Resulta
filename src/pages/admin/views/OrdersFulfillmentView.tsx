@@ -6,7 +6,7 @@ import {
   OrdersKpiGrid,
   OrdersFilterToolbar,
   OrdersTable,
-  OrderInspectionModal
+  OrderDetailsView
 } from '../../../components/admin/orders';
 
 export const OrdersFulfillmentView: React.FC = () => {
@@ -15,10 +15,9 @@ export const OrdersFulfillmentView: React.FC = () => {
   // Filter & search states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [networkFilter, setNetworkFilter] = useState('ALL');
   const [productFilter, setProductFilter] = useState('ALL');
   
-  // Modal selection state
+  // Selected order state for full page details view
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const [orders] = useState<Order[]>([
@@ -35,9 +34,8 @@ export const OrdersFulfillmentView: React.FC = () => {
                           o.phone.includes(searchTerm) ||
                           o.serial.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
-    const matchesNetwork = networkFilter === 'ALL' || o.network === networkFilter;
     const matchesProduct = productFilter === 'ALL' || o.product === productFilter;
-    return matchesSearch && matchesStatus && matchesNetwork && matchesProduct;
+    return matchesSearch && matchesStatus && matchesProduct;
   });
 
   const handleResendSMS = (order: Order) => {
@@ -45,14 +43,6 @@ export const OrdersFulfillmentView: React.FC = () => {
       title: 'SMS Prompt Resubmitted',
       message: `Result-checker PIN & instructions resent to telecom gateway for ${order.phone} (${order.id}).`,
       type: 'success',
-    });
-  };
-
-  const handlePinReveal = () => {
-    addToast({
-      title: 'Security Audit Log Recorded',
-      message: 'Decryption & inspection of voucher PIN has been added to official administrative audit logs.',
-      type: 'warning',
     });
   };
 
@@ -64,14 +54,24 @@ export const OrdersFulfillmentView: React.FC = () => {
     });
   };
 
-  const handleSelectFilter = (status: string, network: string) => {
+  const handleSelectFilter = (status: string) => {
     setStatusFilter(status);
-    if (network !== 'ALL') setNetworkFilter(network);
   };
+
+  // Dedicated Full-Page View Details Mode
+  if (selectedOrder) {
+    return (
+      <OrderDetailsView
+        order={selectedOrder}
+        onBack={() => setSelectedOrder(null)}
+        onResendSMS={handleResendSMS}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 pb-14">
-      {/* 1. Theme-aware header without horizontal dividing border */}
+      {/* 1. Theme-aware header */}
       <OrdersHeader
         onExportCsv={handleExportCsv}
         totalOrdersCount={orders.length}
@@ -83,32 +83,22 @@ export const OrdersFulfillmentView: React.FC = () => {
         onSelectFilter={handleSelectFilter}
       />
 
-      {/* 3. Multi-dimensional Filtering & Search Toolbar */}
+      {/* 3. Multi-dimensional Filtering & Search Toolbar (Gateway filter removed) */}
       <OrdersFilterToolbar
         orders={orders}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
-        networkFilter={networkFilter}
-        onNetworkChange={setNetworkFilter}
         productFilter={productFilter}
         onProductChange={setProductFilter}
       />
 
-      {/* 4. Interactive Data Table with Network Branding Pills */}
+      {/* 4. Interactive Data Table (Gateway badges removed) */}
       <OrdersTable
         orders={filteredOrders}
         onInspect={(order) => setSelectedOrder(order)}
         onResendSMS={handleResendSMS}
-      />
-
-      {/* 5. Compact, scroll-free order inspection modal with visual delivery tracker */}
-      <OrderInspectionModal
-        order={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
-        onResendSMS={handleResendSMS}
-        onPinReveal={handlePinReveal}
       />
     </div>
   );

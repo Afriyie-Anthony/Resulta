@@ -9,8 +9,6 @@ interface OrdersFilterToolbarProps {
   onSearchChange: (val: string) => void;
   statusFilter: string;
   onStatusChange: (status: string) => void;
-  networkFilter: string;
-  onNetworkChange: (network: string) => void;
   productFilter: string;
   onProductChange: (product: string) => void;
 }
@@ -21,8 +19,6 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
   onSearchChange,
   statusFilter,
   onStatusChange,
-  networkFilter,
-  onNetworkChange,
   productFilter,
   onProductChange,
 }) => {
@@ -41,12 +37,11 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
     { id: 'FAILED', label: 'Failed' },
   ];
 
-  const networkOptions = ['ALL', 'MTN MoMo', 'Telecel Cash', 'AirtelTigo'];
   const productOptions = ['ALL', 'WASSCE 2026 Voucher', 'BECE 2026 Voucher'];
 
   return (
     <div className={`p-5 rounded-3xl border transition-colors shadow-sm space-y-4 ${
-      isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
+      isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
     }`}>
       {/* Top row: Status pills & Search input */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -61,22 +56,22 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
                 key={opt.id}
                 type="button"
                 onClick={() => onStatusChange(opt.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap border ${
                   isSelected
                     ? isLight
-                      ? 'bg-[#0F8B8D] text-white shadow-sm shadow-[#0F8B8D]/25'
-                      : 'bg-teal-500 text-slate-950 shadow-sm shadow-teal-950 font-black'
+                      ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-xs'
+                      : 'bg-teal-500 text-slate-950 border-teal-400 font-black shadow-xs'
                     : isLight
-                    ? 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/70'
-                    : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs'
+                    : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:bg-slate-800 hover:text-white'
                 }`}
               >
                 <span>{opt.label}</span>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
                   isSelected
                     ? 'bg-white/25 text-white'
                     : isLight
-                    ? 'bg-slate-200 text-slate-700'
+                    ? 'bg-slate-200 text-slate-900'
                     : 'bg-slate-700 text-slate-300'
                 }`}>
                   {count}
@@ -96,53 +91,33 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
             placeholder="Search phone, order ref or serial..."
             className={`w-full rounded-xl pl-10 pr-4 py-2 text-xs font-semibold focus:outline-none transition-colors border ${
               isLight
-                ? 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
                 : 'bg-slate-950 border-slate-800 text-slate-200 placeholder-slate-500 focus:border-teal-500'
             }`}
           />
         </div>
       </div>
 
-      {/* Bottom row: Network & Exam secondary filters */}
-      <div className={`pt-3.5 flex flex-wrap items-center justify-between gap-4 border-t ${
-        isLight ? 'border-slate-100' : 'border-slate-800/80'
+      {/* Bottom row: Exam Type product filter (gateways removed) */}
+      <div className={`pt-3.5 flex items-center justify-between gap-4 border-t ${
+        isLight ? 'border-slate-200' : 'border-slate-800/80'
       }`}>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1.5 mr-1">
-            <FiFilter className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-teal-400" /> Gateway:
+        <div className="flex items-center gap-2">
+          <span className={`text-[11px] font-black uppercase flex items-center gap-1.5 mr-1 ${isLight ? 'text-slate-800' : 'text-slate-400'}`}>
+            <FiFilter className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-teal-400" /> Exam Type:
           </span>
-          {networkOptions.map((net) => (
-            <button
-              key={net}
-              onClick={() => onNetworkChange(net)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
-                networkFilter === net
-                  ? isLight
-                    ? 'bg-secondary text-white border-secondary shadow-2xs'
-                    : 'bg-slate-700 text-white border-slate-600 font-black'
-                  : isLight
-                  ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                  : 'bg-slate-800/40 text-slate-400 border-slate-800 hover:bg-slate-800'
-              }`}
-            >
-              {net === 'ALL' ? 'All Operators' : net}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-bold text-slate-400 uppercase mr-1">Exam Type:</span>
           {productOptions.map((prod) => (
             <button
               key={prod}
+              type="button"
               onClick={() => onProductChange(prod)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
+              className={`px-3 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
                 productFilter === prod
                   ? isLight
-                    ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-2xs'
+                    ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-2xs font-black'
                     : 'bg-teal-500/20 text-teal-400 border-teal-500/50 font-black'
                   : isLight
-                  ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100'
                   : 'bg-slate-800/40 text-slate-400 border-slate-800 hover:bg-slate-800'
               }`}
             >
