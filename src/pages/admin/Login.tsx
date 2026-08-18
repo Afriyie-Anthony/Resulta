@@ -13,7 +13,8 @@ import {
   FiKey,
   FiArrowLeft,
   FiAlertCircle,
-  FiActivity
+  FiActivity,
+  FiZap
 } from 'react-icons/fi';
 
 const AdminLogin: React.FC = () => {
@@ -36,7 +37,7 @@ const AdminLogin: React.FC = () => {
     setError('');
     setIsLoading(true);
 
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const success = await login(email, password);
     setIsLoading(false);
@@ -44,7 +45,7 @@ const AdminLogin: React.FC = () => {
     if (success) {
       navigate(from, { replace: true });
     } else {
-      setError('Invalid credentials. Please verify your administrator email and password.');
+      setError('Invalid administrator credentials. Please verify your email and security password.');
     }
   };
 
@@ -58,130 +59,145 @@ const AdminLogin: React.FC = () => {
 
   return (
     <div
-      className={`h-screen w-screen overflow-y-auto lg:overflow-hidden font-primary transition-colors duration-300 flex items-center justify-center p-4 sm:p-6 relative ${
+      className={`min-h-screen w-screen overflow-y-auto font-primary transition-colors duration-300 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative ${
         isLight
-          ? 'bg-warm text-text-primary selection:bg-secondary selection:text-surface'
-          : 'bg-slate-950 text-slate-100 selection:bg-secondary selection:text-white'
+          ? 'bg-slate-100 text-slate-950 selection:bg-[#0F8B8D] selection:text-white'
+          : 'bg-slate-950 text-slate-100 selection:bg-teal-500 selection:text-slate-950'
       }`}
     >
-      {/* Decorative background ambient glows matching public website architecture */}
+      {/* Decorative ambient background glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div
-          className={`absolute -top-20 -left-20 w-96 h-96 rounded-full blur-3xl transition-opacity ${
-            isLight ? 'bg-primary/10 opacity-70' : 'bg-teal-500/10 opacity-30'
+          className={`absolute -top-24 -left-24 w-[450px] h-[450px] rounded-full blur-3xl transition-opacity ${
+            isLight ? 'bg-[#0F8B8D]/15 opacity-80' : 'bg-teal-500/10 opacity-30'
           }`}
         />
         <div
-          className={`absolute top-1/3 -right-32 w-[500px] h-[500px] rounded-full blur-3xl transition-opacity ${
-            isLight ? 'bg-secondary/10 opacity-80' : 'bg-blue-600/10 opacity-30'
-          }`}
-        />
-        <div
-          className={`absolute -bottom-20 left-1/3 w-80 h-80 rounded-full blur-3xl transition-opacity ${
-            isLight ? 'bg-accent/15 opacity-60' : 'bg-emerald-500/10 opacity-20'
+          className={`absolute top-1/3 -right-32 w-[550px] h-[550px] rounded-full blur-3xl transition-opacity ${
+            isLight ? 'bg-[#0B2545]/10 opacity-70' : 'bg-blue-600/10 opacity-30'
           }`}
         />
       </div>
 
-      {/* Main Responsive Card – locked max height to guarantee zero scrollbars on laptop/desktop */}
-      <div className="relative z-10 w-full max-w-5xl lg:max-h-[90vh] my-auto">
+      {/* Main Responsive Card Container */}
+      <div className="relative z-10 w-full max-w-5xl my-auto">
         <div
           className={`rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 border grid grid-cols-1 lg:grid-cols-12 ${
             isLight
-              ? 'bg-surface border-border shadow-primary/15'
-              : 'bg-slate-900/90 border-slate-800 shadow-black/60 backdrop-blur-xl'
+              ? 'bg-white border-slate-300 shadow-slate-900/10'
+              : 'bg-slate-900/90 border-slate-800 shadow-black/80 backdrop-blur-xl'
           }`}
         >
-          {/* Left Side: Brand & Value Proposition Panel (6 cols on LG) */}
+          {/* Left Panel: Executive Brand Showcase & Security Badges (Hidden on Mobile, Visible on Desktop LG) */}
           <div
-            className={`lg:col-span-6 relative p-6 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden ${
+            className={`hidden lg:flex lg:col-span-6 relative p-6 sm:p-8 lg:p-10 flex-col justify-between overflow-hidden ${
               isLight
-                ? 'bg-gradient-to-br from-primary via-primary/95 to-secondary/85 text-white'
-                : 'bg-gradient-to-br from-slate-950 via-primary/80 to-slate-900 text-slate-100 lg:border-r border-slate-800'
+                ? 'bg-gradient-to-br from-[#0B2545] via-[#0B2545] to-[#0F8B8D] text-white'
+                : 'bg-gradient-to-br from-slate-950 via-[#0B2545]/90 to-slate-900 text-slate-100 lg:border-r border-slate-800'
             }`}
           >
-            {/* Ambient Lighting & Pattern */}
-            <div className="absolute top-10 left-10 w-32 h-32 bg-accent/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute bottom-12 right-10 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
+            {/* Ambient Overlay Patterns */}
+            <div className="absolute top-10 left-10 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-10 right-10 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
-            {/* Top Brand Emblem with White Logo */}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
+            {/* Top Logo & System Status */}
+            <div className="relative z-10 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
                 <img
                   src="/res copy 2-white.png"
                   alt="Resulta Logo"
                   className="h-8 sm:h-9 w-auto object-contain"
                 />
-                <span className="text-[10px] uppercase font-extrabold tracking-widest text-teal-200 px-2 py-0.5 rounded bg-white/10 border border-white/15 block">
-                  EXECUTIVE
+                <span className="text-[10px] font-black uppercase tracking-widest text-teal-300 px-2.5 py-1 rounded-full bg-white/10 border border-white/20">
+                  EXECUTIVE PORTAL
                 </span>
               </div>
 
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-[10px] font-bold text-white/90">
-                <FiShield className="w-3 h-3 text-accent" />
-                <span>TLS 1.3</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-[10px] font-black text-emerald-300">
+                <FiShield className="w-3 h-3 text-emerald-300" />
+                <span>TLS 1.3 ENCRYPTED</span>
               </span>
             </div>
 
-            {/* Middle Section: Clean, compact descriptions */}
-            <div className="relative z-10 my-6 lg:my-auto py-4 space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                Centralized Control Center
-              </h2>
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-normal max-w-sm">
-                Access examination result-checker PIN pools, reconcile MoMo callbacks, and regulate partner commission payouts.
-              </p>
+            {/* Middle Value Proposition */}
+            <div className="relative z-10 my-8 lg:my-auto py-4 space-y-5">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
+                  Resulta Executive Control Center
+                </h2>
+                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-semibold mt-2 max-w-md">
+                  Administrative control suite for examination result checker PIN pools, real-time Mobile Money reconciliations, and partner commission distributions.
+                </p>
+              </div>
 
-              <div className="pt-1 space-y-2.5">
-                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-xs text-white shadow-sm">
-                  <FiCheckCircle className="w-4 h-4 text-emerald-300 shrink-0" />
-                  <span><strong>Zero-Trust Architecture:</strong> AES-256 PIN vault</span>
+              {/* Feature Highlights */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white shadow-xs">
+                  <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                    <FiCheckCircle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-black text-white">Cryptographic PIN Vault</p>
+                    <p className="text-[11px] text-white/70 font-semibold">AES-256 encrypted result-checker inventory management</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-xs text-white shadow-sm">
-                  <FiActivity className="w-4 h-4 text-accent shrink-0" />
-                  <span><strong>Idempotent Engine:</strong> Real-time MoMo gateways</span>
+
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white shadow-xs">
+                  <div className="w-7 h-7 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center shrink-0">
+                    <FiActivity className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-black text-white">Idempotent Payment Engine</p>
+                    <p className="text-[11px] text-white/70 font-semibold">Instant Mobile Money callback reconciliation & SMS dispatch</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white shadow-xs">
+                  <div className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                    <FiZap className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-black text-white">Multi-Channel Telemetry</p>
+                    <p className="text-[11px] text-white/70 font-semibold">Real-time Web storefront & USSD *713# telemetry</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Compliance text */}
-            <div className="relative z-10 text-[10px] text-white/60 font-medium border-t border-white/10 pt-3 flex items-center justify-between">
-              <span>OWELYN Holdings Ltd &bull; Sections 20–22 Compliance</span>
-              <span>v2.6.0</span>
+            {/* Footer Compliance Text */}
+            <div className="relative z-10 text-[10px] font-bold text-white/60 border-t border-white/15 pt-3.5 flex items-center justify-between">
+              <span>OWELYN Holdings Ltd &bull; National Telecom & WAEC Compliance</span>
+              <span className="font-mono text-teal-300">v2.6.0</span>
             </div>
           </div>
 
-          {/* Right Side: Compact Authentication Form (6 cols on LG) */}
-          <div
-            className={`lg:col-span-6 p-6 sm:p-8 lg:p-10 relative flex flex-col justify-between ${
-              isLight ? 'bg-surface' : 'bg-slate-900'
-            }`}
-          >
-            {/* Top Bar: Back Link and Theme Switcher */}
-            <div className="flex items-center justify-between gap-2 mb-3">
+          {/* Right Panel: Clean Authentication Form (Full width on Mobile, 6 cols on Desktop LG) */}
+          <div className="col-span-1 lg:col-span-6 w-full p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+            {/* Header Toolbar: Back Button & Theme Toggle */}
+            <div className="flex items-center justify-between gap-2 mb-4">
               <Link
                 to="/"
-                className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${
-                  isLight ? 'text-text-secondary hover:text-text-primary' : 'text-slate-400 hover:text-white'
+                className={`inline-flex items-center gap-1.5 text-xs font-black transition-colors ${
+                  isLight ? 'text-slate-700 hover:text-slate-950' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <FiArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Website</span>
+                <span>Return to Storefront</span>
               </Link>
 
               <button
                 type="button"
                 onClick={() => setTheme(isLight ? 'dark' : 'light')}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all border shadow-sm ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all border shadow-2xs ${
                   isLight
-                    ? 'bg-warm border-border text-text-primary hover:bg-slate-200/60'
+                    ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
                     : 'bg-slate-800 border-slate-700 text-amber-300 hover:bg-slate-700'
                 }`}
               >
                 {isLight ? (
                   <>
-                    <FiMoon className="w-3.5 h-3.5 text-primary" />
+                    <FiMoon className="w-3.5 h-3.5 text-[#0B2545]" />
                     <span>Dark Mode</span>
                   </>
                 ) : (
@@ -193,62 +209,63 @@ const AdminLogin: React.FC = () => {
               </button>
             </div>
 
-            {/* Center Form Section */}
-            <div className="max-w-sm w-full mx-auto my-auto py-1">
-              {/* Prominent Logo & Form Title */}
-              <div className="mb-4">
-                <div className="mb-3 flex items-center gap-2">
+            {/* Center Form Container */}
+            <div className="max-w-md w-full mx-auto my-auto py-2 space-y-5">
+              {/* Brand Title */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
                   <img
                     src={isLight ? '/logo.png' : '/res copy 2-white.png'}
                     alt="Resulta Logo"
-                    className="h-7 sm:h-8 w-auto object-contain transition-all"
+                    className="h-8 w-auto object-contain"
                   />
-                  <span className={`text-xs font-extrabold px-2 py-0.5 rounded tracking-wider uppercase border ${
-                    isLight 
-                      ? 'bg-primary/10 text-primary border-primary/20' 
-                      : 'bg-teal-500/10 text-teal-400 border-teal-500/30'
+                  <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                    isLight
+                      ? 'bg-[#0F8B8D]/15 text-[#0F8B8D] border-[#0F8B8D]/30'
+                      : 'bg-teal-500/20 text-teal-400 border-teal-500/30'
                   }`}>
-                    Admin
+                    ADMIN PORTAL
                   </span>
                 </div>
 
-                <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${
-                  isLight ? 'text-text-primary' : 'text-white'
+                <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${
+                  isLight ? 'text-slate-950' : 'text-white'
                 }`}>
                   Executive Sign In
                 </h1>
-                <p className={`mt-0.5 text-xs ${
-                  isLight ? 'text-text-secondary' : 'text-slate-400'
+                <p className={`mt-1 text-xs font-semibold ${
+                  isLight ? 'text-slate-700' : 'text-slate-300'
                 }`}>
-                  Enter your credentials to access the administrative portal.
+                  Enter authorized administrator credentials to access system telemetry.
                 </p>
               </div>
 
-              {/* Quick Fill Banner – Compact */}
+              {/* Quick Fill Demo Credentials Banner */}
               <div
-                className={`mb-3.5 p-2 rounded-xl border text-xs flex items-center justify-between transition-all ${
+                className={`p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 transition-all ${
                   isLight
-                    ? 'bg-warm border-border text-text-primary shadow-2sm'
+                    ? 'bg-slate-50 border-slate-300 text-slate-900 shadow-2xs'
                     : 'bg-slate-800/80 border-slate-700 text-slate-200'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <div className={`p-1 rounded-md ${isLight ? 'bg-accent/20 text-warning' : 'bg-amber-500/20 text-amber-400'}`}>
-                    <FiKey className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-300 shrink-0">
+                    <FiKey className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-[11px]">Demo Credentials</p>
-                    <p className={`text-[10px] font-mono ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
+                    <p className="font-black text-xs text-slate-950 dark:text-white">Demo Credentials</p>
+                    <p className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-400">
                       admin@resulta.com.gh / admin123
                     </p>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   onClick={handleQuickFill}
-                  className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-colors shadow-sm ${
+                  className={`px-3 py-1.5 rounded-xl font-black text-xs transition-all shadow-xs shrink-0 ${
                     isLight
-                      ? 'bg-secondary text-white hover:bg-[#0d7577]'
+                      ? 'bg-[#0F8B8D] text-white hover:bg-[#0B2545]'
                       : 'bg-teal-500 text-slate-950 hover:bg-teal-400'
                   }`}
                 >
@@ -256,34 +273,26 @@ const AdminLogin: React.FC = () => {
                 </button>
               </div>
 
-              {/* Error Banner */}
+              {/* Error Alert Banner */}
               {error && (
-                <div className="mb-3 p-2 rounded-xl bg-rose-50 border border-rose-200 text-error text-[11px] font-semibold flex items-center gap-2 shadow-sm">
-                  <FiAlertCircle className="w-4 h-4 shrink-0 text-error" />
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-800 text-xs font-black flex items-center gap-2.5 shadow-2xs">
+                  <FiAlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-2.5">
+              {/* Login Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label
                     htmlFor="email"
-                    className={`block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                      isLight ? 'text-text-primary' : 'text-slate-300'
+                    className={`block text-xs font-black uppercase mb-1.5 ${
+                      isLight ? 'text-slate-800' : 'text-slate-300'
                     }`}
                   >
                     Administrator Email
                   </label>
-                  <div
-                    className={`relative rounded-xl border transition-all ${
-                      isLight
-                        ? 'bg-warm border-border focus-within:bg-white focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20'
-                        : 'bg-slate-950 border-slate-800 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20'
-                    }`}
-                  >
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMail className={`w-3.5 h-3.5 ${isLight ? 'text-text-secondary' : 'text-slate-500'}`} />
-                    </div>
+                  <div className="relative">
                     <input
                       id="email"
                       type="email"
@@ -291,76 +300,71 @@ const AdminLogin: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@resulta.com.gh"
                       required
-                      className={`w-full bg-transparent pl-9 pr-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
-                        isLight ? 'text-text-primary placeholder-text-secondary/60' : 'text-white placeholder-slate-600'
+                      className={`w-full rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold border focus:outline-none transition-colors ${
+                        isLight
+                          ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                          : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
                       }`}
                     />
+                    <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   </div>
                 </div>
 
                 <div>
                   <label
                     htmlFor="password"
-                    className={`block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                      isLight ? 'text-text-primary' : 'text-slate-300'
+                    className={`block text-xs font-black uppercase mb-1.5 ${
+                      isLight ? 'text-slate-800' : 'text-slate-300'
                     }`}
                   >
                     Security Password
                   </label>
-                  <div
-                    className={`relative rounded-xl border transition-all ${
-                      isLight
-                        ? 'bg-warm border-border focus-within:bg-white focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20'
-                        : 'bg-slate-950 border-slate-800 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20'
-                    }`}
-                  >
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiLock className={`w-3.5 h-3.5 ${isLight ? 'text-text-secondary' : 'text-slate-500'}`} />
-                    </div>
+                  <div className="relative">
                     <input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter password"
+                      placeholder="Enter admin password..."
                       required
-                      className={`w-full bg-transparent pl-9 pr-10 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold focus:outline-none ${
-                        isLight ? 'text-text-primary placeholder-text-secondary/60' : 'text-white placeholder-slate-600'
+                      className={`w-full rounded-2xl pl-11 pr-11 py-2.5 text-xs font-bold border focus:outline-none transition-colors ${
+                        isLight
+                          ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                          : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
                       }`}
                     />
+                    <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      tabIndex={-1}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary transition-colors focus:outline-none"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                     >
-                      {showPassword ? <FiEyeOff className="w-3.5 h-3.5" /> : <FiEye className="w-3.5 h-3.5" />}
+                      {showPassword ? <FiEyeOff className="w-4 h-4 text-slate-500" /> : <FiEye className="w-4 h-4 text-[#0F8B8D]" />}
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] pt-0.5">
-                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                <div className="flex items-center justify-between text-xs font-semibold pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className={`w-3.5 h-3.5 rounded border-border text-secondary focus:ring-secondary cursor-pointer ${
-                        !isLight ? 'border-slate-700 bg-slate-900 text-teal-500 focus:ring-teal-500' : ''
-                      }`}
+                      className="w-4 h-4 rounded border-slate-300 text-[#0F8B8D] focus:ring-[#0F8B8D] cursor-pointer"
                     />
-                    <span className={`font-medium ${isLight ? 'text-text-secondary' : 'text-slate-400'}`}>
-                      Remember device
+                    <span className={isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}>
+                      Remember this device
                     </span>
                   </label>
+
                   <a
                     href="#forgot-password"
                     onClick={(e) => {
                       e.preventDefault();
                       alert('For administrative security resets, please contact support@owelynholdings.com.');
                     }}
-                    className={`font-bold transition-colors ${
-                      isLight ? 'text-secondary hover:underline' : 'text-teal-400 hover:underline'
+                    className={`font-black hover:underline ${
+                      isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
                     }`}
                   >
                     Forgot password?
@@ -371,21 +375,21 @@ const AdminLogin: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full py-2.5 px-6 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md ${
+                    className={`w-full py-3 px-6 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md ${
                       isLoading ? 'opacity-75 cursor-wait' : 'hover:-translate-y-0.5 active:translate-y-0'
                     } ${
                       isLight
-                        ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/20'
+                        ? 'bg-[#0F8B8D] text-white hover:bg-[#0B2545] shadow-[#0F8B8D]/20'
                         : 'bg-teal-500 text-slate-950 font-black hover:bg-teal-400 shadow-teal-500/20'
                     }`}
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span>Authenticating...</span>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Authenticating Session...</span>
                       </>
                     ) : (
-                      <span>Sign In &rarr;</span>
+                      <span>Sign In to Portal &rarr;</span>
                     )}
                   </button>
                 </div>
@@ -393,7 +397,9 @@ const AdminLogin: React.FC = () => {
             </div>
 
             {/* Footer copyright */}
-            <div className="mt-3 pt-2 border-t border-border/60 dark:border-slate-800 text-center text-[10px] font-medium text-text-secondary dark:text-slate-500">
+            <div className={`mt-4 pt-3 border-t text-center text-[11px] font-bold ${
+              isLight ? 'border-slate-200 text-slate-600' : 'border-slate-800 text-slate-400'
+            }`}>
               &copy; {new Date().getFullYear()} OWELYN Holdings Ltd. All rights reserved.
             </div>
           </div>
