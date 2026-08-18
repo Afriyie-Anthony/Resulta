@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import { Modal } from '../../../components/ui/Modal';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
 import {
   FiCheck,
@@ -29,6 +30,7 @@ interface Affiliate {
 }
 
 export const AffiliatesPartnersView: React.FC = () => {
+  const { isLight } = useAdminTheme();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'ALL'>('PENDING');
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,31 +89,35 @@ export const AffiliatesPartnersView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Affiliates & Partner Management</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+            Affiliates & Partner Management
+          </h1>
+          <p className={`text-xs font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
             Review distribution applications, configure commission percentages, and audit partner sales performance.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="info" className="text-xs py-1.5 px-3">
+          <Badge variant="warning" className="text-xs py-1.5 px-3 font-bold shadow-2xs">
             {pendingCount} Pending Approval
           </Badge>
-          <Button variant="outline" size="sm" onClick={() => setActiveTab('PENDING')}>
+          <Button variant={isLight ? 'outline' : 'secondary'} size="sm" onClick={() => setActiveTab('PENDING')} className="font-extrabold text-xs">
             Review Applications
           </Button>
         </div>
       </div>
 
       {/* Tabs & Search */}
-      <Card glass className="p-4 border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <Card glass className={`p-4 border flex flex-col sm:flex-row items-center justify-between gap-4 ${
+        isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-900/90 border-slate-800'
+      }`}>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setActiveTab('PENDING')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs transition-all ${
               activeTab === 'PENDING'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-extrabold'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             Pending Review ({pendingCount})
@@ -119,10 +125,10 @@ export const AffiliatesPartnersView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('ACTIVE')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs transition-all ${
               activeTab === 'ACTIVE'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-extrabold'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? isLight ? 'bg-[#0F8B8D] text-white font-black shadow-xs' : 'bg-teal-500 text-slate-950 font-black shadow-xs'
+                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             Active Partners ({affiliates.filter(a => a.status === 'ACTIVE').length})
@@ -130,10 +136,10 @@ export const AffiliatesPartnersView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('ALL')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs transition-all ${
               activeTab === 'ALL'
-                ? 'bg-slate-700 text-white font-extrabold'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? isLight ? 'bg-slate-800 text-white font-black shadow-xs' : 'bg-slate-700 text-white font-black'
+                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             All Records
@@ -147,17 +153,21 @@ export const AffiliatesPartnersView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder="Search name, email or ref code..."
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+            className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none border ${
+              isLight ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-800 text-slate-200 placeholder-slate-500 focus:border-teal-500'
+            }`}
           />
         </div>
       </Card>
 
       {/* Affiliates List Table */}
-      <Card glass className="border-slate-800/80 overflow-hidden">
+      <Card glass className={`border overflow-hidden ${isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 text-[11px] uppercase text-slate-400 font-bold bg-slate-900/40">
+              <tr className={`border-b text-[11px] uppercase font-black ${
+                isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-900/40 text-slate-400'
+              }`}>
                 <th className="py-3.5 px-4">Partner Details</th>
                 <th className="py-3.5 px-4">MoMo Payout Account</th>
                 <th className="py-3.5 px-4">Referral Handle</th>
@@ -167,41 +177,42 @@ export const AffiliatesPartnersView: React.FC = () => {
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50 text-xs">
+            <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/50'}`}>
               {paginated.length > 0 ? (
                 paginated.map((a) => (
-                  <tr key={a.id} className="hover:bg-slate-900/60 transition-colors">
+                  <tr key={a.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>
                     <td className="py-3.5 px-4">
-                      <span className="font-bold text-white block text-sm">{a.name}</span>
-                      <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-                        <FiMail className="w-3 h-3 text-teal-400" /> {a.email}
+                      <span className={`font-black block text-sm ${isLight ? 'text-slate-950' : 'text-white'}`}>{a.name}</span>
+                      <span className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        <FiMail className="w-3 h-3 text-[#0F8B8D] dark:text-teal-400" /> {a.email}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="font-semibold text-slate-200 block">{a.phone}</span>
-                      <span className="text-[10px] text-slate-500 font-bold">{a.momoNetwork}</span>
+                      <span className={`font-bold block ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>{a.phone}</span>
+                      <span className={`text-[10px] font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-500'}`}>{a.momoNetwork}</span>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-teal-400 font-bold">{a.referralCode}</td>
-                    <td className="py-3.5 px-4 font-bold text-white">{a.totalSales} units</td>
-                    <td className="py-3.5 px-4 font-extrabold text-emerald-400">{formatCedi(a.totalCommission)}</td>
+                    <td className={`py-3.5 px-4 font-mono font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>{a.referralCode}</td>
+                    <td className={`py-3.5 px-4 font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{a.totalSales} units</td>
+                    <td className="py-3.5 px-4 font-black text-emerald-700 dark:text-emerald-400">{formatCedi(a.totalCommission)}</td>
                     <td className="py-3.5 px-4">
                       <Badge
                         variant={a.status === 'ACTIVE' ? 'success' : a.status === 'PENDING' ? 'warning' : 'error'}
-                        className="text-[10px]"
+                        className="text-[10px] font-bold"
                       >
                         {a.status}
                       </Badge>
                     </td>
                     <td className="py-3.5 px-4 text-right space-x-2">
-                      <Button variant="secondary" size="sm" onClick={() => setSelectedAffiliate(a)}>
+                      <Button variant={isLight ? 'outline' : 'secondary'} size="sm" onClick={() => setSelectedAffiliate(a)} className="font-bold text-xs">
                         Review
                       </Button>
                       {a.status === 'PENDING' && (
                         <Button
-                          variant="gradient"
+                          variant={isLight ? 'primary' : 'gradient'}
                           size="sm"
                           onClick={() => handleApprove(a.id, a.name)}
                           leftIcon={<FiCheck />}
+                          className="font-black text-xs"
                         >
                           Approve
                         </Button>
@@ -219,7 +230,7 @@ export const AffiliatesPartnersView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="p-4 border-t border-slate-800">
+        <div className={`p-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -235,57 +246,67 @@ export const AffiliatesPartnersView: React.FC = () => {
       <Modal isOpen={!!selectedAffiliate} onClose={() => setSelectedAffiliate(null)} title="Partner KYC & Commission Review">
         {selectedAffiliate && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-900 border border-slate-800">
-              <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/40 text-teal-300 flex items-center justify-center font-black text-lg">
+            <div className={`flex items-center gap-4 p-4 rounded-2xl border ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'
+            }`}>
+              <div className="w-12 h-12 rounded-xl bg-[#0F8B8D]/20 border border-[#0F8B8D]/40 text-[#0F8B8D] dark:bg-teal-500/20 dark:border-teal-500/40 dark:text-teal-300 flex items-center justify-center font-black text-lg">
                 {selectedAffiliate.name[0]}
               </div>
               <div>
-                <h4 className="text-base font-extrabold text-white">{selectedAffiliate.name}</h4>
-                <p className="text-xs text-slate-400">{selectedAffiliate.email} • Applied on {selectedAffiliate.appliedDate}</p>
+                <h4 className={`text-base font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>{selectedAffiliate.name}</h4>
+                <p className={`text-xs font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{selectedAffiliate.email} • Applied on {selectedAffiliate.appliedDate}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                <p className="text-slate-500 font-bold uppercase text-[10px] flex items-center gap-1">
+              <div className={`p-3.5 rounded-xl border space-y-1 ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/60 border-slate-800'
+              }`}>
+                <p className={`font-black uppercase text-[10px] flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-500'}`}>
                   <FiSmartphone /> Registered MoMo Wallet
                 </p>
-                <p className="text-sm font-bold text-white">{selectedAffiliate.phone}</p>
-                <p className="text-teal-400 text-[11px] font-semibold">{selectedAffiliate.momoNetwork} Verified</p>
+                <p className={`text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{selectedAffiliate.phone}</p>
+                <p className="text-[#0F8B8D] dark:text-teal-400 text-[11px] font-bold">{selectedAffiliate.momoNetwork} Verified</p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-                <p className="text-slate-500 font-bold uppercase text-[10px] flex items-center gap-1">
+              <div className={`p-3.5 rounded-xl border space-y-1 ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/60 border-slate-800'
+              }`}>
+                <p className={`font-black uppercase text-[10px] flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-500'}`}>
                   <FiExternalLink /> Referral Handle Attribution
                 </p>
-                <p className="text-sm font-mono font-bold text-teal-300">?ref={selectedAffiliate.referralCode}</p>
-                <p className="text-slate-400 text-[11px]">Standard 10% Commission Rate</p>
+                <p className="text-sm font-mono font-bold text-[#0F8B8D] dark:text-teal-300">?ref={selectedAffiliate.referralCode}</p>
+                <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Standard 10% Commission Rate</p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-              <span className="text-slate-300 font-bold block">Compliance & Fraud Check Summary</span>
-              <ul className="space-y-1 text-slate-400 list-disc list-inside">
+            <div className={`p-4 rounded-xl border space-y-2 text-xs ${
+              isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
+            }`}>
+              <span className={`font-black block ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>Compliance & Fraud Check Summary</span>
+              <ul className={`space-y-1 font-semibold list-disc list-inside ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                 <li>No duplicate mobile money numbers registered in active affiliate database.</li>
                 <li>Email domain syntax verified and operational.</li>
                 <li>Agreed to OWELYN Holdings Ltd terms & anti-spam marketing guidelines.</li>
               </ul>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+            <div className={`flex justify-end gap-3 pt-4 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
               <Button
                 type="button"
                 variant="danger"
                 leftIcon={<FiX />}
                 onClick={() => handleReject(selectedAffiliate.id, selectedAffiliate.name)}
+                className="font-bold"
               >
                 Reject Application
               </Button>
               <Button
                 type="button"
-                variant="gradient"
+                variant={isLight ? 'primary' : 'gradient'}
                 leftIcon={<FiCheck />}
                 onClick={() => handleApprove(selectedAffiliate.id, selectedAffiliate.name)}
+                className="font-black"
               >
                 Approve & Activate Partner
               </Button>

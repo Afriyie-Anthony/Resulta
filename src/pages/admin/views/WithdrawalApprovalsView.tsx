@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import { Modal } from '../../../components/ui/Modal';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
 import {
   FiXCircle,
@@ -27,6 +28,7 @@ interface Withdrawal {
 }
 
 export const WithdrawalApprovalsView: React.FC = () => {
+  const { isLight } = useAdminTheme();
   const { addToast } = useToast();
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<Withdrawal | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -77,29 +79,35 @@ export const WithdrawalApprovalsView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Affiliate Withdrawal Payouts</h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Review pending commission disbursement requests and authorize mobile money transfers (Section 33 & 40).
+          <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+            Affiliate Withdrawal Payouts
+          </h1>
+          <p className={`text-xs font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+            Review pending commission disbursement requests and authorize mobile money transfers.
           </p>
         </div>
-        <Badge variant="warning" className="w-fit text-xs py-1.5 px-3">
+        <Badge variant="warning" className="w-fit text-xs py-1.5 px-3 font-bold shadow-2xs">
           {pendingList.length} Awaiting Release ({formatCedi(pendingList.reduce((acc, curr) => acc + curr.amount, 0))})
         </Badge>
       </div>
 
       {/* Payout Table */}
-      <Card glass className="border-slate-800/80 overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/40">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <FiClock className="text-amber-400" /> Pending & Historical Disbursements
+      <Card glass className={`overflow-hidden border ${isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800'}`}>
+        <div className={`p-4 border-b flex justify-between items-center ${isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-900/40 border-slate-800'}`}>
+          <h3 className={`text-sm font-black flex items-center gap-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
+            <FiClock className={isLight ? 'text-[#0F8B8D]' : 'text-amber-400'} /> Pending & Historical Disbursements
           </h3>
-          <span className="text-xs text-slate-400">All actions strictly recorded in financial audit trail</span>
+          <span className={`text-xs font-extrabold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            All actions strictly recorded in financial audit trail
+          </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 text-[11px] uppercase text-slate-400 font-bold">
+              <tr className={`border-b text-[11px] uppercase font-black ${
+                isLight ? 'border-slate-300 text-slate-700' : 'border-slate-800 text-slate-400'
+              }`}>
                 <th className="py-3.5 px-4">Withdrawal Ref</th>
                 <th className="py-3.5 px-4">Affiliate Account</th>
                 <th className="py-3.5 px-4">Target MoMo Wallet</th>
@@ -109,26 +117,28 @@ export const WithdrawalApprovalsView: React.FC = () => {
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50 text-xs">
+            <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/50'}`}>
               {paginatedWithdrawals.map((w) => (
-                <tr key={w.id} className={`hover:bg-slate-900/60 transition-colors ${w.status === 'PENDING' ? 'bg-amber-950/10' : ''}`}>
-                  <td className="py-3.5 px-4 font-mono font-bold text-teal-400">{w.id}</td>
+                <tr key={w.id} className={`transition-colors ${
+                  isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/60'
+                } ${w.status === 'PENDING' ? (isLight ? 'bg-amber-50/70' : 'bg-amber-950/10') : ''}`}>
+                  <td className={`py-3.5 px-4 font-mono font-black ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>{w.id}</td>
                   <td className="py-3.5 px-4">
-                    <span className="font-bold text-white block">{w.affiliateName}</span>
-                    <span className="text-[10px] text-teal-400 font-mono font-semibold">{w.referralCode}</span>
+                    <span className={`font-extrabold block ${isLight ? 'text-slate-950' : 'text-white'}`}>{w.affiliateName}</span>
+                    <span className={`text-[10px] font-mono font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>{w.referralCode}</span>
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="font-bold text-slate-200 block">{w.phone}</span>
-                    <span className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
-                      <FiSmartphone className="w-3 h-3 text-emerald-400" /> {w.momoNetwork}
+                    <span className={`font-bold block ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>{w.phone}</span>
+                    <span className={`text-[10px] font-extrabold flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                      <FiSmartphone className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> {w.momoNetwork}
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-sm font-extrabold text-white">{formatCedi(w.amount)}</td>
-                  <td className="py-3.5 px-4 text-slate-400 text-[11px]">{w.requestedDate}</td>
+                  <td className={`py-3.5 px-4 text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{formatCedi(w.amount)}</td>
+                  <td className={`py-3.5 px-4 font-bold text-[11px] ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{w.requestedDate}</td>
                   <td className="py-3.5 px-4">
                     <Badge
                       variant={w.status === 'PAID' ? 'success' : w.status === 'PENDING' ? 'warning' : 'error'}
-                      className="text-[10px]"
+                      className="text-[10px] font-bold"
                     >
                       {w.status}
                     </Badge>
@@ -143,20 +153,22 @@ export const WithdrawalApprovalsView: React.FC = () => {
                             setSelectedWithdrawal(w);
                             setIsRejecting(true);
                           }}
+                          className="font-bold text-xs"
                         >
                           Decline
                         </Button>
                         <Button
-                          variant="gradient"
+                          variant={isLight ? 'primary' : 'gradient'}
                           size="sm"
                           leftIcon={<FiSend />}
                           onClick={() => handleApprove(w.id, w.affiliateName, w.amount)}
+                          className="font-black text-xs"
                         >
                           Release Funds
                         </Button>
                       </>
                     ) : (
-                      <span className="text-slate-500 text-[11px] font-semibold">
+                      <span className={`text-[11px] font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-500'}`}>
                         {w.status === 'PAID' ? 'Dispersed' : 'Closed'}
                       </span>
                     )}
@@ -166,7 +178,7 @@ export const WithdrawalApprovalsView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="p-4 border-t border-slate-800">
+        <div className={`p-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -192,27 +204,31 @@ export const WithdrawalApprovalsView: React.FC = () => {
       >
         {selectedWithdrawal && (
           <div className="space-y-4">
-            <p className="text-xs text-slate-300">
-              You are about to reject the payout request of <strong className="text-white">{selectedWithdrawal.affiliateName}</strong> for <strong className="text-amber-400">{formatCedi(selectedWithdrawal.amount)}</strong>.
+            <p className={`text-xs font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+              You are about to reject the payout request of <strong className={isLight ? 'text-slate-900' : 'text-white'}>{selectedWithdrawal.affiliateName}</strong> for <strong className="text-amber-600 dark:text-amber-400 font-bold">{formatCedi(selectedWithdrawal.amount)}</strong>.
             </p>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">Reason for Rejection (Visible to Affiliate)</label>
+              <label className={`block text-xs font-black uppercase mb-1.5 ${isLight ? 'text-slate-800' : 'text-slate-400'}`}>Reason for Rejection (Visible to Affiliate)</label>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="e.g., Bank details incorrect, pending audit review..."
                 rows={3}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-500"
+                className={`w-full rounded-xl p-3 text-xs font-semibold focus:outline-none border ${
+                  isLight ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-rose-500' : 'bg-slate-900 border-slate-800 text-white focus:border-rose-500'
+                }`}
               />
             </div>
 
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-900 text-[11px] text-slate-400">
-              <FiShield className="w-4 h-4 text-rose-400 shrink-0" />
+            <div className={`flex items-center gap-2 p-3 rounded-xl text-[11px] font-bold ${
+              isLight ? 'bg-slate-100 text-slate-700' : 'bg-slate-900 text-slate-400'
+            }`}>
+              <FiShield className="w-4 h-4 text-rose-500 shrink-0" />
               <span>Declining will return {formatCedi(selectedWithdrawal.amount)} back to their available commission balance.</span>
             </div>
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className={`flex justify-end gap-3 pt-3 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
               <Button type="button" variant="ghost" onClick={() => setIsRejecting(false)}>
                 Cancel
               </Button>
@@ -221,6 +237,7 @@ export const WithdrawalApprovalsView: React.FC = () => {
                 variant="danger"
                 leftIcon={<FiXCircle />}
                 onClick={() => handleRejectConfirm(selectedWithdrawal.id, selectedWithdrawal.affiliateName)}
+                className="font-black"
               >
                 Confirm Rejection
               </Button>

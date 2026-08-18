@@ -17,7 +17,7 @@ export const InventoryHeader: React.FC<InventoryHeaderProps> = ({ onOpenImport }
   return (
     <div className={`p-6 sm:p-7 rounded-3xl border transition-all duration-300 ${
       isLight
-        ? 'bg-white/90 border-slate-200/90 shadow-sm'
+        ? 'bg-white border-slate-200 shadow-sm'
         : 'bg-slate-900/80 border-slate-800/90 shadow-lg shadow-black/20 backdrop-blur-xl'
     }`}>
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -32,14 +32,14 @@ export const InventoryHeader: React.FC<InventoryHeaderProps> = ({ onOpenImport }
           </h1>
 
           {/* Description */}
-          <p className={`text-xs sm:text-sm font-medium leading-relaxed ${
-            isLight ? 'text-slate-500' : 'text-slate-400'
+          <p className={`text-xs sm:text-sm font-semibold leading-relaxed ${
+            isLight ? 'text-slate-700' : 'text-slate-300'
           }`}>
             Monitor examination result-checker PIN pools, manage cryptographic batch imports, track fulfillment cycles, and configure automated low-stock safety triggers.
           </p>
         </div>
 
-        {/* Right Action Bar (Active Pool Valuation Removed) */}
+        {/* Right Action Bar */}
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Button
             variant={isLight ? 'primary' : 'gradient'}
@@ -55,4 +55,3 @@ export const InventoryHeader: React.FC<InventoryHeaderProps> = ({ onOpenImport }
     </div>
   );
 };
-

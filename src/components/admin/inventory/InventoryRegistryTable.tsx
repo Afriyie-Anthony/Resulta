@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
 import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiSearch, FiDatabase, FiLock, FiCheckCircle } from 'react-icons/fi';
+import { useToast } from '../../ui/Toast';
+import { FiSearch, FiDatabase, FiLock, FiCheckCircle, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
 
 interface RegistryItem {
   serial: string;
@@ -29,6 +30,10 @@ interface InventoryRegistryTableProps {
 
 export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ initialFilter }) => {
   const { isLight } = useAdminTheme();
+  const { addToast } = useToast();
+  const [items, setItems] = useState<RegistryItem[]>(mockRegistryItems);
+  const [deletingItem, setDeletingItem] = useState<RegistryItem | null>(null);
+
   const [searchQuery, setSearchQuery] = useState(
     initialFilter && initialFilter.startsWith('BATCH-') ? initialFilter : ''
   );
@@ -41,7 +46,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const filteredItems = mockRegistryItems.filter((item) => {
+  const filteredItems = items.filter((item) => {
     const matchesSearch =
       item.serial.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.batchRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -68,6 +73,17 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
     setCurrentPage(1);
   };
 
+  const confirmDeleteVoucher = () => {
+    if (!deletingItem) return;
+    setItems((prev) => prev.filter((i) => i.serial !== deletingItem.serial));
+    addToast({
+      title: 'Voucher Purged',
+      message: `Uploaded voucher serial ${deletingItem.serial} has been permanently removed from inventory stock.`,
+      type: 'success',
+    });
+    setDeletingItem(null);
+  };
+
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
       isLight ? 'bg-white border-slate-200/90' : 'bg-slate-900/90 border-slate-800'
@@ -79,7 +95,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           }`}>
             <FiDatabase className="text-[#0F8B8D] dark:text-teal-400" /> Active Inventory Serial Registry
           </h3>
-          <p className={`text-xs font-medium mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+          <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
             Live audit table of unassigned voucher serial numbers and cryptographic storage signatures
           </p>
         </div>
@@ -93,10 +109,10 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                 className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all border ${
                   selectedProductFilter === filter
                     ? isLight
-                      ? 'bg-[#0F8B8D] text-white border-[#0F8B8D]'
-                      : 'bg-teal-500 text-slate-950 border-teal-400 font-black'
+                      ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-xs font-black'
+                      : 'bg-teal-500 text-slate-950 border-teal-400 font-black shadow-xs'
                     : isLight
-                    ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs'
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
                 }`}
               >
@@ -125,40 +141,43 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className={`border-b text-[11px] uppercase font-extrabold ${
-              isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800 text-slate-400'
+            <tr className={`border-b text-[11px] uppercase font-black ${
+              isLight ? 'border-slate-300 text-slate-700' : 'border-slate-800 text-slate-400'
             }`}>
               <th className="py-3 px-3">Serial Number</th>
               <th className="py-3 px-3">Exam Product</th>
               <th className="py-3 px-3">Origin Batch</th>
               <th className="py-3 px-3">Cryptographic Signature (At-Rest)</th>
               <th className="py-3 px-3">Ingestion Date</th>
-              <th className="py-3 px-3 text-right">Pool Status</th>
+              <th className="py-3 px-3">Pool Status</th>
+              <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className={`divide-y text-xs font-medium ${
-            isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
+          <tbody className={`divide-y text-xs font-semibold ${
+            isLight ? 'divide-slate-200' : 'divide-slate-800/50'
           }`}>
             {paginatedItems.map((item) => (
               <tr key={item.serial} className={`transition-colors ${
-                isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-950/50'
+                isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/50'
               }`}>
-                <td className={`py-3.5 px-3 font-mono font-black ${
-                  isLight ? 'text-secondary' : 'text-teal-400'
+                <td className={`py-3.5 px-3 font-mono font-bold text-xs ${
+                  isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
                 }`}>
                   {item.serial}
                 </td>
-                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-primary' : 'text-white'}`}>
+                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   {item.product}
                 </td>
-                <td className="py-3.5 px-3 font-mono text-[11px] text-slate-400 font-semibold">
+                <td className={`py-3.5 px-3 font-mono text-[11px] font-bold ${isLight ? 'text-slate-800' : 'text-slate-400'}`}>
                   {item.batchRef}
                 </td>
-                <td className="py-3.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <td className={`py-3.5 px-3 font-mono text-[11px] font-bold flex items-center gap-1.5 ${
+                  isLight ? 'text-slate-700' : 'text-slate-400'
+                }`}>
                   <FiLock className="text-emerald-600 dark:text-teal-400 shrink-0" /> {item.hashSignature}
                 </td>
-                <td className="py-3.5 px-3 text-slate-400">{item.ingestedDate}</td>
-                <td className="py-3.5 px-3 text-right">
+                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{item.ingestedDate}</td>
+                <td className="py-3.5 px-3">
                   <Badge
                     variant={item.status === 'READY' ? 'success' : 'warning'}
                     className="text-[10px] !px-2 font-bold shadow-2xs inline-flex items-center gap-1"
@@ -167,11 +186,21 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                     {item.status === 'READY' ? 'AVAILABLE' : 'RESERVED'}
                   </Badge>
                 </td>
+                <td className="py-3.5 px-3 text-right">
+                  <button
+                    type="button"
+                    onClick={() => setDeletingItem(item)}
+                    title="Delete uploaded voucher"
+                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                  >
+                    <FiTrash2 className="w-4 h-4" />
+                  </button>
+                </td>
               </tr>
             ))}
             {filteredItems.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
                   No inventory serial numbers found matching "{searchQuery}".
                 </td>
               </tr>
@@ -191,6 +220,48 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           setCurrentPage(1);
         }}
       />
+
+      {/* Delete Voucher Confirmation Modal */}
+      {deletingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+          <div className={`w-full max-w-md p-6 rounded-3xl shadow-xl border transition-all ${
+            isLight ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'
+          }`}>
+            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 mb-3">
+              <div className="p-2.5 rounded-2xl bg-rose-100 dark:bg-rose-950/50">
+                <FiAlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="text-base font-black">Delete Uploaded Voucher?</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Action cannot be undone</p>
+              </div>
+            </div>
+
+            <p className={`text-xs font-semibold mb-4 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
+              Are you sure you want to purge voucher serial <strong className="font-mono text-rose-600 dark:text-rose-400">{deletingItem.serial}</strong> ({deletingItem.product}) from batch <strong className="font-mono">{deletingItem.batchRef}</strong>?
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeletingItem(null)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                  isLight ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteVoucher}
+                className="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-colors flex items-center gap-1.5"
+              >
+                <FiTrash2 className="w-3.5 h-3.5" /> Purge Voucher
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

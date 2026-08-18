@@ -118,14 +118,14 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
 
       {/* Control Toolbar: Filter Segmented Groups */}
       <div className={`p-3 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 ${
-        isLight ? 'bg-slate-50/80 border-slate-200/80' : 'bg-slate-950/40 border-slate-800/70'
+        isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-950/40 border-slate-800/70'
       }`}>
         <div className="flex flex-wrap items-center gap-4">
           {/* Exam Filter Segment */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300">Exam:</span>
+            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>Exam:</span>
             <div className={`inline-flex p-1 rounded-xl border ${
-              isLight ? 'bg-white border-slate-200/90 shadow-2xs' : 'bg-slate-900 border-slate-800'
+              isLight ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-900 border-slate-800'
             }`}>
               {['ALL', 'WASSCE', 'BECE'].map((filter) => (
                 <button
@@ -134,10 +134,10 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                   className={`px-3 py-1 rounded-lg text-[11px] font-extrabold transition-all ${
                     productFilter === filter
                       ? isLight
-                        ? 'bg-secondary text-white shadow-2xs'
-                        : 'bg-teal-500 text-slate-950 font-black shadow-2xs'
+                        ? 'bg-[#0F8B8D] text-white shadow-xs'
+                        : 'bg-teal-500 text-slate-950 font-black shadow-xs'
                       : isLight
-                      ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-100 font-bold'
                       : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
                 >
@@ -149,9 +149,9 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
 
           {/* Channel Filter Segment */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300">Channel:</span>
+            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>Channel:</span>
             <div className={`inline-flex p-1 rounded-xl border ${
-              isLight ? 'bg-white border-slate-200/90 shadow-2xs' : 'bg-slate-900 border-slate-800'
+              isLight ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-900 border-slate-800'
             }`}>
               {['ALL', 'USSD', 'Web'].map((filter) => (
                 <button
@@ -160,10 +160,10 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                   className={`px-3 py-1 rounded-lg text-[11px] font-extrabold transition-all ${
                     channelFilter === filter
                       ? isLight
-                        ? 'bg-secondary text-white shadow-2xs'
-                        : 'bg-teal-500 text-slate-950 font-black shadow-2xs'
+                        ? 'bg-[#0F8B8D] text-white shadow-xs'
+                        : 'bg-teal-500 text-slate-950 font-black shadow-xs'
                       : isLight
-                      ? 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-100 font-bold'
                       : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
                 >
@@ -178,7 +178,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
         <div className="flex items-center gap-2">
           <span className={`px-3 py-1 text-[11px] font-black rounded-lg border transition-colors ${
             isLight
-              ? 'bg-slate-100 border-slate-200 text-slate-800'
+              ? 'bg-slate-200 border-slate-300 text-slate-900'
               : 'bg-slate-800 border-slate-700 text-slate-100'
           }`}>
             {filteredSold.length} {filteredSold.length === 1 ? 'Record' : 'Records'}
@@ -189,8 +189,8 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className={`border-b text-[11px] uppercase font-extrabold ${
-              isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800 text-slate-400'
+            <tr className={`border-b text-[11px] uppercase font-black ${
+              isLight ? 'border-slate-300 text-slate-700' : 'border-slate-800 text-slate-400'
             }`}>
               <th className="py-3 px-3">Order Ref</th>
               <th className="py-3 px-3">Serial Number</th>
@@ -201,15 +201,15 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
               <th className="py-3 px-3 text-right">Status</th>
             </tr>
           </thead>
-          <tbody className={`divide-y text-xs font-medium ${
-            isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
+          <tbody className={`divide-y text-xs font-semibold ${
+            isLight ? 'divide-slate-200' : 'divide-slate-800/50'
           }`}>
             {paginatedSold.map((item, idx) => (
               <tr key={idx} className={`transition-colors ${
-                isLight ? 'hover:bg-slate-50/80' : 'hover:bg-slate-950/50'
+                isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/50'
               }`}>
                 <td className={`py-3.5 px-3 font-mono font-black ${
-                  isLight ? 'text-secondary' : 'text-teal-400'
+                  isLight ? 'text-[#0B2545]' : 'text-teal-400'
                 }`}>
                   {item.orderRef}
                 </td>
@@ -222,7 +222,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                   <div className="flex items-center gap-1.5">
                     <span className={`px-2 py-0.5 rounded text-[11px] font-black border ${
                       isLight
-                        ? 'bg-slate-100 border-slate-200 text-slate-900'
+                        ? 'bg-slate-100 border-slate-300 text-slate-950'
                         : 'bg-slate-950 border-slate-800 text-white'
                     }`}>
                       {item.pinCode}
@@ -237,16 +237,16 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                     </button>
                   </div>
                 </td>
-                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-primary' : 'text-slate-200'}`}>
+                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   {item.product}
                 </td>
-                <td className="py-3.5 px-3 font-mono font-extrabold text-slate-600 dark:text-slate-300">
+                <td className={`py-3.5 px-3 font-mono font-extrabold ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
                   <div className="flex items-center gap-1.5">
                     <FiSmartphone className="text-slate-400 w-3.5 h-3.5" />
                     {item.customerPhone}
                   </div>
                 </td>
-                <td className="py-3.5 px-3 text-slate-400 font-semibold text-[11px]">
+                <td className={`py-3.5 px-3 font-bold text-[11px] ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                   {item.dispatchedAt}
                 </td>
                 <td className="py-3.5 px-3 text-right">

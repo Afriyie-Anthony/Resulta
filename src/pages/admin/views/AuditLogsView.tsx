@@ -4,12 +4,11 @@ import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import {
-  FiShield,
   FiSearch,
   FiDownload,
   FiLock,
-  FiAlertTriangle,
   FiTerminal
 } from 'react-icons/fi';
 
@@ -24,6 +23,7 @@ interface AuditLogEntry {
 }
 
 export const AuditLogsView: React.FC = () => {
+  const { isLight } = useAdminTheme();
   const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState('ALL');
@@ -66,38 +66,48 @@ export const AuditLogsView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Security & Activity Audit Logs</h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Immutable tracking of all privileged operations, PIN decryptions, financial approvals, and login attempts (Section 28).
+          <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+            Security & Activity Audit Logs
+          </h1>
+          <p className={`text-xs font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+            Immutable tracking of all privileged operations, PIN decryptions, financial approvals, and login attempts.
           </p>
         </div>
-        <Button variant="secondary" size="sm" leftIcon={<FiDownload />} onClick={handleExportAudit}>
+        <Button variant={isLight ? 'outline' : 'secondary'} size="sm" leftIcon={<FiDownload />} onClick={handleExportAudit} className="font-black text-xs">
           Export Audit Archive
         </Button>
       </div>
 
       {/* Security Banner */}
-      <div className="p-4 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center gap-3 text-xs text-teal-300">
-        <FiLock className="w-6 h-6 text-teal-400 shrink-0" />
+      <div className={`p-4 rounded-2xl border flex items-center gap-3 text-xs ${
+        isLight ? 'bg-teal-50 border-teal-300 text-teal-900' : 'bg-teal-500/10 border-teal-500/30 text-teal-300'
+      }`}>
+        <FiLock className="w-6 h-6 text-[#0F8B8D] dark:text-teal-400 shrink-0" />
         <div>
-          <strong className="text-white">Tamper-Proof Logging Engine Active</strong>
-          <p className="text-teal-400/90 mt-0.5 text-[11px]">
+          <strong className={isLight ? 'text-slate-950 font-black' : 'text-white'}>Tamper-Proof Logging Engine Active</strong>
+          <p className={`mt-0.5 text-[11px] font-bold ${isLight ? 'text-slate-700' : 'text-teal-400/90'}`}>
             To ensure zero-trust compliance, audit records are append-only and cannot be altered or purged from the Control Center.
           </p>
         </div>
       </div>
 
       {/* Filter & Search */}
-      <Card glass className="p-4 border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <Card glass className={`p-4 border flex flex-col sm:flex-row items-center justify-between gap-4 ${
+        isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-900/90 border-slate-800'
+      }`}>
         <div className="flex items-center gap-1.5">
           {['ALL', 'INFO', 'SECURITY', 'CRITICAL'].map((sev) => (
             <button
               key={sev}
               type="button"
               onClick={() => { setSeverityFilter(sev); setCurrentPage(1); }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${
                 severityFilter === sev
-                  ? 'bg-teal-500 text-slate-950 font-extrabold shadow-sm shadow-teal-500/20'
+                  ? isLight
+                    ? 'bg-[#0F8B8D] text-white shadow-xs'
+                    : 'bg-teal-500 text-slate-950 shadow-xs'
+                  : isLight
+                  ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
@@ -113,17 +123,21 @@ export const AuditLogsView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder="Search action, actor or detail..."
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+            className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none border ${
+              isLight ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-800 text-slate-200 placeholder-slate-500 focus:border-teal-500'
+            }`}
           />
         </div>
       </Card>
 
       {/* Logs Table */}
-      <Card glass className="border-slate-800/80 overflow-hidden">
+      <Card glass className={`border overflow-hidden ${isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse font-mono text-xs">
             <thead>
-              <tr className="border-b border-slate-800 text-[11px] uppercase text-slate-400 font-sans font-bold bg-slate-900/40">
+              <tr className={`border-b text-[11px] uppercase font-sans font-black ${
+                isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-900/40 text-slate-400'
+              }`}>
                 <th className="py-3.5 px-4">Timestamp</th>
                 <th className="py-3.5 px-4">Event Action</th>
                 <th className="py-3.5 px-4">Responsible Actor</th>
@@ -132,29 +146,21 @@ export const AuditLogsView: React.FC = () => {
                 <th className="py-3.5 px-4 text-right">Severity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className={`divide-y font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/50'}`}>
               {paginated.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-900/60 transition-colors">
-                  <td className="py-3.5 px-4 text-slate-400 text-[11px]">{log.timestamp}</td>
-                  <td className="py-3.5 px-4 font-bold text-teal-400 flex items-center gap-1.5">
-                    <FiTerminal className="text-slate-500" /> {log.action}
+                <tr key={log.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>
+                  <td className={`py-3.5 px-4 text-[11px] font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{log.timestamp}</td>
+                  <td className={`py-3.5 px-4 font-black flex items-center gap-1.5 ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
+                    <FiTerminal className="text-slate-400" /> {log.action}
                   </td>
-                  <td className="py-3.5 px-4 font-sans font-bold text-white">{log.actor}</td>
-                  <td className="py-3.5 px-4 font-sans text-slate-300 font-medium max-w-md">{log.details}</td>
-                  <td className="py-3.5 px-4 text-slate-400 text-[11px]">{log.ip}</td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className={`py-3.5 px-4 font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>{log.actor}</td>
+                  <td className={`py-3.5 px-4 font-sans font-bold text-xs ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>{log.details}</td>
+                  <td className={`py-3.5 px-4 font-mono font-bold text-[11px] ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{log.ip}</td>
+                  <td className="py-3.5 px-4 text-right font-sans">
                     <Badge
-                      variant={
-                        log.severity === 'CRITICAL'
-                          ? 'error'
-                          : log.severity === 'SECURITY'
-                          ? 'warning'
-                          : 'primary'
-                      }
-                      className="text-[10px]"
+                      variant={log.severity === 'CRITICAL' ? 'error' : log.severity === 'SECURITY' ? 'warning' : 'info'}
+                      className="text-[10px] font-bold"
                     >
-                      {log.severity === 'SECURITY' && <FiAlertTriangle className="mr-1 w-3 h-3 inline" />}
-                      {log.severity === 'CRITICAL' && <FiShield className="mr-1 w-3 h-3 inline" />}
                       {log.severity}
                     </Badge>
                   </td>
@@ -163,8 +169,7 @@ export const AuditLogsView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        
-        <div className="p-4 border-t border-slate-800/50">
+        <div className={`p-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

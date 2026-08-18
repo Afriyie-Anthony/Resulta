@@ -43,7 +43,7 @@ export const InventoryTabs: React.FC<InventoryTabsProps> = ({
   return (
     <div className={`p-2 rounded-2xl border transition-all duration-300 shadow-sm ${
       isLight
-        ? 'bg-slate-100/90 border-slate-200/90'
+        ? 'bg-slate-100 border-slate-300/80'
         : 'bg-slate-900/90 border-slate-800/90 backdrop-blur-md'
     }`}>
       <nav className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 px-0.5">
@@ -55,18 +55,18 @@ export const InventoryTabs: React.FC<InventoryTabsProps> = ({
             <button
               key={tab.id}
               onClick={() => onChangeTab(tab.id)}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer ${
                 isActive
                   ? isLight
                     ? 'bg-[#0F8B8D] text-white shadow-md shadow-[#0F8B8D]/20 scale-[1.01]'
                     : 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 shadow-md shadow-teal-500/20 scale-[1.01]'
                   : isLight
-                  ? 'text-slate-600 hover:text-slate-950 hover:bg-white/80'
+                  ? 'bg-white/80 text-slate-800 border border-slate-200/90 hover:bg-white hover:text-slate-950 hover:border-slate-300 shadow-2xs'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
               }`}
             >
               <Icon className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                isActive ? 'scale-110' : 'opacity-70'
+                isActive ? 'scale-110' : 'opacity-80'
               }`} />
               <span>{tab.label}</span>
 
@@ -75,7 +75,7 @@ export const InventoryTabs: React.FC<InventoryTabsProps> = ({
                   isActive
                     ? isLight ? 'bg-white/30 text-white' : 'bg-slate-950/40 text-slate-950'
                     : isLight
-                    ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-2xs animate-pulse'
                     : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse'
                 }`}>
                   {tab.badge}
