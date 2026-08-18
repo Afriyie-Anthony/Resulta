@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
+import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import {
   FiSearch,
   FiRefreshCw,
   FiShield,
-  FiSmartphone,
   FiCheckCircle,
   FiClock,
   FiAlertCircle
@@ -17,6 +17,9 @@ import {
 export const PaymentsCallbacksView: React.FC = () => {
   const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [transactions, setTransactions] = useState([
     { ref: 'RSL-PAY-2026-7F82A', orderId: 'RSL-ORD-2026-8812', customer: '+233 24 819 0312', network: 'MTN MoMo', amount: 25.0, timestamp: '19:42:15 GMT', status: 'PAID', attempts: 1 },
@@ -39,6 +42,12 @@ export const PaymentsCallbacksView: React.FC = () => {
     t.ref.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.customer.includes(searchTerm)
+  );
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   return (
@@ -96,7 +105,10 @@ export const PaymentsCallbacksView: React.FC = () => {
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search reference or customer MoMo..."
               className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
             />
@@ -117,15 +129,13 @@ export const PaymentsCallbacksView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50 text-xs">
-              {filtered.map((t) => (
+              {paginated.map((t) => (
                 <tr key={t.ref} className="hover:bg-slate-900/50 transition-colors">
                   <td className="py-3.5 px-3 font-mono font-bold text-teal-400">{t.ref}</td>
                   <td className="py-3.5 px-3 font-mono text-slate-300">{t.orderId}</td>
                   <td className="py-3.5 px-3">
                     <span className="font-bold text-white block">{t.customer}</span>
-                    <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
-                      <FiSmartphone className="w-3 h-3 text-teal-400" /> {t.network}
-                    </span>
+                    <span className="text-[10px] text-slate-500 font-semibold">{t.network}</span>
                   </td>
                   <td className="py-3.5 px-3 font-extrabold text-white">{formatCedi(t.amount)}</td>
                   <td className="py-3.5 px-3">
@@ -163,6 +173,19 @@ export const PaymentsCallbacksView: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => {
+              setItemsPerPage(newSize);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </Card>
     </div>

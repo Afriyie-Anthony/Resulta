@@ -3,6 +3,7 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { Modal } from '../../../components/ui/Modal';
+import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import {
@@ -31,12 +32,21 @@ export const WithdrawalApprovalsView: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([
     { id: 'WD-2026-104', affiliateName: 'Kwaku Frimpong', referralCode: 'REF-GH-8823', phone: '+233 24 991 0293', momoNetwork: 'MTN MoMo', amount: 420.0, requestedDate: '2026-08-01 16:10', status: 'PENDING' },
     { id: 'WD-2026-105', affiliateName: 'Esi Ansah', referralCode: 'REF-GH-4412', phone: '+233 55 201 8839', momoNetwork: 'MTN MoMo', amount: 220.0, requestedDate: '2026-08-01 11:30', status: 'PENDING' },
     { id: 'WD-2026-101', affiliateName: 'Kwesi Owosu', referralCode: 'REF-GH-3392', phone: '+233 50 491 8820', momoNetwork: 'Telecel Cash', amount: 350.0, requestedDate: '2026-07-29 09:15', status: 'PAID' },
     { id: 'WD-2026-100', affiliateName: 'Akosua Boakye', referralCode: 'REF-GH-1102', phone: '+233 27 102 9384', momoNetwork: 'AirtelTigo', amount: 150.0, requestedDate: '2026-07-28 14:00', status: 'PAID' },
   ]);
+
+  const totalPages = Math.ceil(withdrawals.length / itemsPerPage);
+  const paginatedWithdrawals = withdrawals.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const pendingList = withdrawals.filter(w => w.status === 'PENDING');
 
@@ -100,7 +110,7 @@ export const WithdrawalApprovalsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50 text-xs">
-              {withdrawals.map((w) => (
+              {paginatedWithdrawals.map((w) => (
                 <tr key={w.id} className={`hover:bg-slate-900/60 transition-colors ${w.status === 'PENDING' ? 'bg-amber-950/10' : ''}`}>
                   <td className="py-3.5 px-4 font-mono font-bold text-teal-400">{w.id}</td>
                   <td className="py-3.5 px-4">
@@ -155,6 +165,19 @@ export const WithdrawalApprovalsView: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="p-4 border-t border-slate-800">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={withdrawals.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => {
+              setItemsPerPage(newSize);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </Card>
 

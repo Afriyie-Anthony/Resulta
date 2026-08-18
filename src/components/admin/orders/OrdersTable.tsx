@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
+import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import type { Order } from './types';
 import { formatCedi } from '../../../utils/formatters';
@@ -14,6 +15,14 @@ interface OrdersTableProps {
 
 export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onResendSMS }) => {
   const { isLight } = useAdminTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const paginatedOrders = orders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getNetworkBadgeStyles = (network: string) => {
     switch (network) {
@@ -50,8 +59,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
           <tbody className={`divide-y text-xs font-medium ${
             isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
           }`}>
-            {orders.length > 0 ? (
-              orders.map((o) => (
+            {paginatedOrders.length > 0 ? (
+              paginatedOrders.map((o) => (
                 <tr key={o.id} className={`transition-colors ${
                   isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-950/50'
                 }`}>
@@ -142,6 +151,18 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={orders.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(newSize) => {
+          setItemsPerPage(newSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

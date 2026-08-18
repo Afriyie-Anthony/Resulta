@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Button } from '../../ui/Button';
+import { Pagination } from '../../ui/Pagination';
 import type { Customer } from './types';
 import { formatCedi } from '../../../utils/formatters';
 import { FiSmartphone, FiMessageSquare, FiEye, FiAward, FiCheckCircle } from 'react-icons/fi';
@@ -17,6 +18,14 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
   onSendSMS
 }) => {
   const { isLight } = useAdminTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const totalPages = Math.ceil(customers.length / itemsPerPage);
+  const paginatedCustomers = customers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (customers.length === 0) {
     return (
@@ -45,12 +54,12 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
               <th className="py-3.5 px-4">Account Status</th>
               <th className="py-3.5 px-4">Total Orders</th>
               <th className="py-3.5 px-4">Lifetime Value</th>
-              <th className="py-3.5 px-4">Last Seen</th>
+              <th className="py-3.5 px-4">Last Active</th>
               <th className="py-3.5 px-5 text-right">Operations</th>
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-medium ${isLight ? 'divide-slate-200/80' : 'divide-slate-800/60'}`}>
-            {customers.map((cust) => {
+            {paginatedCustomers.map((cust) => {
               const isVip = cust.status === 'VIP BUYER';
               return (
                 <tr
@@ -100,31 +109,33 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
                     {formatCedi(cust.spent)}
                   </td>
 
-                  <td className="py-4 px-4 font-semibold text-slate-400">
+                  <td className="py-4 px-4 text-slate-500 dark:text-slate-400 font-bold">
                     {cust.lastActive}
                   </td>
 
                   <td className="py-4 px-5 text-right">
-                    <div className="inline-flex items-center gap-2 justify-end">
+                    <div className="flex items-center justify-end gap-2">
                       <Button
-                        variant="secondary"
+                        variant={isLight ? 'outline' : 'secondary'}
                         size="sm"
+                        leftIcon={<FiEye className="w-3.5 h-3.5" />}
                         onClick={() => onInspectCustomer(cust)}
-                        leftIcon={<FiEye className="w-3 h-3" />}
-                        className="!rounded-xl !py-1 !px-2.5 !text-xs"
+                        className="font-black text-xs"
                       >
                         Inspect
                       </Button>
+
                       <button
+                        type="button"
                         onClick={() => onSendSMS(cust)}
-                        title="Dispatch SMS notification"
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-                          isLight 
-                            ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 hover:border-slate-300' 
-                            : 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200'
+                        title={`Dispatch direct SMS to ${cust.phone}`}
+                        className={`p-2.5 rounded-xl border transition-all ${
+                          isLight
+                            ? 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-[#0F8B8D] hover:text-white hover:border-[#0F8B8D]'
+                            : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-teal-500 hover:text-slate-950 hover:border-teal-500'
                         }`}
                       >
-                        <FiMessageSquare className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-teal-400" /> SMS
+                        <FiMessageSquare className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -133,6 +144,20 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="px-6 pb-2">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={customers.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={(newSize) => {
+            setItemsPerPage(newSize);
+            setCurrentPage(1);
+          }}
+        />
       </div>
     </div>
   );

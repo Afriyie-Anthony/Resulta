@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
+import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiSearch, FiCheckSquare, FiSmartphone, FiExternalLink } from 'react-icons/fi';
 
@@ -36,6 +37,9 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
       : 'ALL'
   );
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   const filteredSold = mockSoldVouchers.filter((item) => {
     const matchesSearch =
       item.orderRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,6 +51,27 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
     if (productFilter !== 'ALL' && !item.product.includes(productFilter)) return false;
     return true;
   });
+
+  const totalPages = Math.ceil(filteredSold.length / itemsPerPage);
+  const paginatedSold = filteredSold.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleProductFilterChange = (filter: string) => {
+    setProductFilter(filter);
+    setCurrentPage(1);
+  };
+
+  const handleChannelFilterChange = (filter: string) => {
+    setChannelFilter(filter);
+    setCurrentPage(1);
+  };
 
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
@@ -70,7 +95,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             {['ALL', 'WASSCE', 'BECE'].map((filter) => (
               <button
                 key={filter}
-                onClick={() => setProductFilter(filter)}
+                onClick={() => handleProductFilterChange(filter)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
                   productFilter === filter
                     ? isLight
@@ -91,7 +116,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             {['ALL', 'USSD', 'Web'].map((filter) => (
               <button
                 key={filter}
-                onClick={() => setChannelFilter(filter)}
+                onClick={() => handleChannelFilterChange(filter)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
                   channelFilter === filter
                     ? isLight
@@ -112,7 +137,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search order ref or phone..."
               className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none transition-colors border ${
                 isLight
@@ -142,7 +167,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
           <tbody className={`divide-y text-xs font-medium ${
             isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
           }`}>
-            {filteredSold.map((item) => (
+            {paginatedSold.map((item) => (
               <tr key={item.orderRef} className={`transition-colors ${
                 isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-950/50'
               }`}>
@@ -181,6 +206,19 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredSold.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(newSize) => {
+          setItemsPerPage(newSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };
+

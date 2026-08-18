@@ -2,7 +2,6 @@ import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import {
   FiGrid,
-  FiUploadCloud,
   FiDatabase,
   FiCheckSquare,
   FiList,
@@ -10,7 +9,7 @@ import {
   FiSettings,
 } from 'react-icons/fi';
 
-export type InventoryTabId = 'overview' | 'upload' | 'registry' | 'sold' | 'history' | 'alerts' | 'config';
+export type InventoryTabId = 'overview' | 'registry' | 'sold' | 'history' | 'alerts' | 'config';
 
 interface InventoryTabsProps {
   activeTab: InventoryTabId;
@@ -34,7 +33,6 @@ export const InventoryTabs: React.FC<InventoryTabsProps> = ({
 
   const tabs: TabItem[] = [
     { id: 'overview', label: 'Overview', icon: FiGrid },
-    { id: 'upload', label: 'Upload Stock', icon: FiUploadCloud },
     { id: 'registry', label: 'Inventory Registry', icon: FiDatabase },
     { id: 'sold', label: 'Sold Vouchers', icon: FiCheckSquare },
     { id: 'history', label: 'Upload History', icon: FiList },

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
+import { Pagination } from '../../ui/Pagination';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiSearch, FiFileText, FiDownload, FiExternalLink, FiDatabase } from 'react-icons/fi';
@@ -27,6 +28,9 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('ALL');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   // Apply search query & status filters
   const filteredBatches = batches.filter((batch) => {
     const matchesSearch =
@@ -38,6 +42,22 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
     if (statusFilter === 'ALL') return true;
     return batch.status === statusFilter;
   });
+
+  const totalPages = Math.ceil(filteredBatches.length / itemsPerPage);
+  const paginatedBatches = filteredBatches.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (status: FilterStatus) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
 
   const handleExportCSV = () => {
     addToast({
@@ -72,7 +92,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
             {(['ALL', 'ACTIVE', 'ACTIVE_LOW', 'DEPLETED'] as FilterStatus[]).map((status) => (
               <button
                 key={status}
-                onClick={() => setStatusFilter(status)}
+                onClick={() => handleStatusFilterChange(status)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all border ${
                   statusFilter === status
                     ? isLight
@@ -94,7 +114,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search batch or serial..."
               className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none transition-colors border ${
                 isLight
@@ -138,7 +158,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
           <tbody className={`divide-y text-xs font-medium ${
             isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
           }`}>
-            {filteredBatches.map((batch) => {
+            {paginatedBatches.map((batch) => {
               const remainingPercent = Math.min(100, Math.max(0, (batch.remaining / batch.total) * 100));
               return (
                 <tr key={batch.id} className={`transition-colors ${
@@ -181,7 +201,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
                               ? 'bg-rose-500'
                               : batch.remaining < 200
                               ? 'bg-amber-500'
-                              : isLight ? 'bg-[#0F8B8D]' : 'bg-teal-400'
+                              : 'bg-emerald-500'
                           }`}
                           style={{ width: `${remainingPercent}%` }}
                         />
@@ -191,9 +211,13 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
                   <td className="py-3.5 px-3">
                     <Badge
                       variant={
-                        batch.status === 'ACTIVE' ? 'success' : batch.status === 'ACTIVE_LOW' ? 'warning' : 'neutral'
+                        batch.status === 'ACTIVE'
+                          ? 'success'
+                          : batch.status === 'ACTIVE_LOW'
+                          ? 'warning'
+                          : 'error'
                       }
-                      className="text-[10px] !px-2 font-extrabold shadow-2xs"
+                      className="text-[10px] font-extrabold !px-2 shadow-2xs"
                     >
                       {batch.status === 'ACTIVE_LOW' ? 'LOW STOCK' : batch.status}
                     </Badge>
@@ -201,22 +225,14 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
                   <td className="py-3.5 px-3 text-right">
                     <button
                       type="button"
-                      onClick={() => {
-                        if (onInspectBatch) {
-                          onInspectBatch(batch.id);
-                        } else {
-                          addToast({ title: 'Inspecting Batch', message: `Filtered registry for ${batch.id}`, type: 'info' });
-                        }
-                      }}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all inline-flex items-center gap-1 border ${
+                      onClick={() => onInspectBatch && onInspectBatch(batch.id)}
+                      className={`px-3 py-1 rounded-xl text-xs font-extrabold border transition-all inline-flex items-center gap-1.5 ${
                         isLight
-                          ? 'bg-slate-100/80 border-slate-200 text-slate-700 hover:bg-primary hover:text-white hover:border-primary shadow-2xs'
-                          : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-teal-500 hover:text-slate-950 hover:border-teal-500'
+                          ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
                       }`}
-                      title="Drilldown to inspect decrypted serial records in Registry"
                     >
-                      <span>Inspect PINs</span>
-                      <FiExternalLink className="w-3 h-3" />
+                      Inspect PINs <FiExternalLink className="w-3 h-3 opacity-60" />
                     </button>
                   </td>
                 </tr>
@@ -224,14 +240,26 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches, o
             })}
             {filteredBatches.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-10 text-center text-slate-400 font-medium">
-                  No cryptographic batches found matching "{searchQuery}" under filter ({statusFilter}).
+                <td colSpan={8} className="py-8 text-center text-slate-400 font-medium">
+                  No batch ingestion records found matching "{searchQuery}".
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredBatches.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(newSize) => {
+          setItemsPerPage(newSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

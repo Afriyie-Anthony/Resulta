@@ -6,7 +6,6 @@ import {
   SecurityComplianceFooter,
   BatchIngestModal,
   InventoryTabs,
-  InlineStockUpload,
   InventoryRegistryTable,
   SoldVouchersTable,
   StockAlertsView,
@@ -81,21 +80,11 @@ export const VoucherInventoryView: React.FC = () => {
               onReplenish={handleOpenReplenish}
               onNavigateTab={handleNavigateTab}
             />
-            <BatchHistoryTable
-              batches={batches.slice(0, 3)}
-              onInspectBatch={(batchId) => handleNavigateTab('registry', batchId)}
-            />
             <SecurityComplianceFooter />
           </div>
         )}
 
-        {activeTab === 'upload' && (
-          <InlineStockUpload
-            currentStats={inventoryStats}
-            onBatchIngested={handleBatchIngested}
-            onNavigateToHistory={() => handleNavigateTab('history')}
-          />
-        )}
+
 
         {activeTab === 'registry' && (
           <InventoryRegistryTable key={tabFilter || 'all'} initialFilter={tabFilter} />

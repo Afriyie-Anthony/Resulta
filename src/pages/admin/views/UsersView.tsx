@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
+import { Pagination } from '../../../components/ui/Pagination';
 import { FiUserCheck, FiUserPlus, FiShield, FiMail } from 'react-icons/fi';
 
 export const UsersView: React.FC = () => {
   const { isLight } = useAdminTheme();
 
-  const users = [
+  const [users] = useState([
     { name: 'System Administrator (SA)', email: 'admin@resulta.com.gh', role: 'SUPER_ADMIN', status: 'ACTIVE', mfa: 'Enabled', lastLogin: '10 mins ago (Current Session)' },
     { name: 'Anthony Afriyie', email: 'anthony@resulta.com.gh', role: 'FINANCE_MANAGER', status: 'ACTIVE', mfa: 'Enabled', lastLogin: '2 hours ago' },
     { name: 'Kwabena Osei (Ops)', email: 'support@resulta.com.gh', role: 'INVENTORY_MANAGER', status: 'ACTIVE', mfa: 'Enabled', lastLogin: 'Yesterday' },
-  ];
+  ]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const paginatedUsers = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="space-y-6">
@@ -50,7 +60,7 @@ export const UsersView: React.FC = () => {
               </tr>
             </thead>
             <tbody className={`divide-y text-xs font-medium ${isLight ? 'divide-slate-200/80' : 'divide-slate-800/60'}`}>
-              {users.map((u, idx) => (
+              {paginatedUsers.map((u, idx) => (
                 <tr key={idx} className={`transition-colors ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-950/40'}`}>
                   <td className="py-4 px-4">
                     <div className="font-extrabold text-sm text-primary dark:text-white flex items-center gap-2">
@@ -83,6 +93,20 @@ export const UsersView: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        
+        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={users.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => {
+              setItemsPerPage(newSize);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </div>
     </div>

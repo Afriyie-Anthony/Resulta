@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
+import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiSearch, FiDatabase, FiLock, FiCheckCircle } from 'react-icons/fi';
 
@@ -37,6 +38,9 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
       : 'ALL'
   );
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   const filteredItems = mockRegistryItems.filter((item) => {
     const matchesSearch =
       item.serial.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,6 +51,22 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
     if (selectedProductFilter !== 'ALL' && !item.product.includes(selectedProductFilter)) return false;
     return true;
   });
+
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setSelectedProductFilter(filter);
+    setCurrentPage(1);
+  };
 
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
@@ -69,7 +89,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
             {['ALL', 'WASSCE', 'BECE'].map((filter) => (
               <button
                 key={filter}
-                onClick={() => setSelectedProductFilter(filter)}
+                onClick={() => handleFilterChange(filter)}
                 className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all border ${
                   selectedProductFilter === filter
                     ? isLight
@@ -90,7 +110,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search serial number or batch..."
               className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none transition-colors border ${
                 isLight
@@ -119,7 +139,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           <tbody className={`divide-y text-xs font-medium ${
             isLight ? 'divide-slate-200/80' : 'divide-slate-800/50'
           }`}>
-            {filteredItems.map((item) => (
+            {paginatedItems.map((item) => (
               <tr key={item.serial} className={`transition-colors ${
                 isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-950/50'
               }`}>
@@ -159,6 +179,18 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredItems.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(newSize) => {
+          setItemsPerPage(newSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

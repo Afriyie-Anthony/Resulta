@@ -3,6 +3,7 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { Modal } from '../../../components/ui/Modal';
+import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import {
@@ -32,6 +33,9 @@ export const AffiliatesPartnersView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'ALL'>('PENDING');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [affiliates, setAffiliates] = useState<Affiliate[]>([
     { id: 'AFF-01', name: 'Kofi Mensah', email: 'kofi.mensah@ghana-uni.edu', phone: '+233 24 551 0921', momoNetwork: 'MTN MoMo', referralCode: 'REF-GH-KOFI26', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 14:20' },
@@ -71,6 +75,12 @@ export const AffiliatesPartnersView: React.FC = () => {
                           a.referralCode.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesSearch;
   });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="space-y-8">
@@ -135,7 +145,7 @@ export const AffiliatesPartnersView: React.FC = () => {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder="Search name, email or ref code..."
             className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
           />
@@ -158,8 +168,8 @@ export const AffiliatesPartnersView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50 text-xs">
-              {filtered.length > 0 ? (
-                filtered.map((a) => (
+              {paginated.length > 0 ? (
+                paginated.map((a) => (
                   <tr key={a.id} className="hover:bg-slate-900/60 transition-colors">
                     <td className="py-3.5 px-4">
                       <span className="font-bold text-white block text-sm">{a.name}</span>
@@ -208,6 +218,16 @@ export const AffiliatesPartnersView: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="p-4 border-t border-slate-800">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => { setItemsPerPage(newSize); setCurrentPage(1); }}
+          />
         </div>
       </Card>
 

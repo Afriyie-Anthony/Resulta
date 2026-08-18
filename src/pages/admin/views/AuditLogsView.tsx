@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
+import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import {
   FiShield,
@@ -12,12 +13,25 @@ import {
   FiTerminal
 } from 'react-icons/fi';
 
+interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  actor: string;
+  action: string;
+  details: string;
+  severity: string;
+  ip: string;
+}
+
 export const AuditLogsView: React.FC = () => {
   const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState('ALL');
 
-  const logs = [
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const logs: AuditLogEntry[] = [
     { id: 'LOG-99182', timestamp: '2026-08-01 19:50:11', actor: 'System Administrator (SA)', action: 'REVEAL_VOUCHER_PIN', details: 'Admin inspected plaintext PIN for order RSL-ORD-2026-8812', severity: 'SECURITY', ip: '102.176.44.12' },
     { id: 'LOG-99181', timestamp: '2026-08-01 19:10:04', actor: 'System Administrator (SA)', action: 'APPROVE_AFFILIATE', details: 'Activated affiliate Kwaku Frimpong (REF-GH-8823)', severity: 'SYSTEM', ip: '102.176.44.12' },
     { id: 'LOG-99180', timestamp: '2026-08-01 18:05:32', actor: 'System Administrator (SA)', action: 'INGEST_VOUCHER_BATCH', details: 'Uploaded BATCH-2026-W09 containing 1,000 WASSCE PINs (AES-256 encrypted)', severity: 'CRITICAL', ip: '102.176.44.12' },
@@ -40,6 +54,12 @@ export const AuditLogsView: React.FC = () => {
                           l.actor.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSev && matchesSearch;
   });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="space-y-8">
@@ -70,11 +90,11 @@ export const AuditLogsView: React.FC = () => {
       {/* Filter & Search */}
       <Card glass className="p-4 border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-1.5">
-          {['ALL', 'CRITICAL', 'SECURITY', 'SYSTEM'].map((sev) => (
+          {['ALL', 'INFO', 'SECURITY', 'CRITICAL'].map((sev) => (
             <button
               key={sev}
               type="button"
-              onClick={() => setSeverityFilter(sev)}
+              onClick={() => { setSeverityFilter(sev); setCurrentPage(1); }}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 severityFilter === sev
                   ? 'bg-teal-500 text-slate-950 font-extrabold shadow-sm shadow-teal-500/20'
@@ -91,7 +111,7 @@ export const AuditLogsView: React.FC = () => {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder="Search action, actor or detail..."
             className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
           />
@@ -113,7 +133,7 @@ export const AuditLogsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
-              {filtered.map((log) => (
+              {paginated.map((log) => (
                 <tr key={log.id} className="hover:bg-slate-900/60 transition-colors">
                   <td className="py-3.5 px-4 text-slate-400 text-[11px]">{log.timestamp}</td>
                   <td className="py-3.5 px-4 font-bold text-teal-400 flex items-center gap-1.5">
@@ -142,6 +162,20 @@ export const AuditLogsView: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        
+        <div className="p-4 border-t border-slate-800/50">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(newSize) => {
+              setItemsPerPage(newSize);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </Card>
     </div>

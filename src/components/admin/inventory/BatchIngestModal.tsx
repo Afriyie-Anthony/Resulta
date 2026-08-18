@@ -28,7 +28,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
   const { isLight } = useAdminTheme();
   
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>(initialProduct);
-  const [batchQuantity, setBatchQuantity] = useState('500');
+  const [batchQuantity] = useState('500');
   const [simulatedFileName, setSimulatedFileName] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -95,7 +95,6 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
     }, 700);
   };
 
-  const quantityPresets = [100, 500, 1000, 2500];
   const currentPoolAvailable = selectedProduct === 'WASSCE' ? currentStats.wassce.available : currentStats.bece.available;
 
   return (
@@ -203,65 +202,12 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           </div>
         </div>
 
-        {/* Step 2: Quantity Presets & Compact Input on a single line */}
+        {/* Step 2: File Drop Zone (Compact) */}
         <div>
           <label className={`block text-[11px] font-black uppercase tracking-wider mb-1.5 ${
             isLight ? 'text-slate-700' : 'text-slate-300'
           }`}>
-            2. Simulated Ingestion Count
-          </label>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            {/* Preset chips */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {quantityPresets.map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => { setBatchQuantity(preset.toString()); setSimulatedFileName(null); }}
-                  className={`px-3 py-1 rounded-lg text-xs font-black transition-all border ${
-                    batchQuantity === preset.toString()
-                      ? isLight
-                        ? 'bg-primary text-white border-primary shadow-2xs scale-[1.02]'
-                        : 'bg-white text-slate-950 border-white shadow-2xs scale-[1.02]'
-                      : isLight
-                      ? 'bg-slate-100/90 text-slate-700 border-slate-200 hover:bg-slate-200/70'
-                      : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-800'
-                  }`}
-                >
-                  +{preset.toLocaleString()} PINs
-                </button>
-              ))}
-            </div>
-
-            {/* Custom Input */}
-            <div className="relative w-full sm:w-48 shrink-0">
-              <input
-                type="number"
-                value={batchQuantity}
-                onChange={(e) => { setBatchQuantity(e.target.value); setSimulatedFileName(null); }}
-                className={`w-full rounded-lg pl-3 pr-20 py-1.5 text-xs font-black focus:outline-none transition-all border ${
-                  isLight
-                    ? 'bg-slate-50/90 border-slate-200 text-slate-900 focus:border-[#0F8B8D] focus:bg-white focus:ring-1 focus:ring-[#0F8B8D]/20'
-                    : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20'
-                }`}
-                placeholder="e.g. 500"
-                required
-                min="1"
-              />
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-bold text-slate-400 pointer-events-none">
-                <span>PIN Units</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Step 3: File Drop Zone (Compact) */}
-        <div>
-          <label className={`block text-[11px] font-black uppercase tracking-wider mb-1.5 ${
-            isLight ? 'text-slate-700' : 'text-slate-300'
-          }`}>
-            3. Select Stock File (.CSV or .XLSX)
+            2. Select Stock File (.CSV or .XLSX)
           </label>
           <div
             onClick={handleSimulateSelectFile}

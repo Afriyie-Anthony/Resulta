@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../../ui/Button';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiInfo, FiFileText } from 'react-icons/fi';
+import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText } from 'react-icons/fi';
 import type { BatchRecord } from './BatchHistoryTable';
 
 interface InlineStockUploadProps {
@@ -23,7 +23,7 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
   const { isLight } = useAdminTheme();
 
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>('WASSCE');
-  const [batchQuantity, setBatchQuantity] = useState('1000');
+  const [batchQuantity] = useState('1000');
   const [simulatedFileName, setSimulatedFileName] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -174,28 +174,7 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
 
         <div>
           <label className={`block text-xs font-black uppercase mb-2 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            2. Simulated Ingestion Batch Count
-          </label>
-          <input
-            type="number"
-            value={batchQuantity}
-            onChange={(e) => { setBatchQuantity(e.target.value); setSimulatedFileName(null); }}
-            className={`w-full rounded-2xl px-4 py-3 text-sm font-black focus:outline-none transition-colors border ${
-              isLight
-                ? 'bg-slate-50 border-slate-200 text-slate-900 focus:border-secondary focus:bg-white'
-                : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500'
-            }`}
-            placeholder="e.g. 1000"
-            required
-          />
-          <p className={`text-[11px] mt-1.5 font-medium flex items-center gap-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-            <FiInfo /> This will instantly add {batchQuantity || '0'} secure units to the active {selectedProduct} inventory pool upon upload.
-          </p>
-        </div>
-
-        <div>
-          <label className={`block text-xs font-black uppercase mb-2 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            3. Select Stock File (.csv or .xlsx)
+            2. Select Stock File (.csv or .xlsx)
           </label>
           <div
             onClick={handleSimulateSelectFile}
