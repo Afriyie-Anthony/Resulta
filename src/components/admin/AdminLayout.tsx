@@ -274,12 +274,19 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
             </div>
 
             <button
-              className={`relative p-2 rounded-lg transition-colors ${
-                isLight ? 'text-text-secondary hover:text-text-primary hover:bg-slate-100' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              type="button"
+              onClick={() => navigate('/admin/notifications')}
+              title="View Notifications & System Alerts"
+              className={`relative p-2 rounded-xl transition-all shadow-2xs ${
+                isLight
+                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-100 border border-slate-300'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700'
               }`}
             >
-              <FiBell className="w-5 h-5" />
-              <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${isLight ? 'bg-secondary' : 'bg-teal-400'}`} />
+              <FiBell className="w-5 h-5 text-[#0F8B8D] dark:text-teal-400" />
+              <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-xs border-2 border-white dark:border-slate-900">
+                10
+              </span>
             </button>
           </div>
         </header>
