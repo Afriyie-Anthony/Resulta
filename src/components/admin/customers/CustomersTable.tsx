@@ -47,13 +47,13 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
             <tr className={`border-b text-[11px] uppercase font-black ${
               isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-950/50 text-slate-400'
             }`}>
-              <th className="py-3.5 px-5 whitespace-nowrap">Customer Account</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Phone Number</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Account Status</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Total Orders</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Lifetime Value</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Last Active</th>
-              <th className="py-3.5 px-5 text-right whitespace-nowrap">Operations</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Account</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Phone Number</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Account Status</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Total Orders</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Lifetime Value</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Last Active</th>
+              <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Operations</th>
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
@@ -66,7 +66,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
                     isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'
                   }`}
                 >
-                  <td className="py-4 px-5 whitespace-nowrap font-mono font-black text-xs">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap font-mono font-black text-xs">
                     <span className={isLight ? 'text-[#0B2545]' : 'text-teal-400'}>
                       {cust.id}
                     </span>
@@ -75,46 +75,46 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
                     </span>
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 font-black text-sm">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 font-black text-sm">
                       <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-4 h-4 shrink-0" />
                       <span className={isLight ? 'text-slate-950' : 'text-white'}>{cust.phone}</span>
                     </div>
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap">
                     {isVip ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30">
                         <FiAward className="w-3.5 h-3.5 text-amber-600 shrink-0" /> VIP Buyer
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
                         <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Verified
                       </span>
                     )}
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap font-black">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap font-black">
                     <span className={isLight ? 'text-slate-950' : 'text-slate-200'}>
                       {cust.totalOrders} {cust.totalOrders === 1 ? 'Voucher' : 'Vouchers'}
                     </span>
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap font-black text-sm text-emerald-700 dark:text-emerald-400">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap font-black text-sm text-emerald-700 dark:text-emerald-400">
                     {formatCedi(cust.spent)}
                   </td>
 
-                  <td className={`py-4 px-4 whitespace-nowrap font-bold text-xs ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold text-xs ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                     {cust.lastActive}
                   </td>
 
-                  <td className="py-4 px-5 text-right whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => onInspectCustomer(cust)}
                         title="View Customer Profile"
-                        className={`p-2.5 rounded-xl border transition-all shadow-2xs ${
+                        className={`p-2 rounded-xl border transition-all shadow-2xs ${
                           isLight
                             ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200 hover:text-slate-950'
                             : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
@@ -127,7 +127,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
                         type="button"
                         onClick={() => onSendSMS(cust)}
                         title={`Dispatch direct SMS to ${cust.phone}`}
-                        className={`p-2.5 rounded-xl border transition-all shadow-2xs ${
+                        className={`p-2 rounded-xl border transition-all shadow-2xs ${
                           isLight
                             ? 'bg-slate-100 border-slate-300 text-[#0F8B8D] hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700'
                             : 'bg-slate-800/80 border-slate-700 text-teal-400 hover:bg-slate-800 hover:text-teal-300'
@@ -144,7 +144,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
         </table>
       </div>
 
-      <div className={`px-6 py-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
+      <div className={`px-6 py-3 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

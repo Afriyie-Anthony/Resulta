@@ -1,74 +1,117 @@
 import React, { useState } from 'react';
-import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
-import { Modal } from '../../../components/ui/Modal';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
+import { AffiliateDetailsView, type Affiliate } from '../../../components/admin/affiliates';
 import {
   FiCheck,
-  FiX,
   FiSearch,
-  FiExternalLink,
   FiMail,
-  FiSmartphone
+  FiSmartphone,
+  FiUsers,
+  FiClock,
+  FiShoppingBag,
+  FiDollarSign,
+  FiEye,
+  FiAlertOctagon
 } from 'react-icons/fi';
-
-interface Affiliate {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  momoNetwork: string;
-  referralCode: string;
-  totalSales: number;
-  totalCommission: number;
-  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
-  appliedDate: string;
-}
 
 export const AffiliatesPartnersView: React.FC = () => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
-  const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'ALL'>('PENDING');
+  const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'ALL'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
+  const [viewingAffiliate, setViewingAffiliate] = useState<Affiliate | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [affiliates, setAffiliates] = useState<Affiliate[]>([
-    { id: 'AFF-01', name: 'Kofi Mensah', email: 'kofi.mensah@ghana-uni.edu', phone: '+233 24 551 0921', momoNetwork: 'MTN MoMo', referralCode: 'REF-GH-KOFI26', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 14:20' },
-    { id: 'AFF-02', name: 'Ama Osei Boateng', email: 'ama.osei92@gmail.com', phone: '+233 50 182 3310', momoNetwork: 'Telecel Cash', referralCode: 'REF-GH-AMA92', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 12:15' },
-    { id: 'AFF-03', name: 'Yaw Ampem Tech House', email: 'support@ampemtech.com.gh', phone: '+233 27 409 1192', momoNetwork: 'AirtelTigo', referralCode: 'REF-GH-AMPEM', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 18:04' },
-    { id: 'AFF-04', name: 'Abigail Owusu', email: 'abigail@campusresale.gh', phone: '+233 54 902 4418', momoNetwork: 'MTN MoMo', referralCode: 'REF-GH-ABIE', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 09:30' },
-    { id: 'AFF-05', name: 'Kwaku Frimpong', email: 'kwaku.f@business.gh', phone: '+233 24 991 0293', momoNetwork: 'MTN MoMo', referralCode: 'REF-GH-8823', totalSales: 142, totalCommission: 710.0, status: 'ACTIVE', appliedDate: '2026-07-10 11:00' },
-    { id: 'AFF-06', name: 'Esi Ansah', email: 'esi.ansah@outlook.com', phone: '+233 55 201 8839', momoNetwork: 'MTN MoMo', referralCode: 'REF-GH-4412', totalSales: 98, totalCommission: 490.0, status: 'ACTIVE', appliedDate: '2026-07-12 16:45' },
+    { id: 'AFF-01', name: 'Kofi Mensah', email: 'kofi.mensah@ghana-uni.edu', phone: '+233 24 551 0921', referralCode: 'REF-GH-KOFI26', ussdCode: '*713*5912*1#', location: 'Kumasi', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 14:20' },
+    { id: 'AFF-02', name: 'Ama Osei Boateng', email: 'ama.osei92@gmail.com', phone: '+233 50 182 3310', referralCode: 'REF-GH-AMA92', ussdCode: '*713*5913*1#', location: 'Accra', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 12:15' },
+    { id: 'AFF-03', name: 'Yaw Ampem Tech House', email: 'support@ampemtech.com.gh', phone: '+233 27 409 1192', referralCode: 'REF-GH-AMPEM', ussdCode: '*713*5914*1#', location: 'Sunyani', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 18:04' },
+    { id: 'AFF-04', name: 'Abigail Owusu', email: 'abigail@campusresale.gh', phone: '+233 54 902 4418', referralCode: 'REF-GH-ABIE', ussdCode: '*713*5915*1#', location: 'Cape Coast', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 09:30' },
+    { id: 'AFF-05', name: 'Kwaku Frimpong', email: 'kwaku.f@business.gh', phone: '+233 24 991 0293', referralCode: 'REF-GH-8823', ussdCode: '*713*5916*1#', location: 'Takoradi', totalSales: 142, totalCommission: 710.0, status: 'ACTIVE', appliedDate: '2026-07-10 11:00' },
+    { id: 'AFF-06', name: 'Esi Ansah', email: 'esi.ansah@outlook.com', phone: '+233 55 201 8839', referralCode: 'REF-GH-4412', ussdCode: '*713*5917*1#', location: 'Tamale', totalSales: 98, totalCommission: 490.0, status: 'ACTIVE', appliedDate: '2026-07-12 16:45' },
   ]);
 
   const pendingCount = affiliates.filter(a => a.status === 'PENDING').length;
+  const activeCount = affiliates.filter(a => a.status === 'ACTIVE').length;
+  const totalSalesUnits = affiliates.reduce((sum, a) => sum + a.totalSales, 0);
+  const totalCommissionPaid = affiliates.reduce((sum, a) => sum + a.totalCommission, 0);
 
   const handleApprove = (id: string, name: string) => {
     setAffiliates(prev => prev.map(a => a.id === id ? { ...a, status: 'ACTIVE' } : a));
-    setSelectedAffiliate(null);
+    if (viewingAffiliate && viewingAffiliate.id === id) {
+      setViewingAffiliate(prev => prev ? { ...prev, status: 'ACTIVE' } : null);
+    }
     addToast({
       title: 'Affiliate Application Approved',
-      message: `${name} is now approved! Their referral link and MoMo commission routing are activated.`,
+      message: `${name} is now approved! USSD code and commission payouts activated.`,
       type: 'success',
     });
   };
 
-  const handleReject = (id: string, name: string) => {
+  const handleSuspend = (id: string, name: string) => {
     setAffiliates(prev => prev.map(a => a.id === id ? { ...a, status: 'SUSPENDED' } : a));
-    setSelectedAffiliate(null);
+    if (viewingAffiliate && viewingAffiliate.id === id) {
+      setViewingAffiliate(prev => prev ? { ...prev, status: 'SUSPENDED' } : null);
+    }
     addToast({
-      title: 'Application Rejected',
-      message: `${name}'s affiliate application has been declined.`,
+      title: 'Account Suspended',
+      message: `Suspended partner account and deactivated USSD referral code for ${name}.`,
+      type: 'warning',
+    });
+  };
+
+  const handleDeactivate = (id: string, name: string) => {
+    setAffiliates(prev => prev.map(a => a.id === id ? { ...a, status: 'SUSPENDED' } : a));
+    if (viewingAffiliate && viewingAffiliate.id === id) {
+      setViewingAffiliate(prev => prev ? { ...prev, status: 'SUSPENDED' } : null);
+    }
+    addToast({
+      title: 'Account Deactivated',
+      message: `Deactivated affiliate access for ${name}.`,
       type: 'info',
     });
   };
+
+  const handleDelete = (id: string, name: string) => {
+    setAffiliates(prev => prev.filter(a => a.id !== id));
+    if (viewingAffiliate && viewingAffiliate.id === id) {
+      setViewingAffiliate(null);
+    }
+    addToast({
+      title: 'Affiliate Profile Deleted',
+      message: `Removed profile for ${name}.`,
+      type: 'info',
+    });
+  };
+
+  const handleUpdateUssdCode = (id: string, newCode: string) => {
+    setAffiliates(prev => prev.map(a => a.id === id ? { ...a, ussdCode: newCode } : a));
+    if (viewingAffiliate && viewingAffiliate.id === id) {
+      setViewingAffiliate(prev => prev ? { ...prev, ussdCode: newCode } : null);
+    }
+  };
+
+  // If a specific affiliate is selected for full page view, render AffiliateDetailsView
+  if (viewingAffiliate) {
+    return (
+      <AffiliateDetailsView
+        affiliate={viewingAffiliate}
+        onBack={() => setViewingAffiliate(null)}
+        onApprove={handleApprove}
+        onSuspend={handleSuspend}
+        onDeactivate={handleDeactivate}
+        onDelete={handleDelete}
+        onUpdateUssdCode={handleUpdateUssdCode}
+      />
+    );
+  }
 
   const filtered = affiliates.filter(a => {
     const matchesTab = activeTab === 'ALL' || a.status === activeTab;
@@ -85,138 +128,342 @@ export const AffiliatesPartnersView: React.FC = () => {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            Affiliates & Partner Management
-          </h1>
-          <p className={`text-xs font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            Review distribution applications, configure commission percentages, and audit partner sales performance.
-          </p>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className={`p-2.5 rounded-2xl ${
+              isLight ? 'bg-[#0F8B8D]/15 text-[#0F8B8D]' : 'bg-teal-500/20 text-teal-400'
+            }`}>
+              <FiUsers className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                Affiliates & Partner Management
+              </h1>
+              <p className={`text-xs sm:text-sm font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                Review partner applications, configure commission structures, and audit referral sales performance.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="warning" className="text-xs py-1.5 px-3 font-bold shadow-2xs">
+        <div className="flex items-center gap-3 shrink-0">
+          <Badge variant="warning" className="text-xs py-1.5 px-3 font-black shadow-2xs">
             {pendingCount} Pending Approval
           </Badge>
-          <Button variant={isLight ? 'outline' : 'secondary'} size="sm" onClick={() => setActiveTab('PENDING')} className="font-extrabold text-xs">
+          <Button
+            variant={isLight ? 'primary' : 'gradient'}
+            size="md"
+            onClick={() => setActiveTab('PENDING')}
+            className="font-black text-xs h-11 px-5 rounded-2xl shadow-md"
+          >
             Review Applications
           </Button>
         </div>
       </div>
 
-      {/* Tabs & Search */}
-      <Card glass className={`p-4 border flex flex-col sm:flex-row items-center justify-between gap-4 ${
-        isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-900/90 border-slate-800'
+      {/* Modern KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Total Partners */}
+        <div
+          onClick={() => setActiveTab('ALL')}
+          className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
+            isLight
+              ? 'bg-white border-slate-300 border-t-cyan-500 hover:border-slate-400'
+              : 'bg-slate-900/90 border-slate-800 border-t-cyan-500'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`text-[10px] font-black uppercase tracking-wider ${
+              isLight ? 'text-slate-700' : 'text-slate-400'
+            }`}>
+              Total Partners
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+              isLight ? 'bg-cyan-100/80 text-cyan-800 border border-cyan-200' : 'bg-teal-500/20 text-teal-400 font-black'
+            }`}>
+              <FiUsers className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
+            {affiliates.length} Partners
+          </p>
+          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            {activeCount} Active • {pendingCount} Pending
+          </p>
+        </div>
+
+        {/* 2. Pending Review */}
+        <div
+          onClick={() => setActiveTab('PENDING')}
+          className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
+            isLight
+              ? 'bg-white border-slate-300 border-t-amber-500 hover:border-slate-400'
+              : 'bg-slate-900/90 border-slate-800 border-t-amber-500'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`text-[10px] font-black uppercase tracking-wider ${
+              isLight ? 'text-slate-700' : 'text-slate-400'
+            }`}>
+              Pending Review
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+              isLight ? 'bg-amber-100/80 text-amber-800 border border-amber-200' : 'bg-amber-500/20 text-amber-400'
+            }`}>
+              <FiClock className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>
+            {pendingCount} Applications
+          </p>
+          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            Action required for activation
+          </p>
+        </div>
+
+        {/* 3. Referral Sales Vol */}
+        <div
+          onClick={() => setActiveTab('ACTIVE')}
+          className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
+            isLight
+              ? 'bg-white border-slate-300 border-t-emerald-500 hover:border-slate-400'
+              : 'bg-slate-900/90 border-slate-800 border-t-emerald-500'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`text-[10px] font-black uppercase tracking-wider ${
+              isLight ? 'text-slate-700' : 'text-slate-400'
+            }`}>
+              Referral Volume
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+              isLight ? 'bg-emerald-100/80 text-emerald-800 border border-emerald-200' : 'bg-emerald-500/20 text-emerald-400 font-black'
+            }`}>
+              <FiShoppingBag className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
+            {totalSalesUnits} Units Sold
+          </p>
+          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            Total vouchers via affiliate links
+          </p>
+        </div>
+
+        {/* 4. Commission Paid */}
+        <div
+          onClick={() => setActiveTab('ACTIVE')}
+          className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
+            isLight
+              ? 'bg-white border-slate-300 border-t-purple-500 hover:border-slate-400'
+              : 'bg-slate-900/90 border-slate-800 border-t-purple-500'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`text-[10px] font-black uppercase tracking-wider ${
+              isLight ? 'text-slate-700' : 'text-slate-400'
+            }`}>
+              Commission Earned
+            </span>
+            <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+              isLight ? 'bg-purple-100/80 text-purple-800 border border-purple-200' : 'bg-purple-500/20 text-purple-400 font-black'
+            }`}>
+              <FiDollarSign className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
+            {formatCedi(totalCommissionPaid)}
+          </p>
+          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            Total partner payouts
+          </p>
+        </div>
+      </div>
+
+      {/* Tabs & Search Toolbar */}
+      <div className={`p-4 rounded-3xl border transition-colors shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 ${
+        isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
       }`}>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab('PENDING')}
-            className={`px-4 py-2 rounded-xl text-xs transition-all ${
-              activeTab === 'PENDING'
-                ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
-                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            Pending Review ({pendingCount})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('ACTIVE')}
-            className={`px-4 py-2 rounded-xl text-xs transition-all ${
-              activeTab === 'ACTIVE'
-                ? isLight ? 'bg-[#0F8B8D] text-white font-black shadow-xs' : 'bg-teal-500 text-slate-950 font-black shadow-xs'
-                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            Active Partners ({affiliates.filter(a => a.status === 'ACTIVE').length})
-          </button>
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setActiveTab('ALL')}
-            className={`px-4 py-2 rounded-xl text-xs transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
               activeTab === 'ALL'
-                ? isLight ? 'bg-slate-800 text-white font-black shadow-xs' : 'bg-slate-700 text-white font-black'
-                : isLight ? 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-200 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? isLight
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-slate-700 text-white border-slate-600 shadow-xs'
+                : isLight
+                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs'
+                : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
             }`}
           >
-            All Records
+            <span>All Records</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300">
+              {affiliates.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('PENDING')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
+              activeTab === 'PENDING'
+                ? isLight
+                  ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-xs'
+                  : 'bg-amber-500 text-slate-950 border-amber-400 shadow-xs'
+                : isLight
+                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs'
+                : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            <span>Pending Review</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-black/15 text-slate-950 dark:bg-white/20 dark:text-white">
+              {pendingCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('ACTIVE')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
+              activeTab === 'ACTIVE'
+                ? isLight
+                  ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-xs'
+                  : 'bg-teal-500 text-slate-950 border-teal-400 shadow-xs'
+                : isLight
+                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs'
+                : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            <span>Active Partners</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-white/20 text-white dark:bg-black/20 dark:text-slate-950">
+              {activeCount}
+            </span>
           </button>
         </div>
 
-        <div className="relative w-full sm:w-72">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="relative w-full sm:w-80">
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            placeholder="Search name, email or ref code..."
-            className={`w-full rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold focus:outline-none border ${
-              isLight ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-800 text-slate-200 placeholder-slate-500 focus:border-teal-500'
+            placeholder="Search partner name, email or ref code..."
+            className={`w-full rounded-2xl pl-10 pr-4 py-2 text-xs font-semibold focus:outline-none transition-colors border ${
+              isLight
+                ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500 focus:bg-slate-900'
             }`}
           />
         </div>
-      </Card>
+      </div>
 
       {/* Affiliates List Table */}
-      <Card glass className={`border overflow-hidden ${isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800'}`}>
+      <div className={`rounded-3xl border overflow-hidden transition-colors ${
+        isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800 shadow-xl'
+      }`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className={`border-b text-[11px] uppercase font-black ${
-                isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-900/40 text-slate-400'
+                isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-950/50 text-slate-400'
               }`}>
-                <th className="py-3.5 px-4">Partner Details</th>
-                <th className="py-3.5 px-4">MoMo Payout Account</th>
-                <th className="py-3.5 px-4">Referral Handle</th>
-                <th className="py-3.5 px-4">Sales Vol</th>
-                <th className="py-3.5 px-4">Commission Earned</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Partner Details</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Payout Phone</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Referral Handle</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Sales Vol</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Commission Earned</th>
+                <th className="py-2.5 px-3.5 whitespace-nowrap">Status</th>
+                <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
-            <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/50'}`}>
+            <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
               {paginated.length > 0 ? (
                 paginated.map((a) => (
-                  <tr key={a.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>
-                    <td className="py-3.5 px-4">
+                  <tr key={a.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'}`}>
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
                       <span className={`font-black block text-sm ${isLight ? 'text-slate-950' : 'text-white'}`}>{a.name}</span>
-                      <span className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                        <FiMail className="w-3 h-3 text-[#0F8B8D] dark:text-teal-400" /> {a.email}
+                      <span className={`text-xs font-bold flex items-center gap-1 mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        <FiMail className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-teal-400" /> {a.email}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`font-bold block ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>{a.phone}</span>
-                      <span className={`text-[10px] font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-500'}`}>{a.momoNetwork}</span>
+
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
+                      <div className="flex items-center gap-2 font-black text-sm">
+                        <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-4 h-4 shrink-0" />
+                        <span className={isLight ? 'text-slate-950' : 'text-white'}>{a.phone}</span>
+                      </div>
                     </td>
-                    <td className={`py-3.5 px-4 font-mono font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>{a.referralCode}</td>
-                    <td className={`py-3.5 px-4 font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{a.totalSales} units</td>
-                    <td className="py-3.5 px-4 font-black text-emerald-700 dark:text-emerald-400">{formatCedi(a.totalCommission)}</td>
-                    <td className="py-3.5 px-4">
+
+                    <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black text-xs ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
+                      {a.referralCode}
+                    </td>
+
+                    <td className={`py-2.5 px-3.5 whitespace-nowrap font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
+                      {a.totalSales} units
+                    </td>
+
+                    <td className="py-2.5 px-3.5 whitespace-nowrap font-black text-sm text-emerald-700 dark:text-emerald-400">
+                      {formatCedi(a.totalCommission)}
+                    </td>
+
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
                       <Badge
                         variant={a.status === 'ACTIVE' ? 'success' : a.status === 'PENDING' ? 'warning' : 'error'}
-                        className="text-[10px] font-bold"
+                        className="text-[10px] font-black tracking-wide uppercase px-2.5 py-0.5"
                       >
                         {a.status}
                       </Badge>
                     </td>
-                    <td className="py-3.5 px-4 text-right space-x-2">
-                      <Button variant={isLight ? 'outline' : 'secondary'} size="sm" onClick={() => setSelectedAffiliate(a)} className="font-bold text-xs">
-                        Review
-                      </Button>
-                      {a.status === 'PENDING' && (
-                        <Button
-                          variant={isLight ? 'primary' : 'gradient'}
-                          size="sm"
-                          onClick={() => handleApprove(a.id, a.name)}
-                          leftIcon={<FiCheck />}
-                          className="font-black text-xs"
+
+                    <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-2">
+                        {/* Eye Icon View Details Page Button */}
+                        <button
+                          type="button"
+                          onClick={() => setViewingAffiliate(a)}
+                          title="View Full Affiliate Profile"
+                          className={`p-2 rounded-xl border transition-all shadow-2xs ${
+                            isLight
+                              ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200 hover:text-slate-950'
+                              : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
+                          }`}
                         >
-                          Approve
-                        </Button>
-                      )}
+                          <FiEye className="w-4 h-4 text-[#0F8B8D] dark:text-teal-400" />
+                        </button>
+
+                        {/* Approve Button */}
+                        {a.status === 'PENDING' && (
+                          <Button
+                            variant={isLight ? 'primary' : 'gradient'}
+                            size="sm"
+                            onClick={() => handleApprove(a.id, a.name)}
+                            leftIcon={<FiCheck />}
+                            className="font-black text-xs h-8 px-3 rounded-xl shadow-2xs"
+                          >
+                            Approve
+                          </Button>
+                        )}
+
+                        {/* Suspend Button */}
+                        {a.status === 'ACTIVE' && (
+                          <button
+                            type="button"
+                            onClick={() => handleSuspend(a.id, a.name)}
+                            title="Suspend Partner Account"
+                            className={`p-2 rounded-xl border transition-all shadow-2xs ${
+                              isLight
+                                ? 'bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100'
+                                : 'bg-amber-950/40 border-amber-900/50 text-amber-300 hover:bg-amber-900/60'
+                            }`}
+                          >
+                            <FiAlertOctagon className="w-4 h-4 text-amber-600" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -230,7 +477,8 @@ export const AffiliatesPartnersView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className={`p-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
+
+        <div className={`px-6 py-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -240,80 +488,7 @@ export const AffiliatesPartnersView: React.FC = () => {
             onItemsPerPageChange={(newSize) => { setItemsPerPage(newSize); setCurrentPage(1); }}
           />
         </div>
-      </Card>
-
-      {/* Affiliate Review Modal */}
-      <Modal isOpen={!!selectedAffiliate} onClose={() => setSelectedAffiliate(null)} title="Partner KYC & Commission Review">
-        {selectedAffiliate && (
-          <div className="space-y-6">
-            <div className={`flex items-center gap-4 p-4 rounded-2xl border ${
-              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'
-            }`}>
-              <div className="w-12 h-12 rounded-xl bg-[#0F8B8D]/20 border border-[#0F8B8D]/40 text-[#0F8B8D] dark:bg-teal-500/20 dark:border-teal-500/40 dark:text-teal-300 flex items-center justify-center font-black text-lg">
-                {selectedAffiliate.name[0]}
-              </div>
-              <div>
-                <h4 className={`text-base font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>{selectedAffiliate.name}</h4>
-                <p className={`text-xs font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{selectedAffiliate.email} • Applied on {selectedAffiliate.appliedDate}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className={`p-3.5 rounded-xl border space-y-1 ${
-                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/60 border-slate-800'
-              }`}>
-                <p className={`font-black uppercase text-[10px] flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-500'}`}>
-                  <FiSmartphone /> Registered MoMo Wallet
-                </p>
-                <p className={`text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{selectedAffiliate.phone}</p>
-                <p className="text-[#0F8B8D] dark:text-teal-400 text-[11px] font-bold">{selectedAffiliate.momoNetwork} Verified</p>
-              </div>
-
-              <div className={`p-3.5 rounded-xl border space-y-1 ${
-                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/60 border-slate-800'
-              }`}>
-                <p className={`font-black uppercase text-[10px] flex items-center gap-1 ${isLight ? 'text-slate-700' : 'text-slate-500'}`}>
-                  <FiExternalLink /> Referral Handle Attribution
-                </p>
-                <p className="text-sm font-mono font-bold text-[#0F8B8D] dark:text-teal-300">?ref={selectedAffiliate.referralCode}</p>
-                <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Standard 10% Commission Rate</p>
-              </div>
-            </div>
-
-            <div className={`p-4 rounded-xl border space-y-2 text-xs ${
-              isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <span className={`font-black block ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>Compliance & Fraud Check Summary</span>
-              <ul className={`space-y-1 font-semibold list-disc list-inside ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                <li>No duplicate mobile money numbers registered in active affiliate database.</li>
-                <li>Email domain syntax verified and operational.</li>
-                <li>Agreed to OWELYN Holdings Ltd terms & anti-spam marketing guidelines.</li>
-              </ul>
-            </div>
-
-            <div className={`flex justify-end gap-3 pt-4 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
-              <Button
-                type="button"
-                variant="danger"
-                leftIcon={<FiX />}
-                onClick={() => handleReject(selectedAffiliate.id, selectedAffiliate.name)}
-                className="font-bold"
-              >
-                Reject Application
-              </Button>
-              <Button
-                type="button"
-                variant={isLight ? 'primary' : 'gradient'}
-                leftIcon={<FiCheck />}
-                onClick={() => handleApprove(selectedAffiliate.id, selectedAffiliate.name)}
-                className="font-black"
-              >
-                Approve & Activate Partner
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      </div>
     </div>
   );
 };

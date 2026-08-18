@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Badge } from '../../ui/Badge';
 import { Pagination } from '../../ui/Pagination';
-import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import type { Order } from './types';
 import { formatCedi } from '../../../utils/formatters';
 import { FiSend, FiSmartphone, FiEye } from 'react-icons/fi';
@@ -24,33 +24,31 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
   );
 
   return (
-    <div className={`p-6 rounded-3xl border transition-colors shadow-sm overflow-hidden ${
-      isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
+    <div className={`rounded-3xl border overflow-hidden transition-colors ${
+      isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800 shadow-xl'
     }`}>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className={`border-b text-[11px] uppercase font-black ${
-              isLight ? 'border-slate-300 text-slate-700 bg-slate-100/90' : 'border-slate-800 text-slate-400 bg-slate-950/50'
+              isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-950/50 text-slate-400'
             }`}>
-              <th className="py-3.5 px-4 whitespace-nowrap">Order Ref</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Customer Account</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Voucher Product</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Gross Amount</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Allocated Serial</th>
-              <th className="py-3.5 px-4 whitespace-nowrap">Fulfillment Status</th>
-              <th className="py-3.5 px-4 text-right whitespace-nowrap">Actions</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Order Ref</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Phone</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Exam Product</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Amount Paid</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Serial Assigned</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Order Status</th>
+              <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Actions</th>
             </tr>
           </thead>
-          <tbody className={`divide-y text-xs font-semibold ${
-            isLight ? 'divide-slate-200' : 'divide-slate-800/50'
-          }`}>
+          <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
             {paginatedOrders.length > 0 ? (
               paginatedOrders.map((o) => (
                 <tr key={o.id} className={`transition-colors ${
                   isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/50'
                 }`}>
-                  <td className={`py-4 px-4 whitespace-nowrap font-mono font-black text-xs ${
+                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black text-xs ${
                     isLight ? 'text-[#0B2545]' : 'text-teal-400'
                   }`}>
                     {o.id}
@@ -59,22 +57,22 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
                     </span>
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap">
                     <div className="flex items-center gap-1.5 font-black text-sm">
                       <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-4 h-4 shrink-0" />
                       <span className={isLight ? 'text-slate-950' : 'text-white'}>{o.phone}</span>
                     </div>
                   </td>
 
-                  <td className={`py-4 px-4 whitespace-nowrap font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
+                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                     {o.product}
                   </td>
 
-                  <td className={`py-4 px-4 whitespace-nowrap font-black text-sm ${isLight ? 'text-slate-950' : 'text-white'}`}>
+                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-black text-sm ${isLight ? 'text-slate-950' : 'text-white'}`}>
                     {formatCedi(o.price)}
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap font-mono">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap font-mono">
                     {o.serial.startsWith('W2') || o.serial.startsWith('B2') ? (
                       <span className={`font-black text-xs ${
                         isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
@@ -86,7 +84,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
                     )}
                   </td>
 
-                  <td className="py-4 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 whitespace-nowrap">
                     <Badge
                       variant={o.status === 'FULFILLED' ? 'success' : o.status === 'PENDING_MOMO' ? 'warning' : 'error'}
                       className="text-[10px] !px-2.5 font-bold shadow-2xs inline-flex"
@@ -95,7 +93,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
                     </Badge>
                   </td>
 
-                  <td className="py-4 px-4 text-right whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
@@ -130,8 +128,8 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="text-center py-12 text-slate-500 font-semibold">
-                  No orders found matching the filter criteria.
+                <td colSpan={7} className="text-center py-8 text-slate-500 font-semibold">
+                  No orders found.
                 </td>
               </tr>
             )}
@@ -139,7 +137,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onInspect, onR
         </table>
       </div>
 
-      <div className={`pt-4 mt-2 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
+      <div className={`px-6 py-3 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
