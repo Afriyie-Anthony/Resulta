@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '../../ui/Badge';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiBox, FiCheckCircle, FiAlertTriangle, FiDatabase, FiTrendingDown, FiClock, FiArrowRight, FiSettings } from 'react-icons/fi';
+import { FiBox, FiCheckCircle, FiAlertTriangle, FiDatabase, FiArrowRight, FiSettings } from 'react-icons/fi';
 
 interface PoolHealthCardsProps {
   stats: {
@@ -60,20 +60,7 @@ export const PoolHealthCards: React.FC<PoolHealthCardsProps> = ({ stats, onReple
             </div>
           </div>
 
-          {/* Predictive Depletion Estimator Banner */}
-          <div className={`py-2 px-3 rounded-xl border text-[11px] font-bold flex items-center justify-between mb-5 ${
-            isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/60 border-slate-800/80 text-slate-300'
-          }`}>
-            <div className="flex items-center gap-2">
-              <FiClock className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} />
-              <span>Est. pool depletion at current sales velocity:</span>
-            </div>
-            <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
-              isLight ? 'bg-emerald-500/15 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300'
-            }`}>
-              ~18 Days Remaining
-            </span>
-          </div>
+
         </div>
 
         <div>
@@ -181,20 +168,7 @@ export const PoolHealthCards: React.FC<PoolHealthCardsProps> = ({ stats, onReple
             </div>
           </div>
 
-          {/* Critical Depletion Velocity Warning */}
-          <div className={`py-2 px-3 rounded-xl border text-[11px] font-black flex items-center justify-between mb-5 ${
-            isLight
-              ? 'bg-rose-500/10 border-rose-400/80 text-rose-900 shadow-2xs'
-              : 'bg-rose-950/40 border-rose-500/60 text-rose-300 shadow-2xs'
-          }`}>
-            <div className="flex items-center gap-2 animate-pulse">
-              <FiTrendingDown className="text-rose-600 dark:text-rose-400 w-4 h-4 shrink-0" />
-              <span>CRITICAL VELOCITY: Est. stock-out at peak demand:</span>
-            </div>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-600 text-white shadow-xs shrink-0">
-              &lt; 36 Hours Left
-            </span>
-          </div>
+
         </div>
 
         <div>

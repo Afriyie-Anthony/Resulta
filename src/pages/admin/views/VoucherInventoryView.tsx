@@ -60,9 +60,8 @@ export const VoucherInventoryView: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-14">
-      {/* 1. Page Header & Primary Actions with Live Valuation Ticker */}
+      {/* 1. Page Header & Primary Actions */}
       <InventoryHeader
-        stats={inventoryStats}
         onOpenImport={() => { setSelectedProduct('WASSCE'); setIsImportOpen(true); }}
       />
 
