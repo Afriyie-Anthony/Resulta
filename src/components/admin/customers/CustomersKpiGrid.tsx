@@ -2,164 +2,153 @@ import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import type { Customer } from './types';
 import { formatCedi } from '../../../utils/formatters';
-import { FiUsers, FiAward, FiTrendingUp, FiPieChart } from 'react-icons/fi';
+import { FiUsers, FiAward, FiTrendingUp, FiShoppingBag } from 'react-icons/fi';
 
 interface CustomersKpiGridProps {
   customers: Customer[];
-  onSelectFilter: (status: string, network: string) => void;
+  onSelectFilter: (status: string) => void;
 }
 
 export const CustomersKpiGrid: React.FC<CustomersKpiGridProps> = ({ customers, onSelectFilter }) => {
   const { isLight } = useAdminTheme();
 
-  // Calculate statistics from loaded dataset
   const totalSpend = customers.reduce((sum, cust) => sum + cust.spent, 0);
   const vipCount = customers.filter(c => c.status === 'VIP BUYER').length;
-  const avgOrders = customers.length > 0 ? (customers.reduce((s, c) => s + c.totalOrders, 0) / customers.length).toFixed(1) : '1.0';
-
-  // Network breakdowns
-  const mtnCount = customers.filter(c => c.network === 'MTN MoMo').length;
-  const telecelCount = customers.filter(c => c.network === 'Telecel Cash').length;
-  const atCount = customers.filter(c => c.network === 'AirtelTigo').length;
+  const avgOrders = customers.length > 0 ? (customers.reduce((s, c) => s + c.totalOrders, 0) / customers.length).toFixed(1) : '5.6';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* 1. Total Registered Accounts (Subtle Cyan / Teal Tint) */}
+      {/* 1. Total Registered Accounts */}
       <div
-        onClick={() => onSelectFilter('ALL', 'ALL')}
-        className={`p-5 rounded-3xl border transition-all cursor-pointer transform hover:scale-[1.02] active:scale-100 shadow-sm ${
+        onClick={() => onSelectFilter('ALL')}
+        className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
           isLight
-            ? 'bg-cyan-50/50 border-cyan-200/70 hover:bg-cyan-50/80 hover:border-cyan-300'
-            : 'bg-teal-950/20 border-teal-500/30 hover:border-teal-500/50'
+            ? 'bg-white border-slate-300 border-t-cyan-500 hover:border-slate-400'
+            : 'bg-slate-900/90 border-slate-800 border-t-cyan-500 hover:border-slate-700'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-cyan-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
-            Total Registered Accounts
+            Total Accounts
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-cyan-600/15 text-cyan-800' : 'bg-teal-500/20 text-teal-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-cyan-100/80 text-cyan-800 border border-cyan-200' : 'bg-teal-500/20 text-teal-400 font-black'
           }`}>
-            <FiUsers className="w-4 h-4" />
+            <FiUsers className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-cyan-950' : 'text-white'}`}>
-          4,227 Accounts
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
+          4,227
         </p>
-        <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-slate-400">
-          <span>+342 new this month</span>
-          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-lg ${
-            isLight ? 'bg-white/80 text-emerald-700 border border-emerald-200' : 'bg-emerald-500/10 text-emerald-400'
+        <div className="mt-1.5 flex items-center justify-between text-[11px] font-semibold">
+          <span className={isLight ? 'text-slate-700 font-bold' : 'text-slate-400'}>+342 this month</span>
+          <span className={`text-[10px] font-black px-2 py-0.2 rounded-full ${
+            isLight ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-emerald-500/15 text-emerald-300'
           }`}>
             +8.8%
           </span>
         </div>
       </div>
 
-      {/* 2. VIP & Bulk Purchasers (Subtle Emerald / Mint Tint) */}
+      {/* 2. VIP & Bulk Purchasers */}
       <div
-        onClick={() => onSelectFilter('VIP BUYER', 'ALL')}
-        className={`p-5 rounded-3xl border transition-all cursor-pointer transform hover:scale-[1.02] active:scale-100 shadow-sm ${
+        onClick={() => onSelectFilter('VIP BUYER')}
+        className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
           isLight
-            ? 'bg-emerald-50/50 border-emerald-200/70 hover:bg-emerald-50/80 hover:border-emerald-300'
-            : 'bg-emerald-950/20 border-emerald-500/30 hover:border-emerald-500/50'
+            ? 'bg-white border-slate-300 border-t-emerald-500 hover:border-slate-400'
+            : 'bg-slate-900/90 border-slate-800 border-t-emerald-500 hover:border-slate-700'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-emerald-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
-            VIP / Bulk Buyers
+            VIP Buyers
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-emerald-600/15 text-emerald-800' : 'bg-emerald-500/20 text-emerald-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-emerald-100/80 text-emerald-800 border border-emerald-200' : 'bg-emerald-500/20 text-emerald-400 font-black'
           }`}>
-            <FiAward className="w-4 h-4" />
+            <FiAward className="w-3.5 h-3.5" />
           </div>
         </div>
-        <div className="flex items-baseline gap-2">
-          <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-emerald-950' : 'text-emerald-400'}`}>
-            {vipCount} {vipCount === 1 ? 'Account' : 'Accounts'}
-          </p>
-          <span className="text-xs font-bold text-slate-400">High LTV tier</span>
-        </div>
-        <p className={`text-xs font-semibold mt-2.5 ${isLight ? 'text-emerald-800/90' : 'text-emerald-300/80'}`}>
-          Click to filter repeat high-volume buyers
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-emerald-950' : 'text-emerald-400'}`}>
+          {vipCount} Accounts
         </p>
+        <div className="mt-1.5 flex items-center justify-between text-[11px] font-bold">
+          <span className={isLight ? 'text-slate-700' : 'text-slate-400'}>High LTV tier</span>
+          <span className={`text-[10px] font-black px-2 py-0.2 rounded-full ${
+            isLight ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-amber-500/15 text-amber-300'
+          }`}>
+            Priority Tier
+          </span>
+        </div>
       </div>
 
-      {/* 3. Tracked Lifetime Value (Subtle Amber / Warm Cream Tint) */}
+      {/* 3. Sample Cohort Value */}
       <div
-        onClick={() => onSelectFilter('ALL', 'ALL')}
-        className={`p-5 rounded-3xl border transition-all cursor-pointer transform hover:scale-[1.02] active:scale-100 shadow-sm ${
+        onClick={() => onSelectFilter('ALL')}
+        className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
           isLight
-            ? 'bg-amber-50/50 border-amber-200/70 hover:bg-amber-50/80 hover:border-amber-300'
-            : 'bg-amber-950/20 border-amber-500/30 hover:border-amber-500/50'
+            ? 'bg-white border-slate-300 border-t-amber-500 hover:border-slate-400'
+            : 'bg-slate-900/90 border-slate-800 border-t-amber-500 hover:border-slate-700'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-amber-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
-            Sample Cohort Value
+            Cohort Value
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-amber-500/15 text-amber-800' : 'bg-amber-500/20 text-amber-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-amber-100/80 text-amber-800 border border-amber-200' : 'bg-amber-500/20 text-amber-400 font-black'
           }`}>
-            <FiTrendingUp className="w-4 h-4" />
+            <FiTrendingUp className="w-3.5 h-3.5" />
           </div>
         </div>
-        <p className={`text-2xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-amber-400'}`}>
           {formatCedi(totalSpend)}
         </p>
-        <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-slate-400">
-          <span>Avg {avgOrders} PINs per account</span>
-          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
-            Strong repeat rate
+        <div className="mt-1.5 flex items-center justify-between text-[11px] font-bold">
+          <span className={isLight ? 'text-slate-700' : 'text-slate-400'}>Tracked cohort spend</span>
+          <span className="text-[10px] font-black text-amber-800 dark:text-amber-300">
+            Strong LTV
           </span>
         </div>
       </div>
 
-      {/* 4. MoMo Carrier Market Split (Subtle Sky Blue / Indigo Tint) */}
+      {/* 4. Average Voucher Volume */}
       <div
-        onClick={() => onSelectFilter('ALL', 'ALL')}
-        className={`p-5 rounded-3xl border transition-colors shadow-sm flex flex-col justify-between cursor-pointer transform hover:scale-[1.02] active:scale-100 ${
-          isLight ? 'bg-blue-50/40 border-blue-200/60 hover:bg-blue-50/70 hover:border-blue-300' : 'bg-blue-950/20 border-blue-500/30 hover:border-blue-500/50'
+        onClick={() => onSelectFilter('ALL')}
+        className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
+          isLight
+            ? 'bg-white border-slate-300 border-t-purple-500 hover:border-slate-400'
+            : 'bg-slate-900/90 border-slate-800 border-t-purple-500 hover:border-slate-700'
         }`}
       >
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <span className={`text-[11px] font-black uppercase tracking-wider ${
-            isLight ? 'text-blue-900/80' : 'text-slate-400'
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className={`text-[10px] font-black uppercase tracking-wider ${
+            isLight ? 'text-slate-700' : 'text-slate-400'
           }`}>
-            Carrier Share
+            Avg Order Volume
           </span>
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isLight ? 'bg-blue-600/15 text-blue-800' : 'bg-blue-500/20 text-blue-400 font-black'
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 ${
+            isLight ? 'bg-purple-100/80 text-purple-800 border border-purple-200' : 'bg-purple-500/20 text-purple-400 font-black'
           }`}>
-            <FiPieChart className="w-4 h-4" />
+            <FiShoppingBag className="w-3.5 h-3.5" />
           </div>
         </div>
-        <div className="space-y-2 text-xs font-bold">
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" /> MTN MoMo
-            </span>
-            <span className={`font-black ${isLight ? 'text-blue-950' : 'text-white'}`}>{mtnCount}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" /> Telecel Cash
-            </span>
-            <span className={`font-black ${isLight ? 'text-blue-950' : 'text-white'}`}>{telecelCount}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" /> AirtelTigo
-            </span>
-            <span className={`font-black ${isLight ? 'text-blue-950' : 'text-white'}`}>{atCount}</span>
-          </div>
+        <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
+          {avgOrders} Vouchers
+        </p>
+        <div className="mt-1.5 flex items-center justify-between text-[11px] font-bold">
+          <span className={isLight ? 'text-slate-700' : 'text-slate-400'}>Per registered account</span>
+          <span className={`text-[10px] font-black px-2 py-0.2 rounded-full ${
+            isLight ? 'bg-purple-100 text-purple-900 border border-purple-300' : 'bg-purple-500/15 text-purple-300'
+          }`}>
+            Repeat Rate
+          </span>
         </div>
       </div>
     </div>

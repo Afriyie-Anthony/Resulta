@@ -11,7 +11,7 @@ export const CustomersHeader: React.FC = () => {
   const handleExport = () => {
     addToast({
       title: 'Customer Directory Exported',
-      message: 'Generating CSV audit list for 4,227 MoMo customer accounts.',
+      message: 'Generating CSV audit report for customer accounts.',
       type: 'success',
       duration: 4000
     });
@@ -20,39 +20,41 @@ export const CustomersHeader: React.FC = () => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
       <div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className={`p-2.5 rounded-2xl ${
-            isLight ? 'bg-secondary/10 text-secondary' : 'bg-teal-500/20 text-teal-400'
+            isLight ? 'bg-[#0F8B8D]/15 text-[#0F8B8D]' : 'bg-teal-500/20 text-teal-400'
           }`}>
             <FiUsers className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className={`text-2xl font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Customer Directory & Telemetry
               </h1>
-              <span className={`inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+              <span className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full border ${
                 isLight 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  ? 'bg-emerald-100 text-emerald-900 border-emerald-300 shadow-2xs' 
                   : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
               }`}>
-                <FiCheckCircle className="w-3 h-3 text-emerald-500" /> 4,227 Total Active
+                <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> 4,227 Total Active
               </span>
             </div>
+            <p className={`text-xs sm:text-sm font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+              Audit verified customer accounts, inspect lifetime purchasing history, and dispatch direct SMS notifications.
+            </p>
           </div>
         </div>
-        <p className={`text-xs mt-1.5 ml-12 ${isLight ? 'text-slate-500 font-semibold' : 'text-slate-400'}`}>
-          Manage registered MoMo phone numbers and inspect lifetime voucher purchase histories across all telecom gateways
-        </p>
       </div>
-      <div className="flex items-center gap-2">
-        <Button 
-          variant={isLight ? 'primary' : 'secondary'} 
-          size="sm" 
-          onClick={handleExport}
+
+      <div className="flex items-center gap-3 shrink-0">
+        <Button
+          variant={isLight ? 'primary' : 'gradient'}
+          size="md"
           leftIcon={<FiDownload />}
+          onClick={handleExport}
+          className="font-black shadow-md px-5 h-11 rounded-2xl text-xs"
         >
-          Export Customer List (CSV)
+          Export Directory
         </Button>
       </div>
     </div>

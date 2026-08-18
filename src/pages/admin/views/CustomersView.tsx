@@ -12,7 +12,6 @@ import {
 export const CustomersView: React.FC = () => {
   const { addToast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
-  const [selectedNetwork, setSelectedNetwork] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [inspectedCustomer, setInspectedCustomer] = useState<Customer | null>(null);
 
@@ -93,15 +92,14 @@ export const CustomersView: React.FC = () => {
     }
   ]);
 
-  const handleFilterFromKpi = (status: string, network: string) => {
+  const handleFilterFromKpi = (status: string) => {
     setSelectedStatus(status);
-    setSelectedNetwork(network);
   };
 
   const handleSendSMS = (cust: Customer) => {
     addToast({
       title: 'SMS Message Dispatched',
-      message: `Promotional update sent to ${cust.phone} via ${cust.network} gateway.`,
+      message: `Promotional update sent to ${cust.phone}.`,
       type: 'success',
       duration: 3500
     });
@@ -110,32 +108,28 @@ export const CustomersView: React.FC = () => {
   // Apply filters
   const filteredCustomers = customers.filter((cust) => {
     const matchesStatus = selectedStatus === 'ALL' || cust.status === selectedStatus;
-    const matchesNetwork = selectedNetwork === 'ALL' || cust.network === selectedNetwork;
     const matchesSearch =
       cust.phone.includes(searchTerm) ||
-      cust.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cust.network.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesNetwork && matchesSearch;
+      cust.id.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
   });
 
   return (
     <div className="space-y-6">
-      {/* Divider-free Header */}
+      {/* Header */}
       <CustomersHeader />
 
-      {/* 4 Subtle Pastel KPI Telemetry Cards */}
+      {/* KPI Cards */}
       <CustomersKpiGrid
         customers={customers}
         onSelectFilter={handleFilterFromKpi}
       />
 
-      {/* Multi-Dimensional Filter Toolbar */}
+      {/* Filter Toolbar */}
       <CustomersFilterToolbar
         customers={customers}
         selectedStatus={selectedStatus}
         onSelectStatus={setSelectedStatus}
-        selectedNetwork={selectedNetwork}
-        onSelectNetwork={setSelectedNetwork}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
