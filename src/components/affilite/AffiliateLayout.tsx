@@ -13,7 +13,11 @@ import {
   FiCheck,
   FiLogOut,
   FiMenu,
-  FiX
+  FiX,
+  FiUsers,
+  FiDollarSign,
+  FiLayers,
+  FiFileText
 } from 'react-icons/fi';
 
 export interface AffiliateLayoutProps extends BaseComponentProps {
@@ -46,9 +50,11 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
 
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
-    { id: 'referrals', label: 'Referrals & Sales', icon: FiTrendingUp },
-    { id: 'withdrawals', label: 'Wallet & Withdrawals', icon: FiCreditCard },
-    { id: 'profile', label: 'Payout Settings', icon: FiUser },
+    { id: 'referrals', label: 'Referrals (Leads)', icon: FiUsers },
+    { id: 'sales', label: 'Sales', icon: FiFileText },
+    { id: 'earnings', label: 'Earnings', icon: FiDollarSign },
+    { id: 'withdrawals', label: 'Withdrawals', icon: FiLayers },
+    { id: 'profile', label: 'Profile', icon: FiUser },
   ];
 
   return (

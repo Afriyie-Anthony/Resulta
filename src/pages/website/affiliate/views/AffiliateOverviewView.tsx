@@ -245,7 +245,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
         </div>
 
         {/* Card 2: Total Earned */}
-        <div className="p-5 rounded-2xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 shadow-sm bg-slate-200/90 border border-slate-300 hover:bg-slate-300/80" onClick={() => onNavigateTab('referrals')}>
+        <div className="p-5 rounded-2xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 shadow-sm bg-slate-200/90 border border-slate-300 hover:bg-slate-300/80" onClick={() => onNavigateTab('sales')}>
           <div className="flex justify-between items-start gap-3">
             <div className="space-y-1 min-w-0 flex-1">
               <p className="text-[11px] font-bold uppercase tracking-wider truncate text-slate-800">
@@ -389,7 +389,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
             </p>
           </div>
           <button
-            onClick={() => onNavigateTab('referrals')}
+            onClick={() => onNavigateTab('sales')}
             className="text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1"
           >
             View All Sales <FiChevronRight className="w-4 h-4" />

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { AffiliateLayout } from '../../../components/affilite/AffiliateLayout';
 import { AffiliateOverviewView } from './views/AffiliateOverviewView';
 import { AffiliateReferralsView } from './views/AffiliateReferralsView';
+import { AffiliateSalesView } from './views/AffiliateSalesView';
+import { AffiliateEarningsView } from './views/AffiliateEarningsView';
 import { AffiliateWithdrawalsView } from './views/AffiliateWithdrawalsView';
-import { AffiliatePayoutSettingsView } from './views/AffiliatePayoutSettingsView';
+import { AffiliateProfileView } from './views/AffiliateProfileView';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -66,10 +68,12 @@ const AffiliateDashboard: React.FC = () => {
           />
         )}
         {activeTab === 'referrals' && <AffiliateReferralsView />}
+        {activeTab === 'sales' && <AffiliateSalesView />}
+        {activeTab === 'earnings' && <AffiliateEarningsView />}
         {activeTab === 'withdrawals' && (
           <AffiliateWithdrawalsView onRequestPayout={() => setIsPayoutModalOpen(true)} />
         )}
-        {activeTab === 'profile' && <AffiliatePayoutSettingsView />}
+        {activeTab === 'profile' && <AffiliateProfileView />}
       </AffiliateLayout>
 
       {/* MoMo Payout Request Modal */}
