@@ -8,6 +8,7 @@ export interface ModalProps extends BaseComponentProps {
   title?: string;
   description?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  forceLight?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -18,9 +19,10 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   size = 'md',
   className = '',
+  forceLight = false,
 }) => {
   const adminTheme = useContext(AdminThemeContext);
-  const isLight = adminTheme?.isLight ?? false;
+  const isLight = forceLight || (adminTheme?.isLight ?? false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

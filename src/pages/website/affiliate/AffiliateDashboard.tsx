@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { AffiliateLayout } from '../../../components/affilite/AffiliateLayout';
 import { AffiliateOverviewView } from './views/AffiliateOverviewView';
-import { AffiliateLinkGeneratorView } from './views/AffiliateLinkGeneratorView';
 import { AffiliateReferralsView } from './views/AffiliateReferralsView';
 import { AffiliateWithdrawalsView } from './views/AffiliateWithdrawalsView';
 import { AffiliatePayoutSettingsView } from './views/AffiliatePayoutSettingsView';
@@ -66,7 +65,6 @@ const AffiliateDashboard: React.FC = () => {
             onRequestPayout={() => setIsPayoutModalOpen(true)}
           />
         )}
-        {activeTab === 'links' && <AffiliateLinkGeneratorView />}
         {activeTab === 'referrals' && <AffiliateReferralsView />}
         {activeTab === 'withdrawals' && (
           <AffiliateWithdrawalsView onRequestPayout={() => setIsPayoutModalOpen(true)} />
@@ -81,6 +79,7 @@ const AffiliateDashboard: React.FC = () => {
         title="Request Mobile Money Payout"
         description="Transfer your cleared affiliate commissions directly to your Ghana Mobile Money wallet."
         size="md"
+        forceLight
       >
         <form onSubmit={handlePayoutSubmit} className="space-y-4">
           <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-between text-xs">
@@ -99,6 +98,7 @@ const AffiliateDashboard: React.FC = () => {
               onChange={(e) => setPayoutAmount(e.target.value)}
               placeholder="Min GH₵ 20.00"
               leftIcon={<FiDollarSign className="text-slate-400" />}
+              forceLight
             />
             <span className="text-[10px] text-slate-500 mt-1.5 block">
               Minimum payout: GH₵ 20.00 • No transfer fee deducted
@@ -129,6 +129,7 @@ const AffiliateDashboard: React.FC = () => {
                 value={momoPhone}
                 onChange={(e) => setMomoPhone(e.target.value)}
                 placeholder="024 XXX XXXX"
+                forceLight
               />
             </div>
           </div>
@@ -141,6 +142,7 @@ const AffiliateDashboard: React.FC = () => {
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
               placeholder="Verified MoMo Account Name"
+              forceLight
             />
           </div>
 

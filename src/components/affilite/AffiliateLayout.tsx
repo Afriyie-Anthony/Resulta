@@ -46,7 +46,6 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
 
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
-    { id: 'links', label: 'Link & Code Generator', icon: FiLink },
     { id: 'referrals', label: 'Referrals & Sales', icon: FiTrendingUp },
     { id: 'withdrawals', label: 'Wallet & Withdrawals', icon: FiCreditCard },
     { id: 'profile', label: 'Payout Settings', icon: FiUser },

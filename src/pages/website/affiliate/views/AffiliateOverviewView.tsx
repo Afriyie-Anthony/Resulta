@@ -214,9 +214,6 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
-          <Button variant="outline" size="sm" leftIcon={<FiShare2 className="w-3.5 h-3.5" />} onClick={() => onNavigateTab('links')}>
-            Link Builder
-          </Button>
           <Button variant="primary" size="sm" leftIcon={<FiCreditCard className="w-3.5 h-3.5" />} onClick={onRequestPayout}>
             Request MoMo Cashout
           </Button>
@@ -292,7 +289,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
         </div>
 
         {/* Card 4: Conversion Rate */}
-        <div className="p-5 rounded-2xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 shadow-sm bg-cyan-100 border border-cyan-300 hover:bg-cyan-200/70" onClick={() => onNavigateTab('links')}>
+        <div className="p-5 rounded-2xl transition-all duration-200 shadow-sm bg-cyan-100 border border-cyan-300">
           <div className="flex justify-between items-start gap-3">
             <div className="space-y-1 min-w-0 flex-1">
               <p className="text-[11px] font-bold uppercase tracking-wider truncate text-cyan-950">
@@ -379,12 +376,6 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
           >
             Facebook
           </a>
-          <button
-            onClick={() => onNavigateTab('links')}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 border border-slate-200 transition-all ml-auto shadow-sm"
-          >
-            Custom Campaign Tags <FiChevronRight className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
 
