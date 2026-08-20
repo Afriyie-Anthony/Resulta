@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Input } from '../../../../components/ui/Input';
-import { Badge } from '../../../../components/ui/Badge';
 
 export const AffiliateSalesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');

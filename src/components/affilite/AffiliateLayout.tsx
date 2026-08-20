@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
-import { formatCedi, copyToClipboard } from '../../utils/formatters';
+import { copyToClipboard } from '../../utils/formatters';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   FiGrid,
-  FiLink,
-  FiTrendingUp,
   FiCreditCard,
   FiUser,
   FiCopy,
@@ -38,7 +36,6 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
 
   const referralCode = 'REF-GH-8823';
   const referralLink = `https://resulta.com.gh/?ref=${referralCode}`;
-  const pendingPayout = 320.0;
 
   const handleCopyLink = async () => {
     const success = await copyToClipboard(referralLink);

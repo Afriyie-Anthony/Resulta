@@ -9,7 +9,6 @@ import {
   FiUsers,
   FiCopy,
   FiCheck,
-  FiShare2,
   FiChevronRight,
   FiBarChart2,
   FiPieChart
