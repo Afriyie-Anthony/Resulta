@@ -23,7 +23,7 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
   const navigate = useNavigate();
   const { isAuthenticated: isAdminAuthenticated } = useAuth();
 
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [loginForm, setLoginForm] = useState({ email: 'superadmin@rms.com', password: 'password123' });
   const [registerForm, setRegisterForm] = useState({
     fullName: '',
     businessName: '',

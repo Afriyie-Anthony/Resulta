@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
-import { AffiliateLayout } from './components/affilite/AffiliateLayout';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
@@ -32,14 +31,12 @@ import {
   FiCheckCircle,
   FiZap,
   FiSmartphone,
-  FiTrendingUp,
-  FiCopy,
   FiBox,
   FiRefreshCw
 } from 'react-icons/fi';
 
 export const AppContent: React.FC = () => {
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('customer');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('affiliate');
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE' | null>(null);
   const [phone, setPhone] = useState('');
@@ -251,56 +248,8 @@ export const AppContent: React.FC = () => {
       {layoutMode === 'website' && <Home />}
 
       {/* Affiliate Layout View */}
-      {layoutMode === 'affiliate' && (
-        <AffiliateLayout>
-          <div className="space-y-6">
-            {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card glass>
-                <p className="text-xs text-slate-400 font-semibold uppercase">Total Sales Referred</p>
-                <p className="text-2xl font-black text-white mt-1">148</p>
-                <p className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
-                  <FiTrendingUp /> +18% from last week
-                </p>
-              </Card>
+      {layoutMode === 'affiliate' && <AffiliateDashboard />}
 
-              <Card glass>
-                <p className="text-xs text-slate-400 font-semibold uppercase">Total Earnings</p>
-                <p className="text-2xl font-black text-emerald-400 mt-1">{formatCedi(1450.0)}</p>
-                <p className="text-[10px] text-slate-400 mt-1">GH₵ 10.00 commission per sale</p>
-              </Card>
-
-              <Card glass>
-                <p className="text-xs text-slate-400 font-semibold uppercase">Withdrawn to MoMo</p>
-                <p className="text-2xl font-black text-white mt-1">{formatCedi(1130.0)}</p>
-                <p className="text-[10px] text-teal-400 mt-1">Paid directly to 024XXXX67</p>
-              </Card>
-
-              <Card glass>
-                <p className="text-xs text-slate-400 font-semibold uppercase">Available for Payout</p>
-                <p className="text-2xl font-black text-amber-400 mt-1">{formatCedi(320.0)}</p>
-                <Button variant="gradient" size="sm" className="mt-2 w-full">
-                  Withdraw to MoMo
-                </Button>
-              </Card>
-            </div>
-
-            {/* Link Sharing Card */}
-            <Card glass header={<h3 className="font-bold text-white">Your Unique Referral Link</h3>}>
-              <div className="flex flex-col sm:flex-row gap-3 items-center">
-                <Input
-                  readOnly
-                  value="https://resulta.com.gh/?ref=REF-GH-8823"
-                  className="font-mono text-xs"
-                />
-                <Button variant="primary" leftIcon={<FiCopy />}>
-                  Copy Link
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </AffiliateLayout>
-      )}
 
       {/* Admin Layout View */}
       {layoutMode === 'admin' && (
