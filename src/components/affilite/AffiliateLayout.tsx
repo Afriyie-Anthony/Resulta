@@ -160,19 +160,18 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
             >
               <FiMenu className="w-5 h-5" />
             </button>
-          </div>
-
-          {/* Quick Referral Link Banner */}
-          <div className="hidden md:flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs shadow-sm">
-            <span className="text-slate-500 font-medium">Referral Code:</span>
-            <span className="font-mono font-bold text-teal-600">{referralCode}</span>
-            <button
-              onClick={handleCopyLink}
-              className="ml-2 text-slate-400 hover:text-teal-600 p-1 rounded hover:bg-slate-200/50 transition-colors"
-              title="Copy referral link"
-            >
-              {copied ? <FiCheck className="w-4 h-4 text-emerald-500" /> : <FiCopy className="w-4 h-4" />}
-            </button>
+            {/* Quick Referral Link Banner */}
+            <div className="hidden md:flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs shadow-sm">
+              <span className="text-slate-500 font-medium">Referral Code:</span>
+              <span className="font-mono font-bold text-teal-600">{referralCode}</span>
+              <button
+                onClick={handleCopyLink}
+                className="ml-2 text-slate-400 hover:text-teal-600 p-1 rounded hover:bg-slate-200/50 transition-colors"
+                title="Copy referral link"
+              >
+                {copied ? <FiCheck className="w-4 h-4 text-emerald-500" /> : <FiCopy className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           {/* Balance & Payout Actions */}
@@ -182,6 +181,7 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
               size="sm"
               leftIcon={<FiCreditCard className="w-4 h-4" />}
               onClick={onRequestPayout}
+              className="!shadow-sm"
             >
               Request Payout
             </Button>
