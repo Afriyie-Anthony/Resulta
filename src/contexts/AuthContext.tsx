@@ -1,12 +1,17 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import React, { createContext, useContext, type ReactNode } from 'react';
+import { useAuthStore } from '../store/authStore';
+import { loginUser, registerAffiliate, logoutUser } from '../services/auth.service';
+import type { AuthUser } from '../schemas/auth';
 
-interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  role: 'ADMIN' | 'AFFILIATE';
-}
-
+/**
+ * AuthContext — the public-facing auth interface consumed by all components.
+ *
+ * Internal implementation delegates to:
+ *  - useAuthStore (Zustand) for all state reads/writes
+ *  - auth.service.ts for API calls
+ *
+ * The public API of useAuth() is unchanged so no components need updating.
+ */
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
@@ -18,72 +23,52 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const ADMIN_CREDENTIALS = {
-  email: 'admin@resulta.com.gh',
-  passwords: ['admin', 'admin123', 'admin2026'],
-};
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const stored = sessionStorage.getItem('resulta_user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const { user, isAuthenticated, setAuth, clearAuth } = useAuthStore();
 
-  const login = async (email: string, password: string, type: 'admin' | 'affiliate' = 'admin'): Promise<boolean> => {
-    if (type === 'admin') {
-      if (email.trim().toLowerCase() === ADMIN_CREDENTIALS.email && ADMIN_CREDENTIALS.passwords.includes(password.trim())) {
-        const adminUser: AuthUser = {
-          id: 'admin-001',
-          name: 'System Administrator',
-          email: ADMIN_CREDENTIALS.email,
-          role: 'ADMIN',
-        };
-        setUser(adminUser);
-        sessionStorage.setItem('resulta_user', JSON.stringify(adminUser));
-        return true;
-      }
+  // ─── Admin / Generic Login ────────────────────────────────────────────────
+  const login = async (
+    email: string,
+    password: string,
+    _type: 'admin' | 'affiliate' = 'admin',
+  ): Promise<boolean> => {
+    try {
+      const { user: authUser, accessToken, refreshToken } = await loginUser({ email, password });
+      setAuth(authUser, accessToken, refreshToken);
+      return true;
+    } catch {
       return false;
     }
-
-    return false;
   };
 
+  // ─── Affiliate Login ──────────────────────────────────────────────────────
   const affiliateLogin = async (email: string, password: string): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (email && password.length >= 6) {
-      const affiliateUser: AuthUser = {
-        id: 'affiliate-' + Date.now(),
-        name: email.split('@')[0],
-        email,
-        role: 'AFFILIATE',
-      };
-      setUser(affiliateUser);
-      sessionStorage.setItem('resulta_user', JSON.stringify(affiliateUser));
+    return login(email, password, 'affiliate');
+  };
+
+  // ─── Affiliate Registration ───────────────────────────────────────────────
+  const register = async (data: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<boolean> => {
+    try {
+      const { user: authUser, accessToken, refreshToken } = await registerAffiliate(data);
+      setAuth(authUser, accessToken, refreshToken);
       return true;
+    } catch {
+      return false;
     }
-    return false;
   };
 
-  const register = async (data: { name: string; email: string; password: string }): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    const newUser: AuthUser = {
-      id: 'affiliate-' + Date.now(),
-      name: data.name,
-      email: data.email,
-      role: 'AFFILIATE',
-    };
-    setUser(newUser);
-    sessionStorage.setItem('resulta_user', JSON.stringify(newUser));
-    return true;
-  };
-
+  // ─── Logout ───────────────────────────────────────────────────────────────
   const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem('resulta_user');
+    clearAuth();
+    logoutUser(); // best-effort server-side invalidation
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, affiliateLogin, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, affiliateLogin, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
