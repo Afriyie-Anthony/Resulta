@@ -4,7 +4,7 @@ import { QueryClient } from '@tanstack/react-query';
  * Global TanStack Query client for Resulta.
  *
  * Configuration decisions:
- * - staleTime: 60s  — data stays fresh for 1 minute; avoids redundant refetches
+ * - staleTime: 30s  — data stays fresh for 30 seconds; avoids redundant refetches
  *                     when navigating between admin views quickly.
  * - retry: 1        — retry once on network errors; prevents hammering a
  *                     temporarily unavailable backend.
@@ -15,7 +15,7 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60_000,        // 1 minute
+      staleTime: 30_000,        // 30 seconds
       gcTime: 5 * 60_000,       // 5 minutes
       retry: 1,
       refetchOnWindowFocus: false,
