@@ -95,7 +95,7 @@ export const UsersView: React.FC = () => {
 
       const parsed = updateUserSchema.safeParse(payload);
       if (!parsed.success) {
-        addToast({ title: 'Validation Error', message: parsed.error.errors[0].message, type: 'error', duration: 3000 });
+        addToast({ title: 'Validation Error', message: parsed.error.issues[0].message, type: 'error', duration: 3000 });
         return;
       }
 
@@ -120,7 +120,7 @@ export const UsersView: React.FC = () => {
 
       const parsed = createUserSchema.safeParse(payload);
       if (!parsed.success) {
-        addToast({ title: 'Validation Error', message: parsed.error.errors[0].message, type: 'error', duration: 3000 });
+        addToast({ title: 'Validation Error', message: parsed.error.issues[0].message, type: 'error', duration: 3000 });
         return;
       }
 

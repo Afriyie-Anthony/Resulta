@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Button } from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/Toast';
+import { useAuthStore } from '../../../store/authStore';
+import { useUpdateProfile } from '../../../hooks/useProfile';
+import { updateProfileSchema } from '../../../schemas/profile';
 import {
   FiSave,
   FiSmartphone,
@@ -37,10 +40,11 @@ export const SystemSettingsView: React.FC = () => {
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   // Profile State
-  const [profileName, setProfileName] = useState('System Administrator');
-  const [profileEmail, setProfileEmail] = useState('admin@resulta.com.gh');
-  const [profilePhone, setProfilePhone] = useState('+233 24 551 0921');
-  const [profileTitle, setProfileTitle] = useState('Lead Platform Administrator');
+  const user = useAuthStore(state => state.user);
+  const [profileName, setProfileName] = useState(user?.name || '');
+  const [profileEmail, setProfileEmail] = useState(user?.email || '');
+  
+  const updateProfileMutation = useUpdateProfile();
 
   // Security Credentials State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -62,40 +66,50 @@ export const SystemSettingsView: React.FC = () => {
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profileName.trim() || !profileEmail.trim()) {
-      addToast({ title: 'Validation Error', message: 'Full name and email are required.', type: 'error' });
+    
+    const payload = { name: profileName.trim(), email: profileEmail.trim() };
+    const parsed = updateProfileSchema.safeParse(payload);
+    
+    if (!parsed.success) {
+      addToast({ title: 'Validation Error', message: parsed.error.issues[0].message, type: 'error' });
       return;
     }
-    addToast({
-      title: 'Profile Updated',
-      message: `Updated profile details for ${profileName}.`,
-      type: 'success',
-      duration: 3500
+
+    updateProfileMutation.mutate(parsed.data, {
+      onSuccess: () => {
+        addToast({ title: 'Profile Updated', message: `Updated profile details for ${profileName}.`, type: 'success' });
+      },
+      onError: (err: any) => {
+        addToast({ title: 'Update Failed', message: err.response?.data?.message || 'Failed to update profile.', type: 'error' });
+      }
     });
   };
 
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword) {
-      addToast({ title: 'Password Required', message: 'Please enter your current password.', type: 'error' });
+    
+    const payload = { 
+      currentPassword, 
+      newPassword, 
+      confirmPassword 
+    };
+    
+    const parsed = updateProfileSchema.safeParse(payload);
+    if (!parsed.success) {
+      addToast({ title: 'Validation Error', message: parsed.error.issues[0].message, type: 'error' });
       return;
     }
-    if (!newPassword || newPassword.length < 8) {
-      addToast({ title: 'Weak Password', message: 'New password must be at least 8 characters long.', type: 'error' });
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      addToast({ title: 'Password Mismatch', message: 'New password and confirmation do not match.', type: 'error' });
-      return;
-    }
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    addToast({
-      title: 'Password Security Credentials Updated',
-      message: 'Super Admin password successfully updated.',
-      type: 'success',
-      duration: 4000
+
+    updateProfileMutation.mutate(parsed.data, {
+      onSuccess: () => {
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        addToast({ title: 'Security Credentials Updated', message: 'Admin password successfully updated.', type: 'success' });
+      },
+      onError: (err: any) => {
+        addToast({ title: 'Update Failed', message: err.response?.data?.message || 'Failed to change password.', type: 'error' });
+      }
     });
   };
 
@@ -433,15 +447,15 @@ export const SystemSettingsView: React.FC = () => {
 
             <form onSubmit={handleSaveProfile} className="space-y-5">
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-[#0B2545] text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
-                  SA
+                <div className="w-16 h-16 rounded-2xl bg-[#0B2545] text-white flex items-center justify-center font-black text-xl shadow-md shrink-0 uppercase">
+                  {user?.name?.substring(0, 2) || 'SA'}
                 </div>
                 <div>
                   <h4 className={`text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                    {profileName}
+                    {user?.name || profileName}
                   </h4>
-                  <p className={`text-xs font-bold text-rose-600 dark:text-rose-400`}>
-                    Super Administrator (Full System Control)
+                  <p className={`text-xs font-bold ${user?.role === 'SUPER_ADMIN' ? 'text-rose-600 dark:text-rose-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                    {user?.role?.replace('_', ' ')} (Platform Administrator)
                   </p>
                 </div>
               </div>
@@ -479,37 +493,6 @@ export const SystemSettingsView: React.FC = () => {
                     <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   </div>
                 </div>
-
-                <div>
-                  <label className={`block text-xs font-black uppercase mb-1.5 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                    Telephone Contact
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={profilePhone}
-                      onChange={(e) => setProfilePhone(e.target.value)}
-                      className={`w-full rounded-2xl pl-10 pr-4 py-2.5 text-xs font-mono font-bold border focus:outline-none ${
-                        isLight ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-700 text-white'
-                      }`}
-                    />
-                    <FiSmartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className={`block text-xs font-black uppercase mb-1.5 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                    Designation / Title
-                  </label>
-                  <input
-                    type="text"
-                    value={profileTitle}
-                    onChange={(e) => setProfileTitle(e.target.value)}
-                    className={`w-full rounded-2xl px-4 py-2.5 text-xs font-semibold border focus:outline-none ${
-                      isLight ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-700 text-white'
-                    }`}
-                  />
-                </div>
               </div>
 
               <div className="flex justify-end pt-2">
@@ -518,8 +501,9 @@ export const SystemSettingsView: React.FC = () => {
                   variant={isLight ? 'primary' : 'gradient'}
                   leftIcon={<FiSave />}
                   className="font-black text-xs h-11 px-6 rounded-2xl shadow-md"
+                  disabled={updateProfileMutation.isPending}
                 >
-                  Save Profile Details
+                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Profile Details'}
                 </Button>
               </div>
             </form>
@@ -623,8 +607,9 @@ export const SystemSettingsView: React.FC = () => {
                   variant="danger"
                   leftIcon={<FiCheckCircle />}
                   className="font-black text-xs h-11 px-6 rounded-2xl shadow-md"
+                  disabled={updateProfileMutation.isPending}
                 >
-                  Update Password Credentials
+                  {updateProfileMutation.isPending ? 'Updating...' : 'Update Password Credentials'}
                 </Button>
               </div>
             </form>
