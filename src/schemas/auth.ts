@@ -19,7 +19,7 @@ export const authUserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   name: z.string(),
-  role: z.enum(['ADMIN', 'AFFILIATE']),
+  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'AFFILIATE']),
   lastLoginAt: z.string().datetime({ offset: true }).nullable().optional(),
 });
 

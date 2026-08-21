@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
+import { useLiveTransactions } from '../../../hooks/useDashboard';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { formatCedi } from '../../../utils/formatters';
-import { FiShoppingBag, FiArrowUpRight, FiSend } from 'react-icons/fi';
+import { FiShoppingBag, FiArrowUpRight, FiSend, FiRefreshCw } from 'react-icons/fi';
 
-type OrderStatus = 'ALL' | 'FULFILLED' | 'PENDING' | 'FAILED';
+type OrderStatus = 'ALL' | 'FULFILLED' | 'PENDING_MOMO' | 'FAILED' | 'PROCESSING';
+
+// ─── Row Skeleton ───────────────────────────────────────────────────────────
+const SkeletonRow: React.FC<{ isLight: boolean }> = ({ isLight }) => (
+  <tr>
+    {Array.from({ length: 6 }).map((_, i) => (
+      <td key={i} className="py-2.5 px-3.5">
+        <div className={`h-3 rounded animate-pulse ${isLight ? 'bg-slate-200' : 'bg-slate-700'} ${i === 0 ? 'w-28' : i === 5 ? 'w-16 ml-auto' : 'w-20'}`} />
+      </td>
+    ))}
+  </tr>
+);
 
 export const LiveTransactionQueue: React.FC = () => {
   const navigate = useNavigate();
   const { isLight } = useAdminTheme();
   const [orderFilter, setOrderFilter] = useState<OrderStatus>('ALL');
 
-  const allOrders = [
-    { id: 'RSL-2026-981A', phone: '+233 24 551 0921', network: 'USSD *713#', netColor: 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-400', product: 'WASSCE 2026', amount: 25.0, status: 'FULFILLED', time: '1 min ago', latency: '1.2s delivery' },
-    { id: 'RSL-2026-981B', phone: '+233 50 182 3310', network: 'Web Portal', netColor: 'bg-teal-100 text-teal-900 border border-teal-300 dark:bg-teal-500/20 dark:text-teal-400', product: 'BECE 2026', amount: 20.0, status: 'FULFILLED', time: '3 mins ago', latency: '1.8s delivery' },
-    { id: 'RSL-2026-981C', phone: '+233 27 409 1192', network: 'USSD *713#', netColor: 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-400', product: 'WASSCE 2026', amount: 25.0, status: 'PENDING', time: '5 mins ago', latency: 'Waiting SMS' },
-    { id: 'RSL-2026-981D', phone: '+233 54 902 4418', network: 'Web Portal', netColor: 'bg-teal-100 text-teal-900 border border-teal-300 dark:bg-teal-500/20 dark:text-teal-400', product: 'WASSCE 2026', amount: 25.0, status: 'FULFILLED', time: '8 mins ago', latency: '0.9s delivery' },
-    { id: 'RSL-2026-981E', phone: '+233 20 448 9912', network: 'USSD *713#', netColor: 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-400', product: 'BECE 2026', amount: 20.0, status: 'FAILED', time: '14 mins ago', latency: 'Gateway Timeout' },
-    { id: 'RSL-2026-981F', phone: '+233 24 110 8943', network: 'Web Portal', netColor: 'bg-teal-100 text-teal-900 border border-teal-300 dark:bg-teal-500/20 dark:text-teal-400', product: 'WASSCE 2026', amount: 25.0, status: 'FULFILLED', time: '22 mins ago', latency: '1.1s delivery' },
-  ];
+  const { data: transactions = [], isLoading, isError, refetch, isFetching } = useLiveTransactions();
 
-  const filteredOrders = orderFilter === 'ALL' ? allOrders : allOrders.filter(o => o.status === orderFilter);
+  const filteredOrders = orderFilter === 'ALL'
+    ? transactions
+    : transactions.filter((o) => o.status === orderFilter);
+
+  const networkColor = (network: string) => {
+    if (network.toLowerCase().includes('ussd')) return 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-400';
+    return 'bg-teal-100 text-teal-900 border border-teal-300 dark:bg-teal-500/20 dark:text-teal-400';
+  };
 
   return (
     <div className={`p-4 sm:p-6 rounded-3xl border flex flex-col justify-between h-full transition-colors shadow-sm ${
@@ -36,15 +48,18 @@ export const LiveTransactionQueue: React.FC = () => {
               <h3 className={`text-base font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
                 Live Transaction Dispatch Queue
               </h3>
+              {isFetching && (
+                <FiRefreshCw className="w-3.5 h-3.5 text-teal-400 animate-spin ml-1" />
+              )}
             </div>
             <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-              Instant SMS PIN dispatch with payment confirmation telemetry
+              Auto-refreshes every 10 seconds · Instant SMS PIN dispatch telemetry
             </p>
           </div>
 
           {/* Status Filter Buttons */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {(['ALL', 'FULFILLED', 'PENDING', 'FAILED'] as OrderStatus[]).map((status) => (
+            {(['ALL', 'FULFILLED', 'PENDING_MOMO', 'FAILED'] as OrderStatus[]).map((status) => (
               <button
                 key={status}
                 onClick={() => setOrderFilter(status)}
@@ -58,7 +73,7 @@ export const LiveTransactionQueue: React.FC = () => {
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
                 }`}
               >
-                {status}
+                {status === 'PENDING_MOMO' ? 'PENDING' : status}
               </button>
             ))}
           </div>
@@ -75,49 +90,72 @@ export const LiveTransactionQueue: React.FC = () => {
                 <th className="py-2.5 px-3.5 whitespace-nowrap">Channel</th>
                 <th className="py-2.5 px-3.5 whitespace-nowrap">Product</th>
                 <th className="py-2.5 px-3.5 whitespace-nowrap">Status</th>
-                <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Dispatch Action</th>
+                <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Action</th>
               </tr>
             </thead>
             <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'}`}>
-                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
-                    {order.id}
-                    <span className="block text-[10px] font-bold text-slate-500 font-sans">{order.time}</span>
-                  </td>
-                  <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
-                    {order.phone}
-                    <span className="block text-[10px] font-bold text-slate-500">{formatCedi(order.amount)} received</span>
-                  </td>
-                  <td className="py-2.5 px-3.5 whitespace-nowrap">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-black ${order.netColor}`}>
-                      {order.network}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3.5 whitespace-nowrap font-black">
-                    {order.product}
-                  </td>
-                  <td className="py-2.5 px-3.5 whitespace-nowrap">
-                    <Badge
-                      variant={order.status === 'FULFILLED' ? 'success' : order.status === 'PENDING' ? 'warning' : 'error'}
-                      className="text-[10px] font-black uppercase px-2.5 py-0.5"
-                    >
-                      {order.status}
-                    </Badge>
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate('/admin/orders')}
-                      leftIcon={<FiSend className="w-3 h-3 text-[#0F8B8D]" />}
-                      className="font-extrabold text-[11px] h-8 px-2.5"
-                    >
-                      Inspect
-                    </Button>
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} isLight={isLight} />)
+              ) : isError ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-xs font-bold text-rose-500">
+                    Failed to load transactions.{' '}
+                    <button onClick={() => refetch()} className="underline">Retry</button>
                   </td>
                 </tr>
-              ))}
+              ) : filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className={`py-8 text-center text-xs font-bold ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                    No transactions match the selected filter.
+                  </td>
+                </tr>
+              ) : (
+                filteredOrders.map((order) => (
+                  <tr key={order.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'}`}>
+                    <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
+                      {order.id}
+                      <span className="block text-[10px] font-bold text-slate-500 font-sans">
+                        {new Date(order.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </td>
+                    <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
+                      {order.phone}
+                      <span className="block text-[10px] font-bold text-slate-500">{formatCedi(order.amount)} received</span>
+                    </td>
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-black ${networkColor(order.network)}`}>
+                        {order.network}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3.5 whitespace-nowrap font-black">
+                      {order.product}
+                    </td>
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
+                      <Badge
+                        variant={
+                          order.status === 'FULFILLED' ? 'success'
+                          : order.status === 'FAILED' ? 'error'
+                          : 'warning'
+                        }
+                        className="text-[10px] font-black uppercase px-2.5 py-0.5"
+                      >
+                        {order.status === 'PENDING_MOMO' ? 'PENDING' : order.status}
+                      </Badge>
+                    </td>
+                    <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate('/admin/orders')}
+                        leftIcon={<FiSend className="w-3 h-3 text-[#0F8B8D]" />}
+                        className="font-extrabold text-[11px] h-8 px-2.5"
+                      >
+                        Inspect
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -126,7 +164,9 @@ export const LiveTransactionQueue: React.FC = () => {
       <div className={`mt-4 pt-3 border-t flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold ${
         isLight ? 'border-slate-200 text-slate-700' : 'border-slate-800 text-slate-400'
       }`}>
-        <span>Showing {filteredOrders.length} live transactions</span>
+        <span>
+          {isLoading ? 'Loading…' : `Showing ${filteredOrders.length} live transaction${filteredOrders.length !== 1 ? 's' : ''}`}
+        </span>
         <Button
           variant="outline"
           size="sm"

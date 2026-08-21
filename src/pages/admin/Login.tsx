@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAuthStore } from '../../store/authStore';
+import { useToast } from '../../components/ui/Toast';
+
+import { loginRequestSchema } from '../../schemas/auth';
 import {
   FiMail,
   FiLock,
@@ -10,7 +14,6 @@ import {
   FiEyeOff,
   FiCheckCircle,
   FiShield,
-  FiKey,
   FiArrowLeft,
   FiAlertCircle,
   FiActivity,
@@ -18,44 +21,96 @@ import {
 } from 'react-icons/fi';
 
 const AdminLogin: React.FC = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // ── Theme: read from localStorage so it matches AdminThemeContext ──────────
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const stored = localStorage.getItem('resulta_admin_theme');
+    return stored === 'dark' ? 'dark' : 'light';
+  });
+
+  const handleToggleTheme = () => {
+    const next = theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+    localStorage.setItem('resulta_admin_theme', next);
+  };
+
+  // ── Form state ─────────────────────────────────────────────────────────────
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [submitError, setSubmitError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem('resulta_remember_admin') === 'true';
+  });
 
   const { login } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = (location.state as { from?: Location })?.from?.pathname || '/admin/overview';
 
+  // ── Submit handler ─────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setSubmitError('');
+    setFieldErrors({});
+
+    // 1. Client-side Zod validation
+    const parsed = loginRequestSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      const errs = parsed.error.flatten().fieldErrors;
+      setFieldErrors({
+        email: errs.email?.[0],
+        password: errs.password?.[0],
+      });
+      return;
+    }
+
     setIsLoading(true);
-
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const success = await login(email, password);
+    const success = await login(email, password, 'admin');
     setIsLoading(false);
 
-    if (success) {
-      navigate(from, { replace: true });
-    } else {
-      setError('Invalid administrator credentials. Please verify your email and security password.');
+    if (!success) {
+      setSubmitError('Invalid administrator credentials. Please verify your email and password.');
+      return;
     }
+
+    // 2. Role guard — read fresh user from store immediately after login
+    const freshUser = useAuthStore.getState().user;
+    if (freshUser?.role !== 'ADMIN' && freshUser?.role !== 'SUPER_ADMIN') {
+      setSubmitError('Access denied. This portal is restricted to administrators only.');
+      return;
+    }
+
+    // 3. Remember me — persist email preference
+    if (rememberMe) {
+      localStorage.setItem('resulta_remember_admin', 'true');
+      localStorage.setItem('resulta_admin_email', email);
+    } else {
+      localStorage.removeItem('resulta_remember_admin');
+      localStorage.removeItem('resulta_admin_email');
+    }
+
+    navigate(from, { replace: true });
   };
 
-  const handleQuickFill = () => {
-    setEmail('admin@resulta.com.gh');
-    setPassword('admin123');
-    setError('');
+  // ── Forgot password ────────────────────────────────────────────────────────
+  const handleForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToast({
+      title: 'Password Reset',
+      message: 'For administrative security resets, contact support@owelynholdings.com',
+      type: 'info',
+      duration: 6000,
+    });
   };
 
   const isLight = theme === 'light';
+
+  // Prefill email if "remember me" was set on a previous visit
+  const rememberedEmail = localStorage.getItem('resulta_admin_email') ?? '';
 
   return (
     <div
@@ -88,7 +143,7 @@ const AdminLogin: React.FC = () => {
               : 'bg-slate-900/90 border-slate-800 shadow-black/80 backdrop-blur-xl'
           }`}
         >
-          {/* Left Panel: Executive Brand Showcase & Security Badges (Hidden on Mobile, Visible on Desktop LG) */}
+          {/* ── Left Panel: Brand Showcase (Desktop only) ────────────────── */}
           <div
             className={`hidden lg:flex lg:col-span-6 relative p-6 sm:p-8 lg:p-10 flex-col justify-between overflow-hidden ${
               isLight
@@ -167,12 +222,12 @@ const AdminLogin: React.FC = () => {
 
             {/* Footer Compliance Text */}
             <div className="relative z-10 text-[10px] font-bold text-white/60 border-t border-white/15 pt-3.5 flex items-center justify-between">
-              <span>OWELYN Holdings Ltd &bull; National Telecom & WAEC Compliance</span>
+              <span>OWELYN Holdings Ltd &bull; National Telecom &amp; WAEC Compliance</span>
               <span className="font-mono text-teal-300">v2.6.0</span>
             </div>
           </div>
 
-          {/* Right Panel: Clean Authentication Form (Full width on Mobile, 6 cols on Desktop LG) */}
+          {/* ── Right Panel: Authentication Form ────────────────────────── */}
           <div className="col-span-1 lg:col-span-6 w-full p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
             {/* Header Toolbar: Back Button & Theme Toggle */}
             <div className="flex items-center justify-between gap-2 mb-4">
@@ -188,7 +243,8 @@ const AdminLogin: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setTheme(isLight ? 'dark' : 'light')}
+                aria-label="Toggle colour theme"
+                onClick={handleToggleTheme}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all border shadow-2xs ${
                   isLight
                     ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
@@ -240,52 +296,24 @@ const AdminLogin: React.FC = () => {
                 </p>
               </div>
 
-              {/* Quick Fill Demo Credentials Banner */}
-              <div
-                className={`p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 transition-all ${
-                  isLight
-                    ? 'bg-slate-50 border-slate-300 text-slate-900 shadow-2xs'
-                    : 'bg-slate-800/80 border-slate-700 text-slate-200'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-300 shrink-0">
-                    <FiKey className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="font-black text-xs text-slate-950 dark:text-white">Demo Credentials</p>
-                    <p className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-400">
-                      admin@resulta.com.gh / admin123
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleQuickFill}
-                  className={`px-3 py-1.5 rounded-xl font-black text-xs transition-all shadow-xs shrink-0 ${
-                    isLight
-                      ? 'bg-[#0F8B8D] text-white hover:bg-[#0B2545]'
-                      : 'bg-teal-500 text-slate-950 hover:bg-teal-400'
-                  }`}
+              {/* Submit Error Banner */}
+              {submitError && (
+                <div
+                  role="alert"
+                  className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-800 text-xs font-black flex items-center gap-2.5 shadow-2xs"
                 >
-                  Quick Fill
-                </button>
-              </div>
-
-              {/* Error Alert Banner */}
-              {error && (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-800 text-xs font-black flex items-center gap-2.5 shadow-2xs">
                   <FiAlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                  <span>{error}</span>
+                  <span>{submitError}</span>
                 </div>
               )}
 
               {/* Login Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+
+                {/* Email */}
                 <div>
                   <label
-                    htmlFor="email"
+                    htmlFor="admin-email"
                     className={`block text-xs font-black uppercase mb-1.5 ${
                       isLight ? 'text-slate-800' : 'text-slate-300'
                     }`}
@@ -294,25 +322,40 @@ const AdminLogin: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
-                      id="email"
+                      id="admin-email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      name="email"
+                      autoComplete="email"
+                      value={email || rememberedEmail}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: undefined }));
+                      }}
                       placeholder="admin@resulta.com.gh"
                       required
+                      aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+                      aria-invalid={!!fieldErrors.email}
                       className={`w-full rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold border focus:outline-none transition-colors ${
-                        isLight
-                          ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
-                          : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
+                        fieldErrors.email
+                          ? 'border-rose-400 bg-rose-50 dark:bg-rose-900/10 focus:border-rose-500'
+                          : isLight
+                            ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                            : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
                       }`}
                     />
                     <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   </div>
+                  {fieldErrors.email && (
+                    <p id="email-error" className="mt-1 text-[11px] font-bold text-rose-500">
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
 
+                {/* Password */}
                 <div>
                   <label
-                    htmlFor="password"
+                    htmlFor="admin-password"
                     className={`block text-xs font-black uppercase mb-1.5 ${
                       isLight ? 'text-slate-800' : 'text-slate-300'
                     }`}
@@ -321,33 +364,52 @@ const AdminLogin: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
-                      id="password"
+                      id="admin-password"
                       type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      autoComplete="current-password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: undefined }));
+                      }}
                       placeholder="Enter admin password..."
                       required
+                      aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+                      aria-invalid={!!fieldErrors.password}
                       className={`w-full rounded-2xl pl-11 pr-11 py-2.5 text-xs font-bold border focus:outline-none transition-colors ${
-                        isLight
-                          ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
-                          : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
+                        fieldErrors.password
+                          ? 'border-rose-400 bg-rose-50 dark:bg-rose-900/10 focus:border-rose-500'
+                          : isLight
+                            ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
+                            : 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-teal-500'
                       }`}
                     />
                     <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                     >
-                      {showPassword ? <FiEyeOff className="w-4 h-4 text-slate-500" /> : <FiEye className="w-4 h-4 text-[#0F8B8D]" />}
+                      {showPassword
+                        ? <FiEyeOff className="w-4 h-4 text-slate-500" />
+                        : <FiEye className="w-4 h-4 text-[#0F8B8D]" />}
                     </button>
                   </div>
+                  {fieldErrors.password && (
+                    <p id="password-error" className="mt-1 text-[11px] font-bold text-rose-500">
+                      {fieldErrors.password}
+                    </p>
+                  )}
                 </div>
 
+                {/* Remember me & Forgot password */}
                 <div className="flex items-center justify-between text-xs font-semibold pt-1">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
+                      id="remember-me"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4 rounded border-slate-300 text-[#0F8B8D] focus:ring-[#0F8B8D] cursor-pointer"
@@ -359,10 +421,7 @@ const AdminLogin: React.FC = () => {
 
                   <a
                     href="#forgot-password"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      alert('For administrative security resets, please contact support@owelynholdings.com.');
-                    }}
+                    onClick={handleForgotPassword}
                     className={`font-black hover:underline ${
                       isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
                     }`}
@@ -371,8 +430,10 @@ const AdminLogin: React.FC = () => {
                   </a>
                 </div>
 
+                {/* Submit */}
                 <div className="pt-2">
                   <button
+                    id="admin-sign-in-btn"
                     type="submit"
                     disabled={isLoading}
                     className={`w-full py-3 px-6 rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md ${
