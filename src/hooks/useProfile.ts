@@ -1,7 +1,20 @@
-import { useMutation } from '@tanstack/react-query';
-import { updateAdminProfile } from '../services/profile.service';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getAdminProfile, updateAdminProfile } from '../services/profile.service';
 import type { UpdateProfileDTO } from '../schemas/profile';
 import { useAuthStore } from '../store/authStore';
+
+export const useGetProfile = () => {
+  const setUser = useAuthStore(state => state.setUser);
+  
+  return useQuery({
+    queryKey: ['adminProfile'],
+    queryFn: async () => {
+      const data = await getAdminProfile();
+      setUser(data);
+      return data;
+    }
+  });
+};
 
 export const useUpdateProfile = () => {
   const setUser = useAuthStore(state => state.setUser);

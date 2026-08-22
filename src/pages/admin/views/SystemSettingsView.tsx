@@ -3,7 +3,7 @@ import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Button } from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/Toast';
 import { useAuthStore } from '../../../store/authStore';
-import { useUpdateProfile } from '../../../hooks/useProfile';
+import { useGetProfile, useUpdateProfile } from '../../../hooks/useProfile';
 import { updateProfileSchema } from '../../../schemas/profile';
 import {
   FiSave,
@@ -44,7 +44,15 @@ export const SystemSettingsView: React.FC = () => {
   const [profileName, setProfileName] = useState(user?.name || '');
   const [profileEmail, setProfileEmail] = useState(user?.email || '');
   
+  const { isFetching: isFetchingProfile } = useGetProfile();
   const updateProfileMutation = useUpdateProfile();
+
+  React.useEffect(() => {
+    if (user) {
+      setProfileName(user.name);
+      setProfileEmail(user.email);
+    }
+  }, [user]);
 
   // Security Credentials State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -439,6 +447,7 @@ export const SystemSettingsView: React.FC = () => {
             <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
               <h3 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-slate-950' : 'text-white'}`}>
                 <FiUser className="text-[#0F8B8D] dark:text-teal-400" /> Super Admin Profile Information
+                {isFetchingProfile && <FiRefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400 ml-2" />}
               </h3>
               <span className="text-[10px] font-mono font-bold uppercase px-3 py-1 rounded-full bg-rose-100 text-rose-950 border border-rose-300">
                 SUPER ADMIN
