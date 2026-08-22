@@ -8,7 +8,67 @@ import {
   OrdersTable,
   OrderDetailsView
 } from '../../../components/admin/orders';
-import { useOrders, useResendOrderSMS, useExportOrders } from '../../../hooks/useOrders';
+import { useResendOrderSMS, useExportOrders } from '../../../hooks/useOrders';
+
+const mockOrders: Order[] = [
+  {
+    id: 'TXN-9823-XL',
+    phone: '054 123 4567',
+    network: 'MTN MoMo',
+    product: 'WASSCE 2026 Voucher',
+    price: 25.00,
+    date: '2026-08-21 14:32',
+    status: 'FULFILLED',
+    serial: 'WSC-26-89012',
+    pin: '8923-4567-1234',
+    affiliateRef: 'EDUMAX-26'
+  },
+  {
+    id: 'TXN-9824-SM',
+    phone: '020 987 6543',
+    network: 'Telecel Cash',
+    product: 'BECE 2026 Voucher',
+    price: 20.00,
+    date: '2026-08-21 14:15',
+    status: 'PENDING_MOMO',
+    serial: 'PENDING ALLOCATION',
+    pin: 'PENDING'
+  },
+  {
+    id: 'TXN-9825-KL',
+    phone: '027 456 7890',
+    network: 'AirtelTigo',
+    product: 'WASSCE 2026 Voucher',
+    price: 25.00,
+    date: '2026-08-21 13:45',
+    status: 'FAILED',
+    serial: 'FAILED ALLOCATION',
+    pin: 'FAILED'
+  },
+  {
+    id: 'TXN-9826-XL',
+    phone: '055 234 5678',
+    network: 'MTN MoMo',
+    product: 'WASSCE 2026 Voucher',
+    price: 25.00,
+    date: '2026-08-21 12:10',
+    status: 'FULFILLED',
+    serial: 'WSC-26-89013',
+    pin: '8923-4567-9999'
+  },
+  {
+    id: 'TXN-9827-XX',
+    phone: '024 333 4444',
+    network: 'Card / Web',
+    product: 'BECE 2026 Voucher',
+    price: 20.00,
+    date: '2026-08-21 11:20',
+    status: 'FULFILLED',
+    serial: 'BEC-26-89014',
+    pin: '1123-4567-8888',
+    affiliateRef: 'TEACH-01'
+  }
+];
 
 export const OrdersFulfillmentView: React.FC = () => {
   const { addToast } = useToast();
@@ -21,17 +81,15 @@ export const OrdersFulfillmentView: React.FC = () => {
   // Selected order state for full page details view
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // ── Real API data ──────────────────────────────────────────────────────────
-  const { data: ordersData, isLoading, isError } = useOrders({
-    status: statusFilter !== 'ALL' ? (statusFilter as any) : undefined,
-    search: searchTerm || undefined,
-  });
-
   const resendSMS = useResendOrderSMS();
   const exportOrders = useExportOrders();
 
-  // Fall back to empty array while loading
-  const orders: Order[] = (ordersData?.items ?? []) as Order[];
+  // Replace API with dummy data
+  const orders: Order[] = mockOrders.filter(o => {
+    const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
+    const matchesSearch = searchTerm === '' || o.id.includes(searchTerm) || o.phone.includes(searchTerm);
+    return matchesStatus && matchesSearch;
+  });
 
   // Client-side product filter (backend may not support it yet)
   const filteredOrders = orders.filter((o) => {
@@ -88,7 +146,7 @@ export const OrdersFulfillmentView: React.FC = () => {
       {/* 1. Header */}
       <OrdersHeader
         onExportCsv={handleExportCsv}
-        totalOrdersCount={ordersData?.meta.total ?? 0}
+        totalOrdersCount={orders.length}
       />
 
       {/* 2. KPI Cards */}
@@ -108,24 +166,12 @@ export const OrdersFulfillmentView: React.FC = () => {
         onProductChange={setProductFilter}
       />
 
-      {/* 4. Table — loading / error / data */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-12 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="py-10 text-center text-sm font-bold text-rose-500">
-          Failed to load orders. Check your connection and try again.
-        </div>
-      ) : (
-        <OrdersTable
-          orders={filteredOrders}
-          onInspect={(order) => setSelectedOrder(order)}
-          onResendSMS={handleResendSMS}
-        />
-      )}
+      {/* 4. Table — data */}
+      <OrdersTable
+        orders={filteredOrders}
+        onInspect={(order) => setSelectedOrder(order)}
+        onResendSMS={handleResendSMS}
+      />
     </div>
   );
 };

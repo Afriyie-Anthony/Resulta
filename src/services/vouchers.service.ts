@@ -43,14 +43,48 @@ export const getVoucherRegistry = async (
   filters: Partial<VoucherFilters> = {},
 ): Promise<{ items: Voucher[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
   const { data } = await apiClient.get('/admin/vouchers/', { params: filters });
-  return data;
+  
+  const vouchers = data.vouchers || [];
+  const mappedItems: Voucher[] = vouchers.map((item: any) => ({
+    id: item.id,
+    serial: item.serialNumber || item.serial,
+    pin: item.pin,
+    voucherType: (item.type || item.voucherType) as VoucherType,
+    batchId: item.uploadHistoryId || item.batchId,
+    status: item.status,
+    soldAt: item.soldAt,
+    soldToPhone: item.soldToPhone,
+    orderId: item.orderId,
+  }));
+
+  return {
+    items: mappedItems,
+    meta: data.pagination || { total: 0, page: 1, totalPages: 1, limit: 10 }
+  };
 };
 
 export const getSoldVouchers = async (
   filters: Partial<SoldVouchersFilters> = {},
 ): Promise<{ items: Voucher[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
   const { data } = await apiClient.get('/admin/vouchers/sold', { params: filters });
-  return data;
+  
+  const vouchers = data.vouchers || [];
+  const mappedItems: Voucher[] = vouchers.map((item: any) => ({
+    id: item.id,
+    serial: item.serialNumber || item.serial,
+    pin: item.pin,
+    voucherType: (item.type || item.voucherType) as VoucherType,
+    batchId: item.uploadHistoryId || item.batchId,
+    status: item.status,
+    soldAt: item.soldAt,
+    soldToPhone: item.soldToPhone,
+    orderId: item.orderId,
+  }));
+
+  return {
+    items: mappedItems,
+    meta: data.pagination || { total: 0, page: 1, totalPages: 1, limit: 10 }
+  };
 };
 
 // ─── Bulk Uploads ────────────────────────────────────────────────────────────
@@ -58,7 +92,13 @@ export const getSoldVouchers = async (
 export const validateUpload = async (
   voucherType: VoucherType,
   file: File
-): Promise<{ success: boolean; validCount: number; duplicates: number }> => {
+): Promise<{ 
+  totalParsed: number;
+  validUniqueCount: number;
+  internalDuplicatesCount: number;
+  databaseDuplicatesCount: number;
+  readyToUploadCount: number;
+}> => {
   const formData = new FormData();
   formData.append('voucherType', voucherType);
   formData.append('file', file);
@@ -87,5 +127,21 @@ export const getUploadHistory = async (
   filters: Partial<UploadHistoryFilters> = {},
 ): Promise<{ items: BatchRecord[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
   const { data } = await apiClient.get('/admin/vouchers/upload-history', { params: filters });
-  return data;
+  
+  const history = data.history || [];
+  const mappedItems: BatchRecord[] = history.map((item: any) => ({
+    id: item.id,
+    voucherType: item.voucherType as VoucherType,
+    uploadDate: new Date(item.createdAt).toLocaleDateString(),
+    serialRange: item.filename || 'N/A',
+    total: item.totalUploaded,
+    remaining: item.totalUploaded,
+    status: item.status === 'SUCCESS' ? 'ACTIVE' : 'QUARANTINED',
+    uploadedBy: item.uploadedBy?.name,
+  }));
+
+  return {
+    items: mappedItems,
+    meta: data.pagination || { total: 0, page: 1, totalPages: 1, limit: 10 }
+  };
 };

@@ -3,8 +3,8 @@ import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText } from 'react-icons/fi';
-import { useBulkUpload } from '../../../hooks/useVouchers';
+import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText, FiAlertTriangle } from 'react-icons/fi';
+import { useBulkUpload, useValidateBulkUpload } from '../../../hooks/useVouchers';
 import type { VoucherType } from '../../../schemas/voucher';
 
 interface BatchIngestModalProps {
@@ -23,20 +23,29 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
   
   const [selectedProduct, setSelectedProduct] = useState<VoucherType>(initialProduct);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [validationResult, setValidationResult] = useState<{ 
+    readyToUploadCount: number; 
+    databaseDuplicatesCount: number; 
+    internalDuplicatesCount: number;
+    totalParsed: number;
+  } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { mutate: uploadBatch, isPending } = useBulkUpload();
+  const { mutate: validateBatch, isPending: isValidating } = useValidateBulkUpload();
+  const { mutate: uploadBatch, isPending: isUploading } = useBulkUpload();
 
   useEffect(() => {
     if (initialProduct) {
       setSelectedProduct(initialProduct);
     }
     setSelectedFile(null);
+    setValidationResult(null);
   }, [initialProduct, isOpen]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
+      setValidationResult(null);
     }
   };
 
@@ -46,31 +55,66 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
 
   const handleImportBatch = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!selectedFile) return;
 
-    uploadBatch(
-      { voucherType: selectedProduct, file: selectedFile },
-      {
-        onSuccess: () => {
-          addToast({
-            title: 'Voucher Batch Ingested',
-            message: `Successfully uploaded and processed ${selectedFile.name}.`,
-            type: 'success',
-          });
-          setSelectedFile(null);
-          onClose();
-        },
-        onError: (err: any) => {
-          addToast({
-            title: 'Upload Failed',
-            message: err.response?.data?.message || 'Failed to bulk upload vouchers',
-            type: 'error',
-          });
+    if (!validationResult) {
+      // Phase 1: Validate file
+      validateBatch(
+        { voucherType: selectedProduct, file: selectedFile },
+        {
+          onSuccess: (data) => {
+            setValidationResult({
+              readyToUploadCount: data.readyToUploadCount,
+              databaseDuplicatesCount: data.databaseDuplicatesCount,
+              internalDuplicatesCount: data.internalDuplicatesCount,
+              totalParsed: data.totalParsed,
+            });
+            const hasDuplicates = data.databaseDuplicatesCount > 0 || data.internalDuplicatesCount > 0;
+            addToast({
+              title: 'Validation Successful',
+              message: `Found ${data.readyToUploadCount} valid PINs ready to upload.`,
+              type: hasDuplicates ? 'warning' : 'success',
+            });
+          },
+          onError: (err: any) => {
+            addToast({
+              title: 'Validation Failed',
+              message: err.response?.data?.message || 'Failed to validate the file. Check formatting.',
+              type: 'error',
+            });
+            setSelectedFile(null);
+            setValidationResult(null);
+          }
         }
-      }
-    );
+      );
+    } else {
+      // Phase 2: Actual Upload
+      uploadBatch(
+        { voucherType: selectedProduct, file: selectedFile },
+        {
+          onSuccess: () => {
+            addToast({
+              title: 'Voucher Batch Ingested',
+              message: `Successfully uploaded and processed ${selectedFile.name}.`,
+              type: 'success',
+            });
+            setSelectedFile(null);
+            setValidationResult(null);
+            onClose();
+          },
+          onError: (err: any) => {
+            addToast({
+              title: 'Upload Failed',
+              message: err.response?.data?.message || 'Failed to bulk upload vouchers',
+              type: 'error',
+            });
+          }
+        }
+      );
+    }
   };
+
+  const isPending = isValidating || isUploading;
 
   return (
     <Modal
@@ -107,7 +151,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => setSelectedProduct('WASSCE_NOVDEC')}
+              onClick={() => { setSelectedProduct('WASSCE_NOVDEC'); setValidationResult(null); }}
               className={`p-3 rounded-xl font-bold text-left border transition-all flex items-center justify-between ${
                 selectedProduct === 'WASSCE_NOVDEC'
                   ? isLight
@@ -132,7 +176,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
 
             <button
               type="button"
-              onClick={() => setSelectedProduct('BECE')}
+              onClick={() => { setSelectedProduct('BECE'); setValidationResult(null); }}
               className={`p-3 rounded-xl font-bold text-left border transition-all flex items-center justify-between ${
                 selectedProduct === 'BECE'
                   ? isLight
@@ -214,6 +258,43 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           </div>
         </div>
 
+        {/* Validation Results Display */}
+        {validationResult && (
+          <div className={`p-4 rounded-xl border text-xs flex flex-col gap-2 ${
+            validationResult.databaseDuplicatesCount > 0 || validationResult.internalDuplicatesCount > 0
+              ? isLight ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              : isLight ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-teal-500/10 border-teal-500/30 text-teal-300'
+          }`}>
+            <div className="flex items-center gap-2 font-black text-sm">
+              {(validationResult.databaseDuplicatesCount > 0 || validationResult.internalDuplicatesCount > 0) ? <FiAlertTriangle /> : <FiCheckCircle />}
+              Validation Complete
+            </div>
+            
+            <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
+              <span className="font-semibold">Ready to Ingest:</span>
+              <span className="font-black font-mono text-emerald-600 dark:text-teal-400">{validationResult.readyToUploadCount}</span>
+            </div>
+            
+            {(validationResult.databaseDuplicatesCount > 0 || validationResult.internalDuplicatesCount > 0) && (
+              <div className="space-y-1.5 mt-1">
+                <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
+                  <span className="font-semibold text-rose-600 dark:text-rose-400">Database Duplicates (Rejected):</span>
+                  <span className="font-black font-mono text-rose-600 dark:text-rose-400">{validationResult.databaseDuplicatesCount}</span>
+                </div>
+                <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Internal File Duplicates (Skipped):</span>
+                  <span className="font-black font-mono text-amber-600 dark:text-amber-400">{validationResult.internalDuplicatesCount}</span>
+                </div>
+              </div>
+            )}
+            <p className="text-[10px] font-medium mt-1 opacity-80">
+              {validationResult.readyToUploadCount === 0 
+                ? 'Cannot proceed. No unique PINs available to upload.'
+                : 'Only valid, unique PINs will be imported and encrypted into the database.'}
+            </p>
+          </div>
+        )}
+
         {/* Footer Actions */}
         <div className={`flex items-center justify-end pt-3.5 border-t ${
           isLight ? 'border-slate-200/90' : 'border-slate-800/80'
@@ -226,11 +307,11 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
               type="submit"
               variant={isLight ? 'primary' : 'gradient'}
               size="sm"
-              disabled={!selectedFile || isPending}
+              disabled={!selectedFile || isPending || (validationResult ? validationResult.readyToUploadCount === 0 : false)}
               leftIcon={isPending ? <FiRefreshCw className="animate-spin" /> : <FiLock />}
               className="font-black text-xs px-4 shadow-sm"
             >
-              {isPending ? 'Encrypting...' : `Ingest Batch`}
+              {isValidating ? 'Validating...' : isUploading ? 'Encrypting & Ingesting...' : !validationResult ? 'Validate File' : 'Confirm & Ingest Batch'}
             </Button>
           </div>
         </div>
