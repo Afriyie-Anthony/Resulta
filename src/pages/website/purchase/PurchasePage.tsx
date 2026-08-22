@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { FiMinus, FiPlus, FiShoppingCart, FiUsers } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../../components/website/layout/MobileBottomNav';
 import BuyBottomSheet from '../../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../../components/website/layout/MoreBottomSheet';
+import { useVoucherConfig, useInitiatePurchase } from '../../../hooks/usePurchase';
 
-const voucherConfig = {
+const voucherConfigData = {
   wassce: {
     title: 'WASSCE / NOVDEC',
     subtitle: 'Senior High School Results',
     badge: 'WASSCE 2026',
+    apiType: 'WASSCE_NOVDEC' as const,
   },
   bece: {
     title: 'BECE',
     subtitle: 'Basic Education Results',
     badge: 'BECE 2026',
+    apiType: 'BECE' as const,
   },
 };
 
@@ -24,17 +27,23 @@ const PurchasePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const voucherType = searchParams.get('type') || 'bece';
-  const config = voucherConfig[voucherType as keyof typeof voucherConfig];
+  const configInfo = voucherConfigData[voucherType as keyof typeof voucherConfigData];
+  
   const [mode, setMode] = useState<'single' | 'bulk'>('single');
   const [quantity, setQuantity] = useState(mode === 'single' ? 1 : 10);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  if (!config) {
+  // Data Hooks
+  const { data: config, isLoading: isConfigLoading } = useVoucherConfig();
+  const { mutate: initiateOrder, isPending: isSubmitting } = useInitiatePurchase();
+
+  if (!configInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-center">
@@ -48,12 +57,19 @@ const PurchasePage: React.FC = () => {
     );
   }
 
-  const pricePerVoucher =
-    mode === 'single'
-      ? 20
-      : quantity >= 30
-        ? 16
-        : 17;
+  // Calculate pricing based on dynamic tiers
+  let pricePerVoucher = 0;
+  if (config) {
+    const matchingTier = config.priceTiers.find(
+      (tier) => 
+        tier.voucherType === configInfo.apiType && 
+        quantity >= tier.minQuantity && 
+        quantity <= tier.maxQuantity
+    );
+    // Fallback to highest tier if not found
+    pricePerVoucher = matchingTier?.unitPrice || 25; 
+  }
+
   const total = pricePerVoucher * quantity;
 
   const validatePhone = (value: string): boolean => {
@@ -95,11 +111,25 @@ const PurchasePage: React.FC = () => {
       setPhoneError('Enter a valid Ghanaian number (e.g. 024 XXX XXX)');
       return;
     }
-    setIsSubmitting(true);
-    setTimeout(() => {
-      alert('Hubtel payment integration will be implemented here.');
-      setIsSubmitting(false);
-    }, 800);
+    
+    initiateOrder(
+      {
+        voucherType: configInfo.apiType,
+        quantity,
+        fullName,
+        phoneNumber: phone,
+        email: email || '',
+      },
+      {
+        onSuccess: (data) => {
+          // Redirect to Hubtel Checkout URL
+          window.location.href = data.checkoutUrl;
+        },
+        onError: () => {
+          alert('Failed to initiate order. Please try again.');
+        }
+      }
+    );
   };
 
   return (
@@ -110,7 +140,7 @@ const PurchasePage: React.FC = () => {
         <section className={`${voucherType === 'wassce' ? 'bg-primary' : 'bg-secondary'} py-16 lg:py-20`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-              {config.title} Result Checker
+              {configInfo.title} Result Checker
             </h1>
             <p className="mt-4 text-sm sm:text-base text-white/60 max-w-xl mx-auto">
               Choose Single or Bulk purchase and get your voucher instantly.
@@ -182,11 +212,6 @@ const PurchasePage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-text-secondary text-center">
-                  {mode === 'single'
-                    ? 'Buy 1 to 9 vouchers at GH₵ 20 each.'
-                    : 'Buy 10+ vouchers. GH₵ 17 each (10-29), GH₵ 16 each (30+).'}
-                </p>
               </div>
 
               <div className="bg-warm rounded-2xl border border-border p-6 sm:p-8 space-y-6">
@@ -202,7 +227,7 @@ const PurchasePage: React.FC = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                    className="w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -217,8 +242,8 @@ const PurchasePage: React.FC = () => {
                     value={phone}
                     onChange={handlePhoneChange}
                     required
-                    className={`w-full rounded-xl bg-slate-900/90 border px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-all ${
-                      phoneError ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-800 focus:border-secondary'
+                    className={`w-full rounded-xl bg-white border px-4 py-3 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:ring-4 transition-all shadow-sm ${
+                      phoneError ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/10' : 'border-border focus:border-primary focus:ring-primary/10'
                     }`}
                     placeholder="024 XXX XXX"
                   />
@@ -228,6 +253,22 @@ const PurchasePage: React.FC = () => {
                   {!phoneError && phone && validatePhone(phone) && (
                     <p className="mt-1.5 text-xs text-emerald-400 font-medium">Valid Ghanaian number</p>
                   )}
+                </div>
+                
+                <div>
+                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-2">
+                    Email Address
+                    {quantity > 5 && <span className="text-rose-400 text-[10px]">(Required for Bulk)</span>}
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required={quantity > 5}
+                    className="w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
+                    placeholder="Enter your email address"
+                  />
                 </div>
               </div>
 
@@ -271,13 +312,21 @@ const PurchasePage: React.FC = () => {
                   <div>
                     <p className="text-xs text-text-secondary">Price per voucher</p>
                     <p className="text-2xl font-black text-text-primary">
-                      GH₵ {pricePerVoucher.toFixed(2)}
+                      {isConfigLoading ? (
+                        <FiLoader className="w-6 h-6 animate-spin text-text-secondary" />
+                      ) : (
+                        `GH₵ ${pricePerVoucher.toFixed(2)}`
+                      )}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-text-secondary">Total</p>
                     <p className="text-2xl font-black text-secondary">
-                      GH₵ {total.toFixed(2)}
+                      {isConfigLoading ? (
+                        <FiLoader className="w-6 h-6 animate-spin text-secondary" />
+                      ) : (
+                        `GH₵ ${total.toFixed(2)}`
+                      )}
                     </p>
                   </div>
                 </div>
@@ -286,10 +335,14 @@ const PurchasePage: React.FC = () => {
               <div className="text-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isConfigLoading}
                   className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-4 rounded-xl text-base hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
-                  <FiShoppingCart className="w-5 h-5" />
+                  {isSubmitting ? (
+                    <FiLoader className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <FiShoppingCart className="w-5 h-5" />
+                  )}
                   {isSubmitting ? 'Processing...' : 'Proceed to Checkout'}
                 </button>
                 <p className="mt-3 text-xs text-text-secondary">

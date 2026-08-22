@@ -13,6 +13,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { formatCedi } from './utils/formatters';
 import Home from './pages/website/Home';
 import PurchasePage from './pages/website/purchase/PurchasePage';
+import PurchaseVerifyPage from './pages/website/purchase/PurchaseVerifyPage';
+import VouchersPricingPage from './pages/website/VouchersPricingPage';
 import RetrieveVoucherPage from './pages/website/my-vouchers/RetrieveVoucherPage';
 import FAQPage from './pages/website/help/FAQPage';
 import ContactSupportPage from './pages/website/help/ContactSupportPage';
@@ -388,7 +390,9 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="/pricing" element={<VouchersPricingPage />} />
       <Route path="/purchase" element={<PurchasePage />} />
+      <Route path="/purchase/verify" element={<PurchaseVerifyPage />} />
       <Route path="/retrieve-voucher" element={<RetrieveVoucherPage />} />
       <Route path="/help/faq" element={<FAQPage />} />
       <Route path="/help/contact" element={<ContactSupportPage />} />

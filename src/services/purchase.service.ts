@@ -1,5 +1,6 @@
 import apiClient from '../lib/axios';
 import type {
+  PublicVoucherConfig,
   PurchaseRequest,
   PurchaseInitResponse,
   PaymentVerifyResponse,
@@ -11,16 +12,22 @@ import type {
  * Public purchase service.
  * These endpoints are public — no auth token required.
  *
- * Endpoints (assumed):
- *   POST /orders/initiate          → kick off MoMo payment
+ * Endpoints:
+ *   GET  /public/vouchers/config   → Get pricing tiers and stock thresholds
+ *   POST /public/orders/initiate   → kick off Hubtel payment
  *   GET  /orders/:id/verify        → poll payment status
  *   POST /orders/retrieve          → retrieve voucher by phone + identifier
  */
 
+export const getVoucherConfig = async (): Promise<PublicVoucherConfig> => {
+  const { data } = await apiClient.get('/public/vouchers/config');
+  return data;
+};
+
 export const initiatePurchase = async (
   payload: PurchaseRequest,
 ): Promise<PurchaseInitResponse> => {
-  const { data } = await apiClient.post<PurchaseInitResponse>('/orders/initiate', payload);
+  const { data } = await apiClient.post('/public/orders/initiate', payload);
   return data;
 };
 

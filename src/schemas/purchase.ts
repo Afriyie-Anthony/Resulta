@@ -6,24 +6,40 @@ import { ghanaPhoneSchema } from './common';
  * Used by the customer-facing /purchase and /retrieve-voucher pages.
  */
 
+// ─── Config ───────────────────────────────────────────────────────────────────
+export const priceTierSchema = z.object({
+  id: z.string(),
+  voucherType: z.string(),
+  minQuantity: z.number(),
+  maxQuantity: z.number(),
+  unitPrice: z.number(),
+});
+
+export const voucherConfigSchema = z.object({
+  beceLowStockThreshold: z.number(),
+  wassceLowStockThreshold: z.number(),
+  priceTiers: z.array(priceTierSchema),
+});
+
 // ─── Purchase Request ─────────────────────────────────────────────────────────
 export const purchaseRequestSchema = z.object({
-  voucherType: z.enum(['WASSCE', 'BECE']),
+  voucherType: z.enum(['WASSCE_NOVDEC', 'BECE']),
   quantity: z.number().int().positive().min(1),
-  customerName: z.string().min(2, 'Enter your full name'),
-  phone: ghanaPhoneSchema,
-  momoNetwork: z.enum(['MTN MoMo', 'Telecel Cash', 'AirtelTigo']),
-  affiliateCode: z.string().optional(),
+  fullName: z.string().min(2, 'Enter your full name'),
+  phoneNumber: ghanaPhoneSchema,
+  email: z.string().email('Enter a valid email address').optional().or(z.literal('')),
 });
 
 // ─── Purchase Initiation Response ─────────────────────────────────────────────
 export const purchaseInitResponseSchema = z.object({
-  orderId: z.string(),
-  paymentReference: z.string(),
-  paymentUrl: z.string().url().optional(),  // Hubtel redirect URL (if applicable)
-  totalAmount: z.number().positive(),
-  status: z.enum(['PAYMENT_PENDING', 'PROCESSING']),
-  message: z.string(),
+  orderNumber: z.string(),
+  voucherType: z.string(),
+  quantity: z.number(),
+  unitPrice: z.number(),
+  totalAmount: z.number(),
+  deliveryMethod: z.string(),
+  checkoutUrl: z.string().url(),
+  checkoutDirectUrl: z.string().url().optional(),
 });
 
 // ─── Payment Verification ─────────────────────────────────────────────────────
@@ -61,6 +77,8 @@ export const retrieveVoucherResponseSchema = z.object({
 });
 
 // ─── Exported Types ──────────────────────────────────────────────────────────
+export type PublicVoucherConfig = z.infer<typeof voucherConfigSchema>;
+export type PriceTier = z.infer<typeof priceTierSchema>;
 export type PurchaseRequest = z.infer<typeof purchaseRequestSchema>;
 export type PurchaseInitResponse = z.infer<typeof purchaseInitResponseSchema>;
 export type PaymentVerifyResponse = z.infer<typeof paymentVerifyResponseSchema>;

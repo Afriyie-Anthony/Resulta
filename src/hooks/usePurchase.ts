@@ -3,17 +3,19 @@ import {
   initiatePurchase,
   verifyPayment,
   retrieveVoucher,
+  getVoucherConfig,
 } from '../services/purchase.service';
 import type { PurchaseRequest, RetrieveVoucherRequest } from '../schemas/purchase';
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 export const purchaseKeys = {
   all: ['purchase'] as const,
+  config: () => [...purchaseKeys.all, 'config'] as const,
   verify: (orderId: string) => [...purchaseKeys.all, 'verify', orderId] as const,
 };
 
 // ─── Mutations ────────────────────────────────────────────────────────────────
-/** Kick off a MoMo payment for a voucher purchase */
+/** Kick off a Hubtel payment for a voucher purchase */
 export const useInitiatePurchase = () =>
   useMutation({
     mutationFn: (payload: PurchaseRequest) => initiatePurchase(payload),
@@ -26,6 +28,16 @@ export const useRetrieveVoucher = () =>
   });
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
+/**
+ * Fetch public voucher pricing config and stock thresholds.
+ */
+export const useVoucherConfig = () =>
+  useQuery({
+    queryKey: purchaseKeys.config(),
+    queryFn: () => getVoucherConfig(),
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+  });
+
 /**
  * Poll payment status for a given order.
  * Enabled only when an orderId exists.
