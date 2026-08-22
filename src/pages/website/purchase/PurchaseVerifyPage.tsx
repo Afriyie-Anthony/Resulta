@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { FiCheckCircle, FiXCircle, FiLoader, FiCopy, FiCheck, FiSearch } from 'react-icons/fi';
+import { FiCheckCircle, FiXCircle, FiCopy, FiCheck, FiSearch } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import { useVerifyPayment } from '../../../hooks/usePurchase';

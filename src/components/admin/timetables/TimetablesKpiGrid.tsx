@@ -1,30 +1,43 @@
 import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import type { ExamSchedule } from './types';
+import type { TimetableItem } from './types';
 import { FiFileText, FiDownloadCloud, FiAlertCircle, FiActivity } from 'react-icons/fi';
 
 interface TimetablesKpiGridProps {
-  schedules: ExamSchedule[];
+  schedules: TimetableItem[];
 }
 
 export const TimetablesKpiGrid: React.FC<TimetablesKpiGridProps> = ({ schedules }) => {
   const { isLight } = useAdminTheme();
 
   // Statistics calculations
-  const totalUploads = schedules.filter(s => s.fileName !== '').length;
-  const totalDownloads = schedules.reduce((sum, s) => sum + s.downloads, 0);
-  const draftCount = schedules.filter(s => s.portalStatus === 'DRAFT').length;
+  const totalUploads = schedules.filter(s => Boolean(s.fileUrl || s.filename)).length;
+  const totalDownloads = schedules.reduce((sum, s) => sum + (s.downloadCount || 0), 0);
+  const draftCount = schedules.filter(s => s.status === 'DRAFT').length;
 
-  // Approximate bandwidth consumed
+  // Bandwidth calculation based on file size (bytes or KB/MB)
   const calcBandwidth = () => {
-    let totalMB = 0;
+    let totalBytes = 0;
     schedules.forEach(s => {
-      const sizeNum = parseFloat(s.fileSize);
-      if (!isNaN(sizeNum)) {
-        totalMB += sizeNum * s.downloads;
+      let bytes = 0;
+      if (typeof s.fileSize === 'number') {
+        bytes = s.fileSize;
+      } else if (typeof s.fileSize === 'string') {
+        const val = parseFloat(s.fileSize);
+        if (!isNaN(val)) {
+          if (s.fileSize.toLowerCase().includes('kb')) bytes = val * 1024;
+          else if (s.fileSize.toLowerCase().includes('gb')) bytes = val * 1024 * 1024 * 1024;
+          else bytes = val * 1024 * 1024; // default MB
+        }
       }
+      totalBytes += bytes * (s.downloadCount || 0);
     });
-    return totalMB > 1000 ? `${(totalMB / 1024).toFixed(1)} GB` : `${totalMB.toFixed(0)} MB`;
+
+    const totalMB = totalBytes / (1024 * 1024);
+    if (totalMB >= 1024) {
+      return `${(totalMB / 1024).toFixed(1)} GB`;
+    }
+    return `${totalMB.toFixed(1)} MB`;
   };
 
   return (
