@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
+import { AdminThemeContext } from '../../contexts/AdminThemeContext';
 
 export interface CardProps extends BaseComponentProps {
   hoverable?: boolean;
@@ -18,11 +19,14 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   onClick,
 }) => {
-  const glassStyle = glass
-    ? 'glass-card'
-    : 'bg-slate-900 border border-slate-800 shadow-xl';
+  const adminTheme = useContext(AdminThemeContext);
+  const isLight = adminTheme?.isLight ?? false;
 
-  const hoverStyle = hoverable ? 'glass-card-hover cursor-pointer' : '';
+  const glassStyle = glass
+    ? (isLight ? 'glass-card-light' : 'glass-card')
+    : (isLight ? 'bg-white border border-slate-200 shadow-xl' : 'bg-slate-900 border border-slate-800 shadow-xl');
+
+  const hoverStyle = hoverable ? (isLight ? 'glass-card-light-hover cursor-pointer' : 'glass-card-hover cursor-pointer') : '';
 
   return (
     <div
