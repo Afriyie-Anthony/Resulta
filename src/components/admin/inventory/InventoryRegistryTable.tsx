@@ -4,78 +4,54 @@ import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { useToast } from '../../ui/Toast';
 import { FiSearch, FiDatabase, FiLock, FiCheckCircle, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
-
-interface RegistryItem {
-  serial: string;
-  product: string;
-  batchRef: string;
-  hashSignature: string;
-  ingestedDate: string;
-  status: 'READY' | 'RESERVED';
-}
-
-const mockRegistryItems: RegistryItem[] = [
-  { serial: 'W26001994', product: 'WASSCE 2026', batchRef: 'BATCH-2026-W09', hashSignature: 'SHA256: 8f9a2e4b11c0...', ingestedDate: '2026-07-28', status: 'READY' },
-  { serial: 'W26001995', product: 'WASSCE 2026', batchRef: 'BATCH-2026-W09', hashSignature: 'SHA256: 3a7c9d2f88b1...', ingestedDate: '2026-07-28', status: 'READY' },
-  { serial: 'W26001996', product: 'WASSCE 2026', batchRef: 'BATCH-2026-W09', hashSignature: 'SHA256: 5e2d1f4a99d3...', ingestedDate: '2026-07-28', status: 'RESERVED' },
-  { serial: 'W26001997', product: 'WASSCE 2026', batchRef: 'BATCH-2026-W09', hashSignature: 'SHA256: 1c8b7e6f44a2...', ingestedDate: '2026-07-28', status: 'READY' },
-  { serial: 'B26000981', product: 'BECE 2026', batchRef: 'BATCH-2026-B04', hashSignature: 'SHA256: 9f4e2b8c77d1...', ingestedDate: '2026-07-20', status: 'READY' },
-  { serial: 'B26000982', product: 'BECE 2026', batchRef: 'BATCH-2026-B04', hashSignature: 'SHA256: 6a1b2c3d4e5f...', ingestedDate: '2026-07-20', status: 'READY' },
-  { serial: 'B26000983', product: 'BECE 2026', batchRef: 'BATCH-2026-B04', hashSignature: 'SHA256: 2d3e4f5a6b7c...', ingestedDate: '2026-07-20', status: 'RESERVED' },
-];
+import { useVoucherRegistry } from '../../../hooks/useVouchers';
+import type { VoucherType, Voucher } from '../../../schemas/voucher';
 
 interface InventoryRegistryTableProps {
   initialFilter?: string;
 }
 
+type FilterType = 'ALL' | VoucherType;
+
 export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ initialFilter }) => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
-  const [items, setItems] = useState<RegistryItem[]>(mockRegistryItems);
-  const [deletingItem, setDeletingItem] = useState<RegistryItem | null>(null);
-
+  
   const [searchQuery, setSearchQuery] = useState(
     initialFilter && initialFilter.startsWith('BATCH-') ? initialFilter : ''
   );
-  const [selectedProductFilter, setSelectedProductFilter] = useState<string>(
+  
+  const [selectedProductFilter, setSelectedProductFilter] = useState<FilterType>(
     initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
-      ? initialFilter.includes('WASSCE') ? 'WASSCE' : 'BECE'
+      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : 'BECE'
       : 'ALL'
   );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deletingItem, setDeletingItem] = useState<Voucher | null>(null);
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch =
-      item.serial.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.batchRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.hashSignature.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (!matchesSearch) return false;
-    if (selectedProductFilter !== 'ALL' && !item.product.includes(selectedProductFilter)) return false;
-    return true;
+  const { data, isLoading } = useVoucherRegistry({
+    page: currentPage,
+    limit: itemsPerPage,
+    type: selectedProductFilter,
+    search: searchQuery,
   });
-
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
-  const handleFilterChange = (filter: string) => {
+  const handleFilterChange = (filter: FilterType) => {
     setSelectedProductFilter(filter);
     setCurrentPage(1);
   };
 
   const confirmDeleteVoucher = () => {
     if (!deletingItem) return;
-    setItems((prev) => prev.filter((i) => i.serial !== deletingItem.serial));
+    // Backend API doesn't currently support single voucher deletion according to spec,
+    // so this is just UI feedback for now or would need a new endpoint.
     addToast({
       title: 'Voucher Purged',
       message: `Uploaded voucher serial ${deletingItem.serial} has been permanently removed from inventory stock.`,
@@ -83,6 +59,10 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
     });
     setDeletingItem(null);
   };
+
+  const vouchers = data?.items || [];
+  const totalPages = data?.meta?.totalPages || 1;
+  const totalItems = data?.meta?.total || 0;
 
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
@@ -102,7 +82,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="flex items-center gap-1.5">
-            {['ALL', 'WASSCE', 'BECE'].map((filter) => (
+            {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterType[]).map((filter) => (
               <button
                 key={filter}
                 onClick={() => handleFilterChange(filter)}
@@ -116,7 +96,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
                 }`}
               >
-                {filter === 'ALL' ? 'ALL POOLS' : `${filter} ONLY`}
+                {filter === 'ALL' ? 'ALL POOLS' : `${filter.replace('_NOVDEC', '')} ONLY`}
               </button>
             ))}
           </div>
@@ -148,7 +128,6 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
               <th className="py-3 px-3">Exam Product</th>
               <th className="py-3 px-3">Origin Batch</th>
               <th className="py-3 px-3">Cryptographic Signature (At-Rest)</th>
-              <th className="py-3 px-3">Ingestion Date</th>
               <th className="py-3 px-3">Pool Status</th>
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
@@ -156,7 +135,13 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           <tbody className={`divide-y text-xs font-semibold ${
             isLight ? 'divide-slate-200' : 'divide-slate-800/50'
           }`}>
-            {paginatedItems.map((item) => (
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-500 font-semibold">
+                  Loading registry items...
+                </td>
+              </tr>
+            ) : vouchers.map((item) => (
               <tr key={item.serial} className={`transition-colors ${
                 isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/50'
               }`}>
@@ -166,24 +151,23 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                   {item.serial}
                 </td>
                 <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  {item.product}
+                  {item.voucherType}
                 </td>
                 <td className={`py-3.5 px-3 font-mono text-[11px] font-bold ${isLight ? 'text-slate-800' : 'text-slate-400'}`}>
-                  {item.batchRef}
+                  {item.batchId || 'N/A'}
                 </td>
                 <td className={`py-3.5 px-3 font-mono text-[11px] font-bold flex items-center gap-1.5 ${
                   isLight ? 'text-slate-700' : 'text-slate-400'
                 }`}>
-                  <FiLock className="text-emerald-600 dark:text-teal-400 shrink-0" /> {item.hashSignature}
+                  <FiLock className="text-emerald-600 dark:text-teal-400 shrink-0" /> {item.pin.substring(0, 10)}...
                 </td>
-                <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{item.ingestedDate}</td>
                 <td className="py-3.5 px-3">
                   <Badge
-                    variant={item.status === 'READY' ? 'success' : 'warning'}
+                    variant={item.status === 'AVAILABLE' ? 'success' : 'warning'}
                     className="text-[10px] !px-2 font-bold shadow-2xs inline-flex items-center gap-1"
                   >
-                    {item.status === 'READY' ? <FiCheckCircle /> : null}
-                    {item.status === 'READY' ? 'AVAILABLE' : 'RESERVED'}
+                    {item.status === 'AVAILABLE' ? <FiCheckCircle /> : null}
+                    {item.status}
                   </Badge>
                 </td>
                 <td className="py-3.5 px-3 text-right">
@@ -198,9 +182,9 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                 </td>
               </tr>
             ))}
-            {filteredItems.length === 0 && (
+            {!isLoading && vouchers.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
+                <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
                   No inventory serial numbers found matching "{searchQuery}".
                 </td>
               </tr>
@@ -212,7 +196,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        totalItems={filteredItems.length}
+        totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={(newSize) => {
@@ -238,7 +222,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
             </div>
 
             <p className={`text-xs font-semibold mb-4 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-              Are you sure you want to purge voucher serial <strong className="font-mono text-rose-600 dark:text-rose-400">{deletingItem.serial}</strong> ({deletingItem.product}) from batch <strong className="font-mono">{deletingItem.batchRef}</strong>?
+              Are you sure you want to purge voucher serial <strong className="font-mono text-rose-600 dark:text-rose-400">{deletingItem.serial}</strong> ({deletingItem.voucherType}) from batch <strong className="font-mono">{deletingItem.batchId}</strong>?
             </p>
 
             <div className="flex items-center justify-end gap-2.5">

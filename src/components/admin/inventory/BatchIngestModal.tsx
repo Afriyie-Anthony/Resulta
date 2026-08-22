@@ -1,101 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText, FiDatabase } from 'react-icons/fi';
-import type { BatchRecord } from './BatchHistoryTable';
+import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText } from 'react-icons/fi';
+import { useBulkUpload } from '../../../hooks/useVouchers';
+import type { VoucherType } from '../../../schemas/voucher';
 
 interface BatchIngestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialProduct?: 'WASSCE' | 'BECE';
-  currentStats: {
-    wassce: { available: number; sold: number; total: number; threshold: number };
-    bece: { available: number; sold: number; total: number; threshold: number };
-  };
-  onBatchIngested: (newBatch: BatchRecord, updatedStats: any) => void;
+  initialProduct?: VoucherType;
 }
 
 export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
   isOpen,
   onClose,
-  initialProduct = 'WASSCE',
-  currentStats,
-  onBatchIngested,
+  initialProduct = 'WASSCE_NOVDEC',
 }) => {
   const { addToast } = useToast();
   const { isLight } = useAdminTheme();
   
-  const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>(initialProduct);
-  const [batchQuantity] = useState('500');
-  const [simulatedFileName, setSimulatedFileName] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<VoucherType>(initialProduct);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutate: uploadBatch, isPending } = useBulkUpload();
 
   useEffect(() => {
     if (initialProduct) {
       setSelectedProduct(initialProduct);
     }
-    setSimulatedFileName(null);
+    setSelectedFile(null);
   }, [initialProduct, isOpen]);
 
-  const handleSimulateSelectFile = () => {
-    const qty = parseInt(batchQuantity) || 500;
-    const fileName = `${selectedProduct}_2026_Pool_${qty}PINs_Raw.csv`;
-    setSimulatedFileName(fileName);
-    addToast({
-      title: 'File Attached Successfully',
-      message: `Attached ${fileName} for in-memory AES-256 cryptographic parsing.`,
-      type: 'info',
-    });
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleTriggerFileSelect = () => {
+    fileInputRef.current?.click();
   };
 
   const handleImportBatch = (e: React.FormEvent) => {
     e.preventDefault();
-    const qty = parseInt(batchQuantity) || 500;
+    
+    if (!selectedFile) return;
 
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      let newStats = { ...currentStats };
-      if (selectedProduct === 'WASSCE') {
-        newStats.wassce = {
-          ...currentStats.wassce,
-          available: currentStats.wassce.available + qty,
-          total: currentStats.wassce.total + qty,
-        };
-      } else {
-        newStats.bece = {
-          ...currentStats.bece,
-          available: currentStats.bece.available + qty,
-          total: currentStats.bece.total + qty,
-        };
+    uploadBatch(
+      { voucherType: selectedProduct, file: selectedFile },
+      {
+        onSuccess: () => {
+          addToast({
+            title: 'Voucher Batch Ingested',
+            message: `Successfully uploaded and processed ${selectedFile.name}.`,
+            type: 'success',
+          });
+          setSelectedFile(null);
+          onClose();
+        },
+        onError: (err: any) => {
+          addToast({
+            title: 'Upload Failed',
+            message: err.response?.data?.message || 'Failed to bulk upload vouchers',
+            type: 'error',
+          });
+        }
       }
-
-      const newBatch: BatchRecord = {
-        id: `BATCH-2026-${selectedProduct[0]}${Math.floor(Math.random() * 89 + 10)}`,
-        product: `${selectedProduct} 2026`,
-        uploadDate: new Date().toISOString().split('T')[0],
-        serialRange: `${selectedProduct[0]}260${Math.floor(10000 + Math.random() * 90000)} - ...`,
-        total: qty,
-        remaining: qty,
-        status: 'ACTIVE',
-      };
-
-      setIsProcessing(false);
-      onBatchIngested(newBatch, newStats);
-      onClose();
-      setSimulatedFileName(null);
-
-      addToast({
-        title: 'Voucher Batch Ingested & Encrypted',
-        message: `${qty} ${selectedProduct} PINs successfully processed into PostgreSQL with AES-256 encryption.`,
-        type: 'success',
-      });
-    }, 700);
+    );
   };
-
-  const currentPoolAvailable = selectedProduct === 'WASSCE' ? currentStats.wassce.available : currentStats.bece.available;
 
   return (
     <Modal
@@ -106,7 +81,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
       size="lg"
     >
       <form onSubmit={handleImportBatch} className="space-y-4">
-        {/* Security Banner - Compact Single/Double Line */}
+        {/* Security Banner */}
         <div className={`py-2 px-3 rounded-xl border text-[11px] flex items-center gap-2.5 transition-colors ${
           isLight
             ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs'
@@ -118,7 +93,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
             <FiLock />
           </div>
           <p className="leading-snug">
-            <strong className="font-black">AES-256 Protection Active:</strong> PINs are encrypted immediately in memory before database insertion. Raw CSV files are never retained.
+            <strong className="font-black">AES-256 Protection Active:</strong> PINs are encrypted immediately in memory before database insertion.
           </p>
         </div>
 
@@ -132,9 +107,9 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => { setSelectedProduct('WASSCE'); setSimulatedFileName(null); }}
+              onClick={() => setSelectedProduct('WASSCE_NOVDEC')}
               className={`p-3 rounded-xl font-bold text-left border transition-all flex items-center justify-between ${
-                selectedProduct === 'WASSCE'
+                selectedProduct === 'WASSCE_NOVDEC'
                   ? isLight
                     ? 'bg-[#0F8B8D]/10 border-[#0F8B8D] text-[#0F8B8D] ring-1 ring-[#0F8B8D]/30 shadow-2xs'
                     : 'bg-teal-500/20 border-teal-400 text-teal-300 shadow-2xs shadow-teal-950/50'
@@ -145,29 +120,19 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
             >
               <div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-black ${selectedProduct === 'WASSCE' && isLight ? 'text-primary' : ''}`}>
+                  <span className={`text-xs font-black ${selectedProduct === 'WASSCE_NOVDEC' && isLight ? 'text-primary' : ''}`}>
                     WASSCE 2026 POOL
                   </span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
-                    selectedProduct === 'WASSCE'
-                      ? isLight ? 'bg-[#0F8B8D] text-white' : 'bg-teal-500 text-slate-950'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                  }`}>
-                    GH₵ 25
-                  </span>
                 </div>
-                <p className="text-[11px] font-semibold opacity-80 mt-0.5 flex items-center gap-1">
-                  <FiDatabase className="w-3 h-3 text-[#0F8B8D] dark:text-teal-400" /> Stock: <strong>{currentStats.wassce.available.toLocaleString()} units</strong>
-                </p>
               </div>
-              {selectedProduct === 'WASSCE' && (
+              {selectedProduct === 'WASSCE_NOVDEC' && (
                 <FiCheckCircle className={`w-4 h-4 shrink-0 ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`} />
               )}
             </button>
 
             <button
               type="button"
-              onClick={() => { setSelectedProduct('BECE'); setSimulatedFileName(null); }}
+              onClick={() => setSelectedProduct('BECE')}
               className={`p-3 rounded-xl font-bold text-left border transition-all flex items-center justify-between ${
                 selectedProduct === 'BECE'
                   ? isLight
@@ -183,17 +148,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
                   <span className={`text-xs font-black ${selectedProduct === 'BECE' && isLight ? 'text-amber-950' : ''}`}>
                     BECE 2026 POOL
                   </span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
-                    selectedProduct === 'BECE'
-                      ? isLight ? 'bg-amber-600 text-white' : 'bg-amber-500 text-slate-950 font-black'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                  }`}>
-                    GH₵ 20
-                  </span>
                 </div>
-                <p className="text-[11px] font-semibold opacity-80 mt-0.5 flex items-center gap-1">
-                  <FiDatabase className="w-3 h-3 text-amber-600 dark:text-amber-400" /> Stock: <strong>{currentStats.bece.available.toLocaleString()} units</strong>
-                </p>
               </div>
               {selectedProduct === 'BECE' && (
                 <FiCheckCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
@@ -209,10 +164,17 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           }`}>
             2. Select Stock File (.CSV or .XLSX)
           </label>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileSelect} 
+            className="hidden" 
+            accept=".csv, .xlsx, .xls"
+          />
           <div
-            onClick={handleSimulateSelectFile}
+            onClick={handleTriggerFileSelect}
             className={`border-2 border-dashed rounded-2xl p-4 text-center transition-all cursor-pointer ${
-              simulatedFileName
+              selectedFile
                 ? isLight
                   ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 shadow-2xs'
                   : 'bg-teal-950/40 border-teal-500/80 text-teal-200 shadow-2xs'
@@ -221,7 +183,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
                 : 'bg-slate-950/60 border-slate-800 hover:border-teal-500/50 hover:bg-slate-950'
             }`}
           >
-            {simulatedFileName ? (
+            {selectedFile ? (
               <div className="flex flex-col items-center gap-1 animate-fadeIn py-1">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-lg shadow-2xs ${
                   isLight ? 'bg-emerald-600 text-white' : 'bg-teal-500 text-slate-950'
@@ -229,15 +191,11 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
                   <FiCheckCircle />
                 </div>
                 <p className="text-xs font-black flex items-center justify-center gap-1.5 mt-0.5">
-                  <FiFileText className="opacity-70" /> {simulatedFileName}
+                  <FiFileText className="opacity-70" /> {selectedFile.name}
                 </p>
                 <div className="flex items-center gap-2 text-[10px]">
                   <span className="font-semibold text-slate-500 dark:text-slate-400">
-                    ~{Math.max(12, Math.floor((parseInt(batchQuantity) || 500) * 0.08))} KB
-                  </span>
-                  <span>•</span>
-                  <span className="font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-                    Verified for Hashing
+                    {Math.round(selectedFile.size / 1024)} KB
                   </span>
                 </div>
               </div>
@@ -249,40 +207,30 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
                   <FiUploadCloud />
                 </div>
                 <p className={`text-xs font-black ${isLight ? 'text-primary' : 'text-white'}`}>
-                  Click to Browse or Simulate CSV File Selection
+                  Click to Browse CSV / XLSX
                 </p>
-                <div className="flex items-center justify-center gap-1.5 mt-1.5 text-[10px] font-mono text-slate-400 font-bold">
-                  <span className="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80">serialNumber</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80">pinCode</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80">expiryDate</span>
-                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className={`flex items-center justify-between pt-3.5 border-t ${
+        <div className={`flex items-center justify-end pt-3.5 border-t ${
           isLight ? 'border-slate-200/90' : 'border-slate-800/80'
         }`}>
-          <div className="text-[11px] text-slate-400 font-bold hidden sm:block">
-            After ingestion: <span className={isLight ? 'text-primary' : 'text-white'}>
-              {(currentPoolAvailable + (parseInt(batchQuantity) || 0)).toLocaleString()} units
-            </span>
-          </div>
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-            <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={isProcessing} className="font-bold text-xs">
+            <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={isPending} className="font-bold text-xs">
               Cancel
             </Button>
             <Button
               type="submit"
               variant={isLight ? 'primary' : 'gradient'}
               size="sm"
-              disabled={!simulatedFileName || isProcessing}
-              leftIcon={isProcessing ? <FiRefreshCw className="animate-spin" /> : <FiLock />}
+              disabled={!selectedFile || isPending}
+              leftIcon={isPending ? <FiRefreshCw className="animate-spin" /> : <FiLock />}
               className="font-black text-xs px-4 shadow-sm"
             >
-              {isProcessing ? 'Encrypting...' : `Ingest Batch (${batchQuantity || 0} PINs)`}
+              {isPending ? 'Encrypting...' : `Ingest Batch`}
             </Button>
           </div>
         </div>

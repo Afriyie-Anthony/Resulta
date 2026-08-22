@@ -1,6 +1,6 @@
 export { InventoryHeader } from './InventoryHeader';
 export { PoolHealthCards } from './PoolHealthCards';
-export { BatchHistoryTable, type BatchRecord } from './BatchHistoryTable';
+export { BatchHistoryTable } from './BatchHistoryTable';
 export { SecurityComplianceFooter } from './SecurityComplianceFooter';
 export { BatchIngestModal } from './BatchIngestModal';
 export { InventoryTabs, type InventoryTabId } from './InventoryTabs';

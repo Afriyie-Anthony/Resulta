@@ -10,42 +10,24 @@ import {
   SoldVouchersTable,
   StockAlertsView,
   InventorySetupConfig,
-  type BatchRecord,
   type InventoryTabId,
 } from '../../../components/admin/inventory';
+import { useInventoryStats, useVoucherAlerts } from '../../../hooks/useVouchers';
+import type { VoucherType } from '../../../schemas/voucher';
 
 export const VoucherInventoryView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<InventoryTabId>('overview');
   const [tabFilter, setTabFilter] = useState<string | undefined>(undefined);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<'WASSCE' | 'BECE'>('WASSCE');
+  const [selectedProduct, setSelectedProduct] = useState<VoucherType>('WASSCE_NOVDEC');
 
-  const [inventoryStats, setInventoryStats] = useState({
-    wassce: { available: 1420, sold: 4080, total: 5500, threshold: 500 },
-    bece: { available: 180, sold: 2820, total: 3000, threshold: 200 }
-  });
+  // React Query Hooks
+  const { data: inventoryStats } = useInventoryStats();
+  const { data: alertsData } = useVoucherAlerts();
 
-  const [batches, setBatches] = useState<BatchRecord[]>([
-    { id: 'BATCH-2026-W09', product: 'WASSCE 2026', uploadDate: '2026-07-28', serialRange: 'W26001000 - W26002000', total: 1000, remaining: 620, status: 'ACTIVE' },
-    { id: 'BATCH-2026-W08', product: 'WASSCE 2026', uploadDate: '2026-07-15', serialRange: 'W26000001 - W26000999', total: 1000, remaining: 0, status: 'DEPLETED' },
-    { id: 'BATCH-2026-B04', product: 'BECE 2026', uploadDate: '2026-07-20', serialRange: 'B26000501 - B26001000', total: 500, remaining: 180, status: 'ACTIVE_LOW' },
-  ]);
-
-  const handleOpenReplenish = (product: 'WASSCE' | 'BECE') => {
+  const handleOpenReplenish = (product: VoucherType) => {
     setSelectedProduct(product);
     setIsImportOpen(true);
-  };
-
-  const handleBatchIngested = (newBatch: BatchRecord, updatedStats: any) => {
-    setBatches([newBatch, ...batches]);
-    setInventoryStats(updatedStats);
-  };
-
-  const handleUpdateThresholds = (wassceThreshold: number, beceThreshold: number) => {
-    setInventoryStats(prev => ({
-      wassce: { ...prev.wassce, threshold: wassceThreshold },
-      bece: { ...prev.bece, threshold: beceThreshold },
-    }));
   };
 
   const handleNavigateTab = (targetTab: InventoryTabId, filter?: string) => {
@@ -54,14 +36,26 @@ export const VoucherInventoryView: React.FC = () => {
   };
 
   // Calculate active alert count
-  const alertCount = (inventoryStats.bece.available <= inventoryStats.bece.threshold ? 1 : 0) +
-                     (inventoryStats.wassce.available <= inventoryStats.wassce.threshold ? 1 : 0);
+  const alertCount = alertsData 
+    ? (alertsData.beceIsLowStock ? 1 : 0) + (alertsData.wassceNovdecIsLowStock ? 1 : 0)
+    : 0;
+
+  // Fallback stats for UI during loading if undefined or mismatched keys
+  // @ts-ignore - gracefully handle potential backend key variations
+  const wStats = inventoryStats?.wassceNovdec || inventoryStats?.WASSCE_NOVDEC || inventoryStats?.wassce || { available: 0, sold: 0, total: 0, threshold: 0 };
+  // @ts-ignore
+  const bStats = inventoryStats?.bece || inventoryStats?.BECE || { available: 0, sold: 0, total: 0, threshold: 0 };
+
+  const safeStats = {
+    wassceNovdec: wStats,
+    bece: bStats
+  };
 
   return (
     <div className="space-y-6 pb-14">
       {/* 1. Page Header & Primary Actions */}
       <InventoryHeader
-        onOpenImport={() => { setSelectedProduct('WASSCE'); setIsImportOpen(true); }}
+        onOpenImport={() => { setSelectedProduct('WASSCE_NOVDEC'); setIsImportOpen(true); }}
       />
 
       {/* 2. Redesigned Premium Segmented Navigation Tabs */}
@@ -76,15 +70,13 @@ export const VoucherInventoryView: React.FC = () => {
         {activeTab === 'overview' && (
           <div className="space-y-8">
             <PoolHealthCards
-              stats={inventoryStats}
+              stats={safeStats}
               onReplenish={handleOpenReplenish}
               onNavigateTab={handleNavigateTab}
             />
             <SecurityComplianceFooter />
           </div>
         )}
-
-
 
         {activeTab === 'registry' && (
           <InventoryRegistryTable key={tabFilter || 'all'} initialFilter={tabFilter} />
@@ -96,26 +88,21 @@ export const VoucherInventoryView: React.FC = () => {
 
         {activeTab === 'history' && (
           <div className="space-y-6">
-            <BatchHistoryTable
-              batches={batches}
-              onInspectBatch={(batchId) => handleNavigateTab('registry', batchId)}
-            />
+            <BatchHistoryTable />
             <SecurityComplianceFooter />
           </div>
         )}
 
         {activeTab === 'alerts' && (
           <StockAlertsView
-            stats={inventoryStats}
+            stats={safeStats}
+            alerts={alertsData}
             onReplenish={handleOpenReplenish}
           />
         )}
 
         {activeTab === 'config' && (
-          <InventorySetupConfig
-            stats={inventoryStats}
-            onUpdateThresholds={handleUpdateThresholds}
-          />
+          <InventorySetupConfig />
         )}
       </div>
 
@@ -124,8 +111,6 @@ export const VoucherInventoryView: React.FC = () => {
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
         initialProduct={selectedProduct}
-        currentStats={inventoryStats}
-        onBatchIngested={handleBatchIngested}
       />
     </div>
   );

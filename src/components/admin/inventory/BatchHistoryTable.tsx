@@ -1,59 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Badge } from '../../ui/Badge';
 import { Pagination } from '../../ui/Pagination';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { FiSearch, FiFileText, FiDownload, FiDatabase, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
+import { FiSearch, FiFileText, FiDownload, FiDatabase } from 'react-icons/fi';
+import { useUploadHistory } from '../../../hooks/useVouchers';
+import type { VoucherType } from '../../../schemas/voucher';
 
-export interface BatchRecord {
-  id: string;
-  product: string;
-  uploadDate: string;
-  serialRange: string;
-  total: number;
-  remaining: number;
-  status: string;
-}
+interface BatchHistoryTableProps {}
 
-interface BatchHistoryTableProps {
-  batches: BatchRecord[];
-  onInspectBatch?: (batchId: string) => void;
-}
+type FilterStatus = 'ALL' | VoucherType;
 
-type FilterStatus = 'ALL' | 'ACTIVE' | 'ACTIVE_LOW' | 'DEPLETED';
-
-export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches }) => {
+export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
-  const [batchList, setBatchList] = useState<BatchRecord[]>(batches);
-  const [deletingBatch, setDeletingBatch] = useState<BatchRecord | null>(null);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('ALL');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  useEffect(() => {
-    setBatchList(batches);
-  }, [batches]);
-
-  // Apply search query & status filters
-  const filteredBatches = batchList.filter((batch) => {
-    const matchesSearch =
-      batch.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      batch.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      batch.serialRange.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (!matchesSearch) return false;
-    if (statusFilter === 'ALL') return true;
-    return batch.status === statusFilter;
+  const { data, isLoading } = useUploadHistory({
+    page: currentPage,
+    limit: itemsPerPage,
+    voucherType: statusFilter,
+    search: searchQuery,
   });
-
-  const totalPages = Math.ceil(filteredBatches.length / itemsPerPage);
-  const paginatedBatches = filteredBatches.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -68,21 +41,14 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
   const handleExportCSV = () => {
     addToast({
       title: 'Cryptographic Audit Exported',
-      message: `Generated tamper-proof CSV audit report for ${filteredBatches.length} batch logs.`,
+      message: `Generated tamper-proof CSV audit report.`,
       type: 'success',
     });
   };
 
-  const confirmDeleteBatch = () => {
-    if (!deletingBatch) return;
-    setBatchList((prev) => prev.filter((b) => b.id !== deletingBatch.id));
-    addToast({
-      title: 'Voucher Batch File Purged',
-      message: `Uploaded batch file ${deletingBatch.id} (${deletingBatch.product}) has been deleted, purging ${deletingBatch.remaining.toLocaleString()} unassigned stock units.`,
-      type: 'success',
-    });
-    setDeletingBatch(null);
-  };
+  const batches = data?.items || [];
+  const totalPages = data?.meta?.totalPages || 1;
+  const totalItems = data?.meta?.total || 0;
 
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm ${
@@ -100,7 +66,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
                 ? 'bg-slate-200 border-slate-300 text-slate-900'
                 : 'bg-slate-800 border-slate-700 text-slate-100'
             }`}>
-              {filteredBatches.length} {filteredBatches.length === 1 ? 'Record' : 'Records'}
+              {totalItems} {totalItems === 1 ? 'Record' : 'Records'}
             </span>
           </div>
           <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
@@ -145,11 +111,11 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
         isLight ? 'bg-slate-100/90 border-slate-300' : 'bg-slate-950/40 border-slate-800/70'
       }`}>
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>Status Filter:</span>
+          <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>Filter by Product:</span>
           <div className={`inline-flex p-1 rounded-xl border ${
             isLight ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-900 border-slate-800'
           }`}>
-            {(['ALL', 'ACTIVE', 'ACTIVE_LOW', 'DEPLETED'] as FilterStatus[]).map((status) => (
+            {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterStatus[]).map((status) => (
               <button
                 key={status}
                 onClick={() => handleStatusFilterChange(status)}
@@ -163,7 +129,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
                     : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                {status === 'ACTIVE_LOW' ? 'Low Stock' : status === 'ALL' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}
+                {status === 'ALL' ? 'All' : status.replace('_NOVDEC', '')}
               </button>
             ))}
           </div>
@@ -183,13 +149,18 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
               <th className="py-3 px-3">Total Units</th>
               <th className="py-3 px-3">Remaining Stock</th>
               <th className="py-3 px-3">Pool Status</th>
-              <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-semibold ${
             isLight ? 'divide-slate-200' : 'divide-slate-800/50'
           }`}>
-            {paginatedBatches.map((batch) => {
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
+                  Loading...
+                </td>
+              </tr>
+            ) : batches.map((batch) => {
               const remainingPercent = Math.min(100, Math.max(0, (batch.remaining / batch.total) * 100));
               return (
                 <tr key={batch.id} className={`transition-colors ${
@@ -202,14 +173,14 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
                   </td>
                   <td className={`py-3.5 px-3 font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                     <div className="flex items-center gap-1.5">
-                      <FiDatabase className="w-3.5 h-3.5 opacity-60" /> {batch.product}
+                      <FiDatabase className="w-3.5 h-3.5 opacity-60" /> {batch.voucherType}
                     </div>
                   </td>
                   <td className={`py-3.5 px-3 font-bold text-[11px] ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{batch.uploadDate}</td>
                   <td className={`py-3.5 px-3 font-mono font-bold text-xs ${
                     isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
                   }`}>
-                    {batch.serialRange}
+                    {batch.serialRange || 'N/A'}
                   </td>
                   <td className={`py-3.5 px-3 font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
                     {batch.total.toLocaleString()}
@@ -255,22 +226,12 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
                       {batch.status === 'ACTIVE_LOW' ? 'LOW STOCK' : batch.status}
                     </Badge>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setDeletingBatch(batch)}
-                      title="Purge uploaded voucher file batch"
-                      className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                    </button>
-                  </td>
                 </tr>
               );
             })}
-            {filteredBatches.length === 0 && (
+            {!isLoading && batches.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-slate-400 font-medium">
+                <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
                   No batch ingestion records found matching "{searchQuery}".
                 </td>
               </tr>
@@ -282,7 +243,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        totalItems={filteredBatches.length}
+        totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={(newSize) => {
@@ -290,48 +251,6 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = ({ batches })
           setCurrentPage(1);
         }}
       />
-
-      {/* Delete Batch File Confirmation Modal */}
-      {deletingBatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
-          <div className={`w-full max-w-md p-6 rounded-3xl shadow-xl border transition-all ${
-            isLight ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'
-          }`}>
-            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 mb-3">
-              <div className="p-2.5 rounded-2xl bg-rose-100 dark:bg-rose-950/50">
-                <FiAlertTriangle className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-base font-black">Delete Voucher File Batch?</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Purges entire uploaded stock file</p>
-              </div>
-            </div>
-
-            <p className={`text-xs font-semibold mb-4 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-              Are you sure you want to delete batch file <strong className="font-mono text-rose-600 dark:text-rose-400">{deletingBatch.id}</strong> ({deletingBatch.product})? This will permanently delete the uploaded file and purge all <strong className="font-mono text-rose-600 dark:text-rose-400">{deletingBatch.remaining.toLocaleString()}</strong> unassigned vouchers remaining in this batch from active inventory.
-            </p>
-
-            <div className="flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={() => setDeletingBatch(null)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
-                  isLight ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-                }`}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={confirmDeleteBatch}
-                className="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-colors flex items-center gap-1.5"
-              >
-                <FiTrash2 className="w-3.5 h-3.5" /> Purge Entire Batch File
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

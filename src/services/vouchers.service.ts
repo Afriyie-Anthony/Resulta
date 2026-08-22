@@ -1,50 +1,91 @@
 import apiClient from '../lib/axios';
 import type {
+  VoucherConfig,
   InventoryStats,
   BatchRecord,
   Voucher,
   VoucherFilters,
+  SoldVouchersFilters,
+  UploadHistoryFilters,
+  VoucherAlerts,
+  VoucherType,
 } from '../schemas/voucher';
 
 /**
  * Vouchers / inventory service.
- *
- * Endpoints (assumed):
- *   GET  /admin/inventory/stats         → pool health stats
- *   GET  /admin/inventory/batches       → batch history list
- *   POST /admin/inventory/batches       → ingest new batch (multipart)
- *   GET  /admin/inventory/vouchers      → paginated voucher registry
  */
 
-export const getInventoryStats = async (): Promise<InventoryStats> => {
-  const { data } = await apiClient.get('/admin/inventory/stats');
+// ─── Config & Alerts ─────────────────────────────────────────────────────────
+
+export const getConfig = async (): Promise<VoucherConfig> => {
+  const { data } = await apiClient.get('/admin/vouchers/config');
   return data;
 };
 
-export const getBatchHistory = async (): Promise<BatchRecord[]> => {
-  const { data } = await apiClient.get('/admin/inventory/batches');
+export const updateConfig = async (config: Partial<VoucherConfig>): Promise<VoucherConfig> => {
+  const { data } = await apiClient.put('/admin/vouchers/config', config);
   return data;
 };
 
-export const ingestBatch = async (
-  product: 'WASSCE' | 'BECE',
-  file: File,
-  notes?: string,
-): Promise<BatchRecord> => {
-  const formData = new FormData();
-  formData.append('product', product);
-  formData.append('file', file);
-  if (notes) formData.append('notes', notes);
+export const getAlerts = async (): Promise<VoucherAlerts> => {
+  const { data } = await apiClient.get('/admin/vouchers/alerts');
+  return data;
+};
 
-  const { data } = await apiClient.post('/admin/inventory/batches', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+// ─── Stats & Registry ────────────────────────────────────────────────────────
+
+export const getStats = async (): Promise<InventoryStats> => {
+  const { data } = await apiClient.get('/admin/vouchers/stats');
   return data;
 };
 
 export const getVoucherRegistry = async (
   filters: Partial<VoucherFilters> = {},
 ): Promise<{ items: Voucher[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
-  const { data } = await apiClient.get('/admin/inventory/vouchers', { params: filters });
+  const { data } = await apiClient.get('/admin/vouchers/', { params: filters });
+  return data;
+};
+
+export const getSoldVouchers = async (
+  filters: Partial<SoldVouchersFilters> = {},
+): Promise<{ items: Voucher[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
+  const { data } = await apiClient.get('/admin/vouchers/sold', { params: filters });
+  return data;
+};
+
+// ─── Bulk Uploads ────────────────────────────────────────────────────────────
+
+export const validateUpload = async (
+  voucherType: VoucherType,
+  file: File
+): Promise<{ success: boolean; validCount: number; duplicates: number }> => {
+  const formData = new FormData();
+  formData.append('voucherType', voucherType);
+  formData.append('file', file);
+
+  const { data } = await apiClient.post('/admin/vouchers/validate-upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+};
+
+export const bulkUpload = async (
+  voucherType: VoucherType,
+  file: File
+): Promise<void> => {
+  const formData = new FormData();
+  formData.append('voucherType', voucherType);
+  formData.append('file', file);
+
+  const { data } = await apiClient.post('/admin/vouchers/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+};
+
+export const getUploadHistory = async (
+  filters: Partial<UploadHistoryFilters> = {},
+): Promise<{ items: BatchRecord[]; meta: { total: number; page: number; totalPages: number; limit: number } }> => {
+  const { data } = await apiClient.get('/admin/vouchers/upload-history', { params: filters });
   return data;
 };

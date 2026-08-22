@@ -3,7 +3,7 @@ import { Button } from '../../ui/Button';
 import { useToast } from '../../ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiLock, FiUploadCloud, FiCheckCircle, FiRefreshCw, FiFileText } from 'react-icons/fi';
-import type { BatchRecord } from './BatchHistoryTable';
+import type { BatchRecord } from '../../../schemas/voucher';
 
 interface InlineStockUploadProps {
   currentStats: {
@@ -62,7 +62,7 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
 
       const newBatch: BatchRecord = {
         id: `BATCH-2026-${selectedProduct[0]}${Math.floor(Math.random() * 89 + 10)}`,
-        product: `${selectedProduct} 2026`,
+        voucherType: selectedProduct === 'WASSCE' ? 'WASSCE_NOVDEC' : 'BECE',
         uploadDate: new Date().toISOString().split('T')[0],
         serialRange: `${selectedProduct[0]}260${Math.floor(10000 + Math.random() * 90000)} - ...`,
         total: qty,

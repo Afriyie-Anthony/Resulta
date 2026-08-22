@@ -3,76 +3,43 @@ import { Badge } from '../../ui/Badge';
 import { Pagination } from '../../ui/Pagination';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiSearch, FiCheckSquare, FiSmartphone, FiCopy, FiCheck } from 'react-icons/fi';
-
-interface SoldItem {
-  orderRef: string;
-  serial: string;
-  pinCode: string;
-  product: string;
-  customerPhone: string;
-  channel: string;
-  dispatchedAt: string;
-  status: string;
-}
-
-const mockSoldVouchers: SoldItem[] = [
-  { orderRef: 'ORD-88241', serial: '262100424896', pinCode: '7TTC5F7789F2', product: 'BECE 2026', customerPhone: '024****819', channel: 'USSD Checkout', dispatchedAt: '2 mins ago', status: 'SOLD' },
-  { orderRef: 'ORD-88240', serial: 'WGR250672304', pinCode: '684781585973', product: 'WASSCE 2026', customerPhone: '050****412', channel: 'Web Portal', dispatchedAt: '5 mins ago', status: 'SOLD' },
-  { orderRef: 'ORD-88239', serial: 'WGR250672212', pinCode: '682254328104', product: 'WASSCE 2026', customerPhone: '027****911', channel: 'USSD Checkout', dispatchedAt: '12 mins ago', status: 'SOLD' },
-  { orderRef: 'ORD-88238', serial: 'W26001978', pinCode: '918237465012', product: 'WASSCE 2026', customerPhone: '024****331', channel: 'USSD Checkout', dispatchedAt: '18 mins ago', status: 'SOLD' },
-  { orderRef: 'ORD-88237', serial: 'B26000969', pinCode: '409182736451', product: 'BECE 2026', customerPhone: '054****721', channel: 'USSD Checkout', dispatchedAt: '24 mins ago', status: 'SOLD' },
-  { orderRef: 'ORD-88236', serial: 'W26001977', pinCode: '883920194821', product: 'WASSCE 2026', customerPhone: '020****119', channel: 'Web Portal', dispatchedAt: '35 mins ago', status: 'SOLD' },
-];
+import { useSoldVouchers } from '../../../hooks/useVouchers';
+import type { VoucherType } from '../../../schemas/voucher';
 
 interface SoldVouchersTableProps {
   initialFilter?: string;
 }
 
+type FilterType = 'ALL' | VoucherType;
+
 export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFilter }) => {
   const { isLight } = useAdminTheme();
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [channelFilter, setChannelFilter] = useState('ALL');
   const [copiedPin, setCopiedPin] = useState<string | null>(null);
-  const [productFilter, setProductFilter] = useState(
+  const [productFilter, setProductFilter] = useState<FilterType>(
     initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
-      ? initialFilter.includes('WASSCE') ? 'WASSCE' : 'BECE'
+      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : 'BECE'
       : 'ALL'
   );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const filteredSold = mockSoldVouchers.filter((item) => {
-    const matchesSearch =
-      item.orderRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.serial.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.pinCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.customerPhone.includes(searchQuery);
-    
-    if (!matchesSearch) return false;
-    if (channelFilter !== 'ALL' && !item.channel.includes(channelFilter)) return false;
-    if (productFilter !== 'ALL' && !item.product.includes(productFilter)) return false;
-    return true;
+  const { data, isLoading } = useSoldVouchers({
+    page: currentPage,
+    limit: itemsPerPage,
+    type: productFilter,
+    search: searchQuery,
   });
-
-  const totalPages = Math.ceil(filteredSold.length / itemsPerPage);
-  const paginatedSold = filteredSold.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
-  const handleProductFilterChange = (filter: string) => {
+  const handleProductFilterChange = (filter: FilterType) => {
     setProductFilter(filter);
-    setCurrentPage(1);
-  };
-
-  const handleChannelFilterChange = (filter: string) => {
-    setChannelFilter(filter);
     setCurrentPage(1);
   };
 
@@ -81,6 +48,10 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
     setCopiedPin(pin);
     setTimeout(() => setCopiedPin(null), 2000);
   };
+
+  const vouchers = data?.items || [];
+  const totalPages = data?.meta?.totalPages || 1;
+  const totalItems = data?.meta?.total || 0;
 
   return (
     <div className={`p-4 sm:p-5 rounded-3xl border transition-colors shadow-sm ${
@@ -127,7 +98,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             <div className={`inline-flex p-1 rounded-xl border ${
               isLight ? 'bg-white border-slate-300 shadow-2xs' : 'bg-slate-900 border-slate-800'
             }`}>
-              {['ALL', 'WASSCE', 'BECE'].map((filter) => (
+              {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterType[]).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => handleProductFilterChange(filter)}
@@ -141,33 +112,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                       : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
                 >
-                  {filter === 'ALL' ? 'All' : filter}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Channel Filter Segment */}
-          <div className="flex items-center gap-2">
-            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>Channel:</span>
-            <div className={`inline-flex p-1 rounded-xl border ${
-              isLight ? 'bg-white border-slate-300 shadow-2xs' : 'bg-slate-900 border-slate-800'
-            }`}>
-              {['ALL', 'USSD', 'Web'].map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => handleChannelFilterChange(filter)}
-                  className={`px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold transition-all ${
-                    channelFilter === filter
-                      ? isLight
-                        ? 'bg-[#0F8B8D] text-white shadow-2xs'
-                        : 'bg-teal-500 text-slate-950 font-black shadow-2xs'
-                      : isLight
-                      ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-100 font-bold'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  {filter === 'ALL' ? 'All' : filter}
+                  {filter === 'ALL' ? 'All' : filter.replace('_NOVDEC', '')}
                 </button>
               ))}
             </div>
@@ -181,7 +126,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
               ? 'bg-white border-slate-300 text-slate-900 shadow-2xs'
               : 'bg-slate-800 border-slate-700 text-slate-100'
           }`}>
-            {filteredSold.length} {filteredSold.length === 1 ? 'Record' : 'Records'}
+            {totalItems} {totalItems === 1 ? 'Record' : 'Records'}
           </span>
         </div>
       </div>
@@ -204,14 +149,20 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
           <tbody className={`divide-y text-xs font-semibold ${
             isLight ? 'divide-slate-200' : 'divide-slate-800/50'
           }`}>
-            {paginatedSold.map((item, idx) => (
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-slate-500 font-semibold">
+                  Loading sold vouchers...
+                </td>
+              </tr>
+            ) : vouchers.map((item, idx) => (
               <tr key={idx} className={`transition-colors ${
                 isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/50'
               }`}>
                 <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black ${
                   isLight ? 'text-[#0B2545]' : 'text-teal-400'
                 }`}>
-                  {item.orderRef}
+                  {item.orderId || 'N/A'}
                 </td>
                 <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-bold text-xs ${
                   isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
@@ -225,29 +176,29 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                         ? 'bg-slate-100 border-slate-300 text-slate-950'
                         : 'bg-slate-950 border-slate-800 text-white'
                     }`}>
-                      {item.pinCode}
+                      {item.pin}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopyPin(item.pinCode)}
+                      onClick={() => handleCopyPin(item.pin)}
                       title="Copy PIN Code"
                       className="p-1 text-slate-400 hover:text-emerald-600 transition-colors"
                     >
-                      {copiedPin === item.pinCode ? <FiCheck className="w-3.5 h-3.5 text-emerald-600" /> : <FiCopy className="w-3.5 h-3.5" />}
+                      {copiedPin === item.pin ? <FiCheck className="w-3.5 h-3.5 text-emerald-600" /> : <FiCopy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </td>
                 <td className={`py-2.5 px-3.5 whitespace-nowrap font-black ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
-                  {item.product}
+                  {item.voucherType}
                 </td>
                 <td className={`py-2.5 px-3.5 whitespace-nowrap font-mono font-black ${isLight ? 'text-slate-950' : 'text-slate-300'}`}>
                   <div className="flex items-center gap-1.5">
                     <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-3.5 h-3.5" />
-                    {item.customerPhone}
+                    {item.soldToPhone || 'N/A'}
                   </div>
                 </td>
                 <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold text-xs ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                  {item.dispatchedAt}
+                  {item.soldAt ? new Date(item.soldAt).toLocaleString() : 'N/A'}
                 </td>
                 <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                   <Badge variant="success" className="text-[10px] font-black uppercase !px-2.5 py-0.5 shadow-2xs">
@@ -256,7 +207,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                 </td>
               </tr>
             ))}
-            {filteredSold.length === 0 && (
+            {!isLoading && vouchers.length === 0 && (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-slate-500 font-semibold">
                   No dispatched vouchers match search query "{searchQuery}".
@@ -271,7 +222,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={filteredSold.length}
+          totalItems={totalItems}
           itemsPerPage={itemsPerPage}
           onPageChange={setCurrentPage}
           onItemsPerPageChange={(newSize) => {
