@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Pagination } from '../../ui/Pagination';
-import type { Customer } from './types';
+import type { Customer, PaginationMeta } from './types';
 import { formatCedi } from '../../../utils/formatters';
-import { FiSmartphone, FiMessageSquare, FiEye, FiAward, FiCheckCircle } from 'react-icons/fi';
+import { FiSmartphone, FiEye, FiAward, FiCheckCircle } from 'react-icons/fi';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 interface CustomersTableProps {
   customers: Customer[];
-  onInspectCustomer: (customer: Customer) => void;
-  onSendSMS: (customer: Customer) => void;
+  meta?: PaginationMeta;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+  onInspectCustomer: (phoneNumber: string) => void;
 }
+
+const TableSkeleton: React.FC<{ isLight: boolean }> = ({ isLight }) => (
+  <div className={`p-12 text-center rounded-3xl border transition-colors ${
+    isLight ? 'bg-white border-slate-300' : 'bg-slate-900 border-slate-800'
+  }`}>
+    <div className={`h-8 w-8 mx-auto rounded-full animate-pulse mb-3 ${isLight ? 'bg-slate-200' : 'bg-slate-700'}`} />
+    <p className={`text-sm font-black mb-1 animate-pulse ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Loading directory...</p>
+  </div>
+);
 
 export const CustomersTable: React.FC<CustomersTableProps> = ({
   customers,
+  meta,
+  isLoading,
+  onPageChange,
   onInspectCustomer,
-  onSendSMS
 }) => {
   const { isLight } = useAdminTheme();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const totalPages = Math.ceil(customers.length / itemsPerPage);
-  const paginatedCustomers = customers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  if (isLoading) {
+    return <TableSkeleton isLight={isLight} />;
+  }
 
-  if (customers.length === 0) {
+  if (!customers || customers.length === 0) {
     return (
       <div className={`p-12 text-center rounded-3xl border transition-colors ${
         isLight ? 'bg-white border-slate-300 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
@@ -48,8 +58,7 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
               isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-950/50 text-slate-400'
             }`}>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Account</th>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Phone Number</th>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Account Status</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Account Segment</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Total Orders</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Lifetime Value</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Last Active</th>
@@ -57,28 +66,28 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
-            {paginatedCustomers.map((cust) => {
-              const isVip = cust.status === 'VIP BUYER';
+            {customers.map((cust) => {
+              const isVip = cust.segment === 'VIP';
+              const lastActiveText = cust.lastOrderAt ? formatDistanceToNow(parseISO(cust.lastOrderAt), { addSuffix: true }) : 'Never';
+
               return (
                 <tr
-                  key={cust.id}
+                  key={cust.phoneNumber}
                   className={`transition-colors ${
                     isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'
                   }`}
                 >
-                  <td className="py-2.5 px-3.5 whitespace-nowrap font-mono font-black text-xs">
-                    <span className={isLight ? 'text-[#0B2545]' : 'text-teal-400'}>
-                      {cust.id}
-                    </span>
-                    <span className={`block font-sans text-[10px] font-extrabold mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                      Registered {cust.registeredDate}
-                    </span>
-                  </td>
-
                   <td className="py-2.5 px-3.5 whitespace-nowrap">
-                    <div className="flex items-center gap-1.5 font-black text-sm">
-                      <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-4 h-4 shrink-0" />
-                      <span className={isLight ? 'text-slate-950' : 'text-white'}>{cust.phone}</span>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1.5 font-black text-sm">
+                        <FiSmartphone className="text-[#0F8B8D] dark:text-teal-400 w-4 h-4 shrink-0" />
+                        <span className={isLight ? 'text-slate-950' : 'text-white'}>{cust.phoneNumber}</span>
+                      </div>
+                      {cust.fullName && (
+                        <span className={`text-[10px] font-extrabold mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                          {cust.fullName}
+                        </span>
+                      )}
                     </div>
                   </td>
 
@@ -89,53 +98,41 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
-                        <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Verified
+                        <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {cust.segment}
                       </span>
                     )}
                   </td>
 
                   <td className="py-2.5 px-3.5 whitespace-nowrap font-black">
                     <span className={isLight ? 'text-slate-950' : 'text-slate-200'}>
-                      {cust.totalOrders} {cust.totalOrders === 1 ? 'Voucher' : 'Vouchers'}
+                      {cust.totalVouchersPurchased} {cust.totalVouchersPurchased === 1 ? 'Voucher' : 'Vouchers'}
+                    </span>
+                    <span className={`block text-[10px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>
+                      Across {cust.totalOrders} orders
                     </span>
                   </td>
 
                   <td className="py-2.5 px-3.5 whitespace-nowrap font-black text-sm text-emerald-700 dark:text-emerald-400">
-                    {formatCedi(cust.spent)}
+                    {formatCedi(cust.totalSpent)}
                   </td>
 
                   <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold text-xs ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                    {cust.lastActive}
+                    {lastActiveText}
                   </td>
 
                   <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => onInspectCustomer(cust)}
-                        title="View Customer Profile"
-                        className={`p-2 rounded-xl border transition-all shadow-2xs ${
-                          isLight
-                            ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200 hover:text-slate-950'
-                            : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
-                        }`}
-                      >
-                        <FiEye className="w-4 h-4 text-[#0F8B8D] dark:text-teal-400" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => onSendSMS(cust)}
-                        title={`Dispatch direct SMS to ${cust.phone}`}
-                        className={`p-2 rounded-xl border transition-all shadow-2xs ${
-                          isLight
-                            ? 'bg-slate-100 border-slate-300 text-[#0F8B8D] hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700'
-                            : 'bg-slate-800/80 border-slate-700 text-teal-400 hover:bg-slate-800 hover:text-teal-300'
-                        }`}
-                      >
-                        <FiMessageSquare className="w-4 h-4" />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onInspectCustomer(cust.phoneNumber)}
+                      title="View Customer Profile"
+                      className={`p-2 rounded-xl border transition-all shadow-2xs ${
+                        isLight
+                          ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200 hover:text-slate-950'
+                          : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <FiEye className="w-4 h-4 text-[#0F8B8D] dark:text-teal-400" />
+                    </button>
                   </td>
                 </tr>
               );
@@ -144,19 +141,18 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
         </table>
       </div>
 
-      <div className={`px-6 py-3 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={customers.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={(newSize) => {
-            setItemsPerPage(newSize);
-            setCurrentPage(1);
-          }}
-        />
-      </div>
+      {meta && meta.totalPages > 1 && (
+        <div className={`px-6 py-3 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
+          <Pagination
+            currentPage={meta.page}
+            totalPages={meta.totalPages}
+            totalItems={meta.total}
+            itemsPerPage={meta.limit}
+            onPageChange={onPageChange}
+            onItemsPerPageChange={() => {}} // Remove if backend doesn't support changing limit easily or handle it in parent
+          />
+        </div>
+      )}
     </div>
   );
 };

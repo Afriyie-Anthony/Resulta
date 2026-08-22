@@ -1,8 +1,9 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   getCustomers,
-  getCustomerById,
-  sendCustomerSMS,
+  getCustomerStats,
+  getCustomerByPhone,
+  exportCustomersCsv,
 } from '../services/customers.service';
 import type { CustomerFilters } from '../schemas/customer';
 
@@ -11,27 +12,44 @@ export const customerKeys = {
   all: ['customers'] as const,
   lists: () => [...customerKeys.all, 'list'] as const,
   list: (filters: Partial<CustomerFilters>) => [...customerKeys.lists(), filters] as const,
-  details: () => [...customerKeys.all, 'detail'] as const,
-  detail: (id: string) => [...customerKeys.details(), id] as const,
+  stats: () => [...customerKeys.all, 'stats'] as const,
+  profiles: () => [...customerKeys.all, 'profile'] as const,
+  profile: (phoneNumber: string) => [...customerKeys.profiles(), phoneNumber] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
+
 export const useCustomers = (filters: Partial<CustomerFilters> = {}) =>
   useQuery({
     queryKey: customerKeys.list(filters),
     queryFn: () => getCustomers(filters),
   });
 
-export const useCustomer = (id: string) =>
+export const useCustomerStats = () =>
   useQuery({
-    queryKey: customerKeys.detail(id),
-    queryFn: () => getCustomerById(id),
-    enabled: !!id,
+    queryKey: customerKeys.stats(),
+    queryFn: () => getCustomerStats(),
+  });
+
+export const useCustomerProfile = (phoneNumber: string | null) =>
+  useQuery({
+    queryKey: customerKeys.profile(phoneNumber ?? ''),
+    queryFn: () => getCustomerByPhone(phoneNumber!),
+    enabled: !!phoneNumber,
   });
 
 // ─── Mutations ────────────────────────────────────────────────────────────────
-export const useSendCustomerSMS = () =>
+
+export const useExportCustomers = () =>
   useMutation({
-    mutationFn: ({ id, message }: { id: string; message: string }) =>
-      sendCustomerSMS(id, message),
+    mutationFn: (filters: Partial<Omit<CustomerFilters, 'page' | 'limit'>>) =>
+      exportCustomersCsv(filters),
+    onSuccess: (blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resulta-customers-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
   });
