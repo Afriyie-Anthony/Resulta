@@ -4,6 +4,7 @@ import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import type { Order } from './types';
+import { useOrder } from '../../../hooks/useOrders';
 import { formatCedi } from '../../../utils/formatters';
 import {
   FiArrowLeft,
@@ -17,8 +18,7 @@ import {
   FiSend,
   FiShield,
   FiCopy,
-  FiCheckCircle,
-  FiUser
+  FiCheckCircle
 } from 'react-icons/fi';
 
 interface OrderDetailsViewProps {
@@ -42,11 +42,14 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
+  const { data: fullOrderData, isLoading } = useOrder(order.id);
+  const fullOrder = fullOrderData || order;
+
   const stages = [
-    { name: 'Checkout Started', done: true, time: order.date },
-    { name: 'MoMo Payment Verified', done: order.status === 'FULFILLED' || order.status === 'PENDING_MOMO', active: order.status === 'PENDING_MOMO', failed: order.status === 'FAILED' },
-    { name: 'Voucher Allocated', done: order.status === 'FULFILLED', failed: order.status === 'FAILED' },
-    { name: 'SMS Dispatched', done: order.status === 'FULFILLED', failed: order.status === 'FAILED' }
+    { name: 'Checkout Started', done: true, time: fullOrder.createdAt },
+    { name: 'Payment Verified', done: fullOrder.status === 'SUCCESSFUL', active: fullOrder.status === 'PENDING', failed: fullOrder.status === 'FAILED' },
+    { name: 'Voucher Allocated', done: fullOrder.status === 'SUCCESSFUL' && (fullOrder.vouchersAssigned ?? 0) > 0, failed: fullOrder.status === 'FAILED' },
+    { name: 'SMS Dispatched', done: fullOrder.deliveryStatus === 'DELIVERED', active: fullOrder.deliveryStatus === 'PENDING', failed: fullOrder.deliveryStatus === 'FAILED' || fullOrder.status === 'FAILED' }
   ];
 
   return (
@@ -71,21 +74,21 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
               {order.id}
             </span>
             <Badge
-              variant={order.status === 'FULFILLED' ? 'success' : order.status === 'PENDING_MOMO' ? 'warning' : 'error'}
+              variant={fullOrder.status === 'SUCCESSFUL' ? 'success' : fullOrder.status === 'PENDING' ? 'warning' : 'error'}
               className="text-xs font-black !px-3 !py-1 shadow-2xs"
             >
-              {order.status.replace('_', ' ')}
+              {fullOrder.status}
             </Badge>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {order.status === 'FULFILLED' && (
+          {fullOrder.status === 'SUCCESSFUL' && (
             <Button
               variant={isLight ? 'primary' : 'gradient'}
               size="md"
               leftIcon={<FiSend />}
-              onClick={() => onResendSMS(order)}
+              onClick={() => onResendSMS(fullOrder)}
               className="font-black text-xs h-11 px-5 rounded-2xl shadow-md"
             >
               Resend SMS Voucher
@@ -101,10 +104,10 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
             Transaction Value
           </span>
           <p className={`text-2xl font-black ${isLight ? 'text-[#0B2545]' : 'text-white'}`}>
-            {formatCedi(order.price)}
+            {formatCedi(fullOrder.totalAmount)}
           </p>
           <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-1 block">
-            Single Unit License
+            {fullOrder.quantity}x Unit License
           </span>
         </Card>
 
@@ -113,7 +116,7 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
             Voucher Product
           </span>
           <p className={`text-lg font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            {order.product}
+            {fullOrder.voucherType?.replace('_', ' ')}
           </p>
           <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-1 block">
             WAEC Ghana Official Serial
@@ -122,13 +125,13 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
 
         <Card glass className={`p-5 border ${isLight ? 'bg-white border-slate-300 shadow-sm' : 'bg-slate-900/90 border-slate-800'}`}>
           <span className={`text-[11px] font-black uppercase tracking-wider block mb-1 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-            Payment Gateway
+            Payment Channel
           </span>
           <p className={`text-lg font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            {order.network}
+            {fullOrder.channel}
           </p>
           <span className="text-xs font-semibold text-[#0F8B8D] dark:text-teal-400 mt-1 block">
-            Verified Mobile Money
+            Verified {fullOrder.channel === 'USSD' ? 'USSD' : 'Web Portal'}
           </span>
         </Card>
 
@@ -137,10 +140,10 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
             Purchase Timestamp
           </span>
           <p className={`text-base font-mono font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            {order.date}
+            {new Date(fullOrder.createdAt).toLocaleString()}
           </p>
           <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-1 block">
-            GMT Accra Standard Time
+            Local Time
           </span>
         </Card>
       </div>
@@ -204,10 +207,10 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
             <div className="flex items-center gap-2">
               <FiTag className="text-[#0F8B8D] dark:text-teal-400 w-5 h-5" />
               <h3 className={`text-base font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Allocated Voucher Credentials
+                Allocated Voucher Credentials ({fullOrder.vouchers?.length || 0})
               </h3>
             </div>
-            {order.status === 'FULFILLED' && (
+            {fullOrder.status === 'SUCCESSFUL' && (
               <Button
                 variant={isLight ? 'outline' : 'secondary'}
                 size="sm"
@@ -215,68 +218,60 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
                 leftIcon={isPinVisible ? <FiEyeOff className="w-3.5 h-3.5" /> : <FiEye className="w-3.5 h-3.5" />}
                 className="font-bold text-xs"
               >
-                {isPinVisible ? 'Hide PIN' : 'Reveal PIN'}
+                {isPinVisible ? 'Hide PINs' : 'Reveal PINs'}
               </Button>
             )}
           </div>
 
-          {order.status === 'FULFILLED' ? (
+          {isLoading ? (
+            <div className="text-center py-8">Loading credentials...</div>
+          ) : fullOrder.status === 'SUCCESSFUL' && fullOrder.vouchers && fullOrder.vouchers.length > 0 ? (
             <div className="space-y-4">
-              <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-black uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                    Serial Number
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(order.serial, 'serial')}
-                    className="text-xs font-bold text-[#0F8B8D] dark:text-teal-400 flex items-center gap-1 hover:underline"
-                  >
-                    {copiedField === 'serial' ? <><FiCheckCircle className="w-3.5 h-3.5" /> Copied!</> : <><FiCopy className="w-3.5 h-3.5" /> Copy</>}
-                  </button>
-                </div>
-                <p className={`text-lg font-mono font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-300'}`}>
-                  {order.serial}
-                </p>
-              </div>
-
-              <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-black uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                    Voucher PIN Code
-                  </span>
-                  {isPinVisible && (
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(order.pin, 'pin')}
-                      className="text-xs font-bold text-[#0F8B8D] dark:text-teal-400 flex items-center gap-1 hover:underline"
-                    >
-                      {copiedField === 'pin' ? <><FiCheckCircle className="w-3.5 h-3.5" /> Copied!</> : <><FiCopy className="w-3.5 h-3.5" /> Copy PIN</>}
-                    </button>
-                  )}
-                </div>
-                <p className={`text-xl font-mono font-black px-3 py-1.5 rounded-xl border inline-block ${
-                  isPinVisible
-                    ? 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40'
-                    : 'bg-slate-200/80 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
-                }`}>
-                  {isPinVisible ? order.pin : '••••••••••••'}
-                </p>
-              </div>
-
-              {order.affiliateRef && (
-                <div className={`p-4 rounded-2xl border flex items-center justify-between ${
-                  isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-teal-500/10 border-teal-500/30 text-slate-200'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <FiUser className="w-4 h-4 text-emerald-700 dark:text-teal-400" />
-                    <span className="text-xs font-black">Attributed Affiliate Handle:</span>
+              {fullOrder.vouchers.map((voucher, index) => (
+                <div key={voucher.id} className="mb-4 border-b pb-4 last:border-0 last:pb-0 border-slate-200 dark:border-slate-800">
+                  <div className={`p-4 rounded-t-2xl border border-b-0 ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-xs font-black uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        Voucher #{index + 1} Serial
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(voucher.serialNumber, `serial-${voucher.id}`)}
+                        className="text-xs font-bold text-[#0F8B8D] dark:text-teal-400 flex items-center gap-1 hover:underline"
+                      >
+                        {copiedField === `serial-${voucher.id}` ? <><FiCheckCircle className="w-3.5 h-3.5" /> Copied!</> : <><FiCopy className="w-3.5 h-3.5" /> Copy</>}
+                      </button>
+                    </div>
+                    <p className={`text-lg font-mono font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-300'}`}>
+                      {voucher.serialNumber}
+                    </p>
                   </div>
-                  <Badge variant="success" className="font-mono text-xs font-black !px-3">
-                    {order.affiliateRef}
-                  </Badge>
+
+                  <div className={`p-4 rounded-b-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-xs font-black uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        Voucher PIN Code
+                      </span>
+                      {isPinVisible && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(voucher.pin, `pin-${voucher.id}`)}
+                          className="text-xs font-bold text-[#0F8B8D] dark:text-teal-400 flex items-center gap-1 hover:underline"
+                        >
+                          {copiedField === `pin-${voucher.id}` ? <><FiCheckCircle className="w-3.5 h-3.5" /> Copied!</> : <><FiCopy className="w-3.5 h-3.5" /> Copy PIN</>}
+                        </button>
+                      )}
+                    </div>
+                    <p className={`text-xl font-mono font-black px-3 py-1.5 rounded-xl border inline-block ${
+                      isPinVisible
+                        ? 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40'
+                        : 'bg-slate-200/80 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
+                    }`}>
+                      {isPinVisible ? voucher.pin : '••••••••••••'}
+                    </p>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           ) : (
             <div className={`p-6 rounded-2xl border text-center space-y-2 ${
@@ -311,10 +306,10 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
                 Recipient Mobile Money Account
               </span>
               <p className={`text-base font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                {order.phone}
+                {fullOrder.phoneNumber}
               </p>
               <span className="text-[#0F8B8D] dark:text-teal-400 font-bold text-xs block">
-                {order.network} Operator Network
+                {fullOrder.fullName}
               </span>
             </div>
 
@@ -324,12 +319,12 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
               </span>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-slate-500 block font-bold">MoMo Reference:</span>
-                  <span className="font-mono font-bold text-slate-800 dark:text-slate-200">PAY-GH-{order.id.slice(-6)}</span>
+                  <span className="text-slate-500 block font-bold">Transaction Reference:</span>
+                  <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{fullOrder.hubtelTransactionId || 'N/A'}</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block font-bold">SMS Dispatch Status:</span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">DELIVERED_GATEWAY</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">{fullOrder.deliveryStatus}</span>
                 </div>
               </div>
             </div>

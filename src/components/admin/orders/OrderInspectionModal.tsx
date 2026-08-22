@@ -4,6 +4,7 @@ import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import type { Order } from './types';
+import { useOrder } from '../../../hooks/useOrders';
 import { formatCedi } from '../../../utils/formatters';
 import {
   FiEye,
@@ -12,7 +13,6 @@ import {
   FiSmartphone,
   FiCalendar,
   FiTag,
-  FiUser,
   FiCheck,
   FiClock,
   FiAlertCircle
@@ -36,6 +36,9 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
 
   if (!order) return null;
 
+  const { data: fullOrderData } = useOrder(order?.id || '');
+  const fullOrder = fullOrderData || order;
+
   const handleTogglePin = () => {
     if (!isPinVisible) {
       onPinReveal();
@@ -45,10 +48,10 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
 
   // Pipeline stages logic
   const stages = [
-    { name: 'Checkout Started', done: true, time: order.date },
-    { name: 'MoMo Verified', done: order.status === 'FULFILLED' || order.status === 'PENDING_MOMO', active: order.status === 'PENDING_MOMO', failed: order.status === 'FAILED' },
-    { name: 'PIN Allocated', done: order.status === 'FULFILLED', failed: order.status === 'FAILED' },
-    { name: 'SMS Dispatched', done: order.status === 'FULFILLED', failed: order.status === 'FAILED' }
+    { name: 'Checkout Started', done: true, time: fullOrder.createdAt },
+    { name: 'Payment Verified', done: fullOrder.status === 'SUCCESSFUL', active: fullOrder.status === 'PENDING', failed: fullOrder.status === 'FAILED' },
+    { name: 'PIN Allocated', done: fullOrder.status === 'SUCCESSFUL' && (fullOrder.vouchersAssigned ?? 0) > 0, failed: fullOrder.status === 'FAILED' },
+    { name: 'SMS Dispatched', done: fullOrder.deliveryStatus === 'DELIVERED', active: fullOrder.deliveryStatus === 'PENDING', failed: fullOrder.deliveryStatus === 'FAILED' || fullOrder.status === 'FAILED' }
   ];
 
   return (
@@ -66,14 +69,14 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
           <div>
             <span className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider block">Transaction Identifier</span>
             <span className={`text-base font-mono font-black ${isLight ? 'text-primary' : 'text-teal-400'}`}>
-              {order.id}
+              {fullOrder.orderNumber}
             </span>
           </div>
           <Badge
-            variant={order.status === 'FULFILLED' ? 'success' : order.status === 'PENDING_MOMO' ? 'warning' : 'error'}
+            variant={fullOrder.status === 'SUCCESSFUL' ? 'success' : fullOrder.status === 'PENDING' ? 'warning' : 'error'}
             className="text-[10px] font-black !px-3 !py-1 shadow-2xs"
           >
-            {order.status.replace('_', ' ')}
+            {fullOrder.status}
           </Badge>
         </div>
 
@@ -123,9 +126,9 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
               <FiSmartphone /> MoMo Account
             </p>
             <p className={`text-sm font-black truncate ${isLight ? 'text-primary' : 'text-white'}`}>
-              {order.phone}
+              {fullOrder.phoneNumber}
             </p>
-            <p className="text-[#0F8B8D] dark:text-teal-400 font-bold text-[11px]">{order.network} Gateway</p>
+            <p className="text-[#0F8B8D] dark:text-teal-400 font-bold text-[11px]">{fullOrder.channel} Gateway</p>
           </div>
 
           <div className={`p-3 rounded-2xl border space-y-0.5 ${
@@ -135,14 +138,15 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
               <FiCalendar /> Purchase Date
             </p>
             <p className={`text-sm font-black truncate ${isLight ? 'text-primary' : 'text-white'}`}>
-              {order.date}
+              {new Date(fullOrder.createdAt).toLocaleString()}
             </p>
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-[11px]">{formatCedi(order.price)} Gross Total</p>
+            <p className="text-slate-500 dark:text-slate-400 font-bold text-[11px]">{formatCedi(fullOrder.totalAmount)} Gross Total</p>
           </div>
         </div>
 
         {/* Affiliate Attribution */}
-        {order.affiliateRef && (
+        {/*
+        {fullOrder.affiliateRef && (
           <div className={`px-3.5 py-2.5 rounded-2xl border flex items-center justify-between ${
             isLight
               ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
@@ -153,10 +157,11 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
               <span className="text-xs font-bold">Attributed Affiliate Code:</span>
             </div>
             <Badge variant="success" className="font-mono text-[11px] font-black !px-2.5">
-              {order.affiliateRef}
+              {fullOrder.affiliateRef}
             </Badge>
           </div>
         )}
+        */}
 
         {/* Cryptographic PIN Section (Compact) */}
         <div className={`p-4 rounded-2xl border transition-colors space-y-3 ${
@@ -166,10 +171,10 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
             <div className="flex items-center gap-2">
               <FiTag className="text-amber-500 dark:text-amber-400 w-4 h-4" />
               <span className={`text-xs font-black ${isLight ? 'text-primary' : 'text-white'}`}>
-                Allocated Serial & PIN Credentials
+                Allocated Credentials ({fullOrder.vouchers?.length || 0})
               </span>
             </div>
-            {order.status === 'FULFILLED' && (
+            {fullOrder.status === 'SUCCESSFUL' && (
               <Button
                 variant="outline"
                 size="sm"
@@ -177,31 +182,33 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
                 leftIcon={isPinVisible ? <FiEyeOff className="w-3.5 h-3.5" /> : <FiEye className="w-3.5 h-3.5" />}
                 className="text-[11px] h-7 px-2.5"
               >
-                {isPinVisible ? 'Hide PIN' : 'Reveal PIN'}
+                {isPinVisible ? 'Hide PINs' : 'Reveal PINs'}
               </Button>
             )}
           </div>
 
-          {order.status === 'FULFILLED' ? (
-            <div className={`grid grid-cols-2 gap-4 font-mono pt-2.5 border-t ${
-              isLight ? 'border-slate-200' : 'border-slate-800/60'
-            }`}>
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase block font-sans font-bold">Serial Number</span>
-                <span className={`text-xs font-black ${isLight ? 'text-secondary' : 'text-slate-200'}`}>{order.serial}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase block font-sans font-bold">Voucher PIN Code</span>
-                <span className={`text-xs font-extrabold px-2 py-0.5 rounded border inline-block mt-0.5 ${
-                  isPinVisible
-                    ? isLight
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                      : 'text-emerald-400 bg-emerald-500/15 border-emerald-500/40'
-                    : 'text-slate-400 border-transparent !px-0'
-                }`}>
-                  {isPinVisible ? order.pin : '••••••••••••'}
-                </span>
-              </div>
+          {fullOrder.status === 'SUCCESSFUL' && fullOrder.vouchers && fullOrder.vouchers.length > 0 ? (
+            <div className={`space-y-4 pt-2.5 border-t ${isLight ? 'border-slate-200' : 'border-slate-800/60'}`}>
+              {fullOrder.vouchers.map((voucher, idx) => (
+                <div key={voucher.id} className="grid grid-cols-2 gap-4 font-mono pb-2 border-b last:border-0 last:pb-0 border-slate-200 dark:border-slate-800/60">
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase block font-sans font-bold">Voucher #{idx + 1} Serial</span>
+                    <span className={`text-xs font-black ${isLight ? 'text-secondary' : 'text-slate-200'}`}>{voucher.serialNumber}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase block font-sans font-bold">PIN Code</span>
+                    <span className={`text-xs font-extrabold px-2 py-0.5 rounded border inline-block mt-0.5 ${
+                      isPinVisible
+                        ? isLight
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                          : 'text-emerald-400 bg-emerald-500/15 border-emerald-500/40'
+                        : 'text-slate-400 border-transparent !px-0'
+                    }`}>
+                      {isPinVisible ? voucher.pin : '••••••••••••'}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <p className={`text-[11px] font-bold p-2.5 rounded-xl border ${
@@ -223,11 +230,11 @@ export const OrderInspectionModal: React.FC<OrderInspectionModalProps> = ({
             <Button type="button" variant="ghost" size="sm" onClick={() => { setIsPinVisible(false); onClose(); }} className="h-9 font-bold text-xs">
               Close
             </Button>
-            {order.status === 'FULFILLED' && (
+            {fullOrder.status === 'SUCCESSFUL' && (
               <Button
                 variant={isLight ? 'primary' : 'gradient'}
                 size="sm"
-                onClick={() => { onResendSMS(order); onClose(); }}
+                onClick={() => { onResendSMS(fullOrder); onClose(); }}
                 leftIcon={<FiSend />}
                 className="h-9 px-4 text-xs font-black shadow-md rounded-xl"
               >

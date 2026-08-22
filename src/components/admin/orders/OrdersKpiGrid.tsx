@@ -1,34 +1,34 @@
 import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import type { Order } from './types';
+import type { OrderStats } from './types';
 import { formatCedi } from '../../../utils/formatters';
 import { FiDollarSign, FiCheckCircle, FiPieChart, FiSend } from 'react-icons/fi';
 
 interface OrdersKpiGridProps {
-  orders: Order[];
+  stats?: OrderStats;
   onSelectFilter: (status: string) => void;
 }
 
-export const OrdersKpiGrid: React.FC<OrdersKpiGridProps> = ({ orders, onSelectFilter }) => {
+export const OrdersKpiGrid: React.FC<OrdersKpiGridProps> = ({ stats, onSelectFilter }) => {
   const { isLight } = useAdminTheme();
 
   // Operational metrics
-  const totalRevenue = orders.reduce((sum, order) => sum + order.price, 0) || 74910;
-  const vouchersSold = 2497;
-  const ordersPlaced = 9312;
+  const totalRevenue = stats?.revenueAndVolume.totalRevenue || 0;
+  const vouchersSold = stats?.revenueAndVolume.vouchersSold || 0;
+  const ordersPlaced = stats?.revenueAndVolume.ordersPlaced || 0;
 
-  const successfulPayments = 2496;
-  const pendingPayments = 6800;
-  const failedPayments = 16;
+  const successfulPayments = stats?.paymentStatuses.successful || 0;
+  const pendingPayments = stats?.paymentStatuses.pending || 0;
+  const failedPayments = stats?.paymentStatuses.failed || 0;
 
-  const wassceSales = 281;
-  const beceSales = 2216;
-  const webSales = 8;
-  const ussdSales = 2488;
+  const wassceSales = stats?.salesBreakdown.byVoucherType['WASSCE_NOVDEC'] || 0;
+  const beceSales = stats?.salesBreakdown.byVoucherType['BECE'] || 0;
+  const webSales = stats?.salesBreakdown.byChannel['WEB'] || 0;
+  const ussdSales = stats?.salesBreakdown.byChannel['USSD'] || 0;
 
-  const sentDelivered = 2495;
-  const failedDelivery = 1;
-  const notSent = 0;
+  const sentDelivered = stats?.deliveryRates.delivered || 0;
+  const failedDelivery = stats?.deliveryRates.failedDelivery || 0;
+  const notSent = stats?.deliveryRates.notSent || 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -80,7 +80,7 @@ export const OrdersKpiGrid: React.FC<OrdersKpiGridProps> = ({ orders, onSelectFi
 
       {/* 2. PAYMENT STATUSES */}
       <div
-        onClick={() => onSelectFilter('FULFILLED')}
+        onClick={() => onSelectFilter('SUCCESSFUL')}
         className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${
           isLight
             ? 'bg-white border-slate-300 border-t-emerald-500 hover:border-slate-400'

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getOrders, getOrderById, resendOrderSMS, exportOrdersCsv } from '../services/orders.service';
+import { getOrders, getOrderById, resendOrderSMS, exportOrdersCsv, getOrderStats } from '../services/orders.service';
 import type { OrderFilters } from '../schemas/order';
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
@@ -7,6 +7,7 @@ export const orderKeys = {
   all: ['orders'] as const,
   lists: () => [...orderKeys.all, 'list'] as const,
   list: (filters: Partial<OrderFilters>) => [...orderKeys.lists(), filters] as const,
+  stats: () => [...orderKeys.all, 'stats'] as const,
   details: () => [...orderKeys.all, 'detail'] as const,
   detail: (id: string) => [...orderKeys.details(), id] as const,
 };
@@ -16,6 +17,12 @@ export const useOrders = (filters: Partial<OrderFilters> = {}) =>
   useQuery({
     queryKey: orderKeys.list(filters),
     queryFn: () => getOrders(filters),
+  });
+
+export const useOrderStats = () =>
+  useQuery({
+    queryKey: orderKeys.stats(),
+    queryFn: () => getOrderStats(),
   });
 
 export const useOrder = (id: string) =>

@@ -42,7 +42,11 @@ apiClient.interceptors.response.use(
       'success' in response.data &&
       'data' in response.data
     ) {
-      return { ...response, data: response.data.data };
+      const customResponse: any = { ...response, data: response.data.data };
+      if (response.data.pagination) {
+        customResponse.pagination = response.data.pagination;
+      }
+      return customResponse;
     }
     return response;
   },

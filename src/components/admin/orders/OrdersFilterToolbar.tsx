@@ -1,10 +1,10 @@
 import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import type { Order } from './types';
+import type { OrderStats } from './types';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 
 interface OrdersFilterToolbarProps {
-  orders: Order[];
+  stats?: OrderStats;
   searchTerm: string;
   onSearchChange: (val: string) => void;
   statusFilter: string;
@@ -14,7 +14,7 @@ interface OrdersFilterToolbarProps {
 }
 
 export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
-  orders,
+  stats,
   searchTerm,
   onSearchChange,
   statusFilter,
@@ -24,20 +24,24 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
 }) => {
   const { isLight } = useAdminTheme();
 
-  // Count helper
+  // Count helper using server stats
   const getStatusCount = (st: string) => {
-    if (st === 'ALL') return orders.length;
-    return orders.filter(o => o.status === st).length;
+    if (!stats) return 0;
+    if (st === 'ALL') return stats.revenueAndVolume.ordersPlaced;
+    if (st === 'SUCCESSFUL') return stats.paymentStatuses.successful;
+    if (st === 'PENDING') return stats.paymentStatuses.pending;
+    if (st === 'FAILED') return stats.paymentStatuses.failed;
+    return 0;
   };
 
   const statusOptions = [
     { id: 'ALL', label: 'All Orders' },
-    { id: 'FULFILLED', label: 'Fulfilled' },
-    { id: 'PENDING_MOMO', label: 'Pending MoMo' },
+    { id: 'SUCCESSFUL', label: 'Successful' },
+    { id: 'PENDING', label: 'Pending' },
     { id: 'FAILED', label: 'Failed' },
   ];
 
-  const productOptions = ['ALL', 'WASSCE 2026 Voucher', 'BECE 2026 Voucher'];
+  const productOptions = ['ALL', 'WASSCE_NOVDEC', 'BECE'];
 
   return (
     <div className={`p-5 rounded-3xl border transition-colors shadow-sm space-y-4 ${
@@ -121,7 +125,7 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
                   : 'bg-slate-800/40 text-slate-400 border-slate-800 hover:bg-slate-800'
               }`}
             >
-              {prod === 'ALL' ? 'All Products' : prod.replace(' Voucher', '')}
+              {prod === 'ALL' ? 'All Products' : prod.replace('_', ' ')}
             </button>
           ))}
         </div>

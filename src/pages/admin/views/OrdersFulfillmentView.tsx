@@ -8,67 +8,8 @@ import {
   OrdersTable,
   OrderDetailsView
 } from '../../../components/admin/orders';
-import { useResendOrderSMS, useExportOrders } from '../../../hooks/useOrders';
-
-const mockOrders: Order[] = [
-  {
-    id: 'TXN-9823-XL',
-    phone: '054 123 4567',
-    network: 'MTN MoMo',
-    product: 'WASSCE 2026 Voucher',
-    price: 25.00,
-    date: '2026-08-21 14:32',
-    status: 'FULFILLED',
-    serial: 'WSC-26-89012',
-    pin: '8923-4567-1234',
-    affiliateRef: 'EDUMAX-26'
-  },
-  {
-    id: 'TXN-9824-SM',
-    phone: '020 987 6543',
-    network: 'Telecel Cash',
-    product: 'BECE 2026 Voucher',
-    price: 20.00,
-    date: '2026-08-21 14:15',
-    status: 'PENDING_MOMO',
-    serial: 'PENDING ALLOCATION',
-    pin: 'PENDING'
-  },
-  {
-    id: 'TXN-9825-KL',
-    phone: '027 456 7890',
-    network: 'AirtelTigo',
-    product: 'WASSCE 2026 Voucher',
-    price: 25.00,
-    date: '2026-08-21 13:45',
-    status: 'FAILED',
-    serial: 'FAILED ALLOCATION',
-    pin: 'FAILED'
-  },
-  {
-    id: 'TXN-9826-XL',
-    phone: '055 234 5678',
-    network: 'MTN MoMo',
-    product: 'WASSCE 2026 Voucher',
-    price: 25.00,
-    date: '2026-08-21 12:10',
-    status: 'FULFILLED',
-    serial: 'WSC-26-89013',
-    pin: '8923-4567-9999'
-  },
-  {
-    id: 'TXN-9827-XX',
-    phone: '024 333 4444',
-    network: 'Card / Web',
-    product: 'BECE 2026 Voucher',
-    price: 20.00,
-    date: '2026-08-21 11:20',
-    status: 'FULFILLED',
-    serial: 'BEC-26-89014',
-    pin: '1123-4567-8888',
-    affiliateRef: 'TEACH-01'
-  }
-];
+import { useResendOrderSMS, useExportOrders, useOrders, useOrderStats } from '../../../hooks/useOrders';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 export const OrdersFulfillmentView: React.FC = () => {
   const { addToast } = useToast();
@@ -84,25 +25,27 @@ export const OrdersFulfillmentView: React.FC = () => {
   const resendSMS = useResendOrderSMS();
   const exportOrders = useExportOrders();
 
-  // Replace API with dummy data
-  const orders: Order[] = mockOrders.filter(o => {
-    const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
-    const matchesSearch = searchTerm === '' || o.id.includes(searchTerm) || o.phone.includes(searchTerm);
-    return matchesStatus && matchesSearch;
+  const [page, setPage] = useState(1);
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  const { data: statsData } = useOrderStats();
+  const { data: ordersData, isLoading } = useOrders({
+    page,
+    limit: 10,
+    status: statusFilter !== 'ALL' ? (statusFilter as any) : undefined,
+    voucherType: productFilter !== 'ALL' ? (productFilter as any) : undefined,
+    search: debouncedSearch || undefined,
   });
 
-  // Client-side product filter (backend may not support it yet)
-  const filteredOrders = orders.filter((o) => {
-    const matchesProduct = productFilter === 'ALL' || o.product === productFilter;
-    return matchesProduct;
-  });
+  const orders = ordersData?.items || [];
+  const meta = ordersData?.meta;
 
   const handleResendSMS = (order: Order) => {
     resendSMS.mutate(order.id, {
       onSuccess: () =>
         addToast({
           title: 'SMS Prompt Resubmitted',
-          message: `Result-checker PIN & instructions resent to ${order.phone} (${order.id}).`,
+          message: `Result-checker PIN & instructions resent to ${order.phoneNumber} (${order.orderNumber}).`,
           type: 'success',
         }),
       onError: () =>
@@ -146,29 +89,32 @@ export const OrdersFulfillmentView: React.FC = () => {
       {/* 1. Header */}
       <OrdersHeader
         onExportCsv={handleExportCsv}
-        totalOrdersCount={orders.length}
+        totalOrdersCount={meta?.total || 0}
       />
 
       {/* 2. KPI Cards */}
       <OrdersKpiGrid
-        orders={filteredOrders}
+        stats={statsData}
         onSelectFilter={handleSelectFilter}
       />
 
       {/* 3. Filter Toolbar */}
       <OrdersFilterToolbar
-        orders={filteredOrders}
+        stats={statsData}
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={(v) => { setSearchTerm(v); setPage(1); }}
         statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        onStatusChange={(v) => { setStatusFilter(v); setPage(1); }}
         productFilter={productFilter}
-        onProductChange={setProductFilter}
+        onProductChange={(v) => { setProductFilter(v); setPage(1); }}
       />
 
       {/* 4. Table — data */}
       <OrdersTable
-        orders={filteredOrders}
+        orders={orders}
+        meta={meta}
+        isLoading={isLoading}
+        onPageChange={setPage}
         onInspect={(order) => setSelectedOrder(order)}
         onResendSMS={handleResendSMS}
       />
