@@ -42,7 +42,7 @@ export const VoucherInventoryView: React.FC = () => {
 
   // Fallback stats for UI during loading if undefined or mismatched keys
   // @ts-ignore - gracefully handle potential backend key variations
-  const wStats = inventoryStats?.wassceNovdec || inventoryStats?.WASSCE_NOVDEC || inventoryStats?.wassce || { available: 0, sold: 0, total: 0, threshold: 0 };
+  const wStats = inventoryStats?.wassce_novdec || inventoryStats?.wassceNovdec || inventoryStats?.WASSCE_NOVDEC || inventoryStats?.wassce || { available: 0, sold: 0, total: 0, threshold: 0 };
   // @ts-ignore
   const bStats = inventoryStats?.bece || inventoryStats?.BECE || { available: 0, sold: 0, total: 0, threshold: 0 };
 
