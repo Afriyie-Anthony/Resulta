@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
 import { FiBarChart2, FiCalendar } from 'react-icons/fi';
-import type { RevenueDataPoint } from '../../../schemas/dashboard';
 
 type TimeFrame = '24h' | '7d' | '30d';
 

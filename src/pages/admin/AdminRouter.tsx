@@ -14,6 +14,7 @@ import { TimetablesView } from './views/TimetablesView';
 import { UsersView } from './views/UsersView';
 import { SMSModuleView } from './views/SMSModuleView';
 import { NotificationsView } from './views/NotificationsView';
+import { ContactsView } from './views/ContactsView';
 
 export const AdminRouter: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ export const AdminRouter: React.FC = () => {
         <Route path="orders" element={<OrdersFulfillmentView />} />
         <Route path="customers" element={<CustomersView />} />
         <Route path="timetables" element={<TimetablesView />} />
+        <Route path="contacts" element={<ContactsView />} />
         <Route path="users" element={<UsersView />} />
         <Route path="affiliates" element={<AffiliatesPartnersView />} />
         <Route path="sms" element={<SMSModuleView />} />
