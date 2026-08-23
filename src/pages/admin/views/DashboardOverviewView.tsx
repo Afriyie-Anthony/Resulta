@@ -11,20 +11,23 @@ import {
   LiveTransactionQueue,
   GatewayTelemetryCard,
 } from '../../../components/admin/dashboard';
+import { useDashboardTelemetry } from '../../../hooks/useDashboard';
 
 export const DashboardOverviewView: React.FC = () => {
+  const { data: telemetry, isLoading, isFetching } = useDashboardTelemetry('7d');
+
   return (
     <div className="space-y-6 pb-12">
       {/* 1. Header & Live Actions */}
       <DashboardHeader />
 
       {/* 2. Top Level KPIs (8 Metric Cards) */}
-      <KpiGrid />
+      <KpiGrid data={telemetry?.overviewCards} isLoading={isLoading} />
 
       {/* 3. Primary Performance & Velocity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <TrajectoryChart />
+          <TrajectoryChart data={telemetry?.revenueTrajectory} isLoading={isLoading} />
         </div>
         <div className="lg:col-span-1">
           <TargetVelocityCard />
@@ -50,10 +53,10 @@ export const DashboardOverviewView: React.FC = () => {
       {/* 6. Live Gateway Telemetry & Transaction Dispatch Queue */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <LiveTransactionQueue />
+          <LiveTransactionQueue data={telemetry?.liveTransactions} isLoading={isLoading} isFetching={isFetching} />
         </div>
         <div className="lg:col-span-1">
-          <GatewayTelemetryCard />
+          <GatewayTelemetryCard channelSplit={telemetry?.channelFulfillmentSplit} />
         </div>
       </div>
     </div>

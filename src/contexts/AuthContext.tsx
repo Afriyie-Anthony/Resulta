@@ -3,21 +3,22 @@ import { useAuthStore } from '../store/authStore';
 import { loginUser, registerAffiliate, logoutUser } from '../services/auth.service';
 import type { AuthUser } from '../schemas/auth';
 
-/**
- * AuthContext — the public-facing auth interface consumed by all components.
- *
- * Internal implementation delegates to:
- *  - useAuthStore (Zustand) for all state reads/writes
- *  - auth.service.ts for API calls
- *
- * The public API of useAuth() is unchanged so no components need updating.
- */
+export interface LoginResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface RegisterResult {
+  success: boolean;
+  error?: string;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string, type?: 'admin' | 'affiliate') => Promise<boolean>;
-  affiliateLogin: (email: string, password: string) => Promise<boolean>;
-  register: (data: { name: string; email: string; password: string }) => Promise<boolean>;
+  login: (email: string, password: string, type?: 'admin' | 'affiliate') => Promise<LoginResult>;
+  affiliateLogin: (email: string, password: string) => Promise<LoginResult>;
+  register: (data: { name: string; email: string; password: string }) => Promise<RegisterResult>;
   logout: () => void;
 }
 
@@ -31,18 +32,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     email: string,
     password: string,
     _type: 'admin' | 'affiliate' = 'admin',
-  ): Promise<boolean> => {
+  ): Promise<LoginResult> => {
     try {
       const { user: authUser, accessToken, refreshToken } = await loginUser({ email, password });
       setAuth(authUser, accessToken, refreshToken);
-      return true;
-    } catch {
-      return false;
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Invalid credentials. Please verify your email and password.';
+      return { success: false, error: errorMsg };
     }
   };
 
   // ─── Affiliate Login ──────────────────────────────────────────────────────
-  const affiliateLogin = async (email: string, password: string): Promise<boolean> => {
+  const affiliateLogin = async (email: string, password: string): Promise<LoginResult> => {
     return login(email, password, 'affiliate');
   };
 
@@ -51,13 +56,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     name: string;
     email: string;
     password: string;
-  }): Promise<boolean> => {
+  }): Promise<RegisterResult> => {
     try {
       const { user: authUser, accessToken, refreshToken } = await registerAffiliate(data);
       setAuth(authUser, accessToken, refreshToken);
-      return true;
-    } catch {
-      return false;
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Registration failed. Please try again.';
+      return { success: false, error: errorMsg };
     }
   };
 

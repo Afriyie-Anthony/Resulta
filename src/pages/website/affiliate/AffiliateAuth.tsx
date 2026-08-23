@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiBriefcase, FiPhone, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button } from '../../../components/ui/Button';
+import { ForgotPasswordModal } from '../../../components/auth/ForgotPasswordModal';
 
 type AuthView = 'login' | 'register';
 type RegisterStep = 1 | 2;
@@ -17,6 +18,7 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const location = useLocation();
@@ -76,12 +78,12 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
       return;
     }
     setIsLoading(true);
-    const success = await affiliateLogin(loginForm.email, loginForm.password);
+    const result = await affiliateLogin(loginForm.email, loginForm.password);
     setIsLoading(false);
-    if (success) {
+    if (result.success) {
       navigate('/affiliate/dashboard', { replace: true });
     } else {
-      setError('Invalid email or password. Please try again.');
+      setError(result.error || 'Invalid email or password. Please try again.');
     }
   };
 
@@ -108,19 +110,19 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
     }
 
     setIsLoading(true);
-    const success = await register({
+    const result = await register({
       name: registerForm.fullName,
       email: registerForm.email,
       password: registerForm.password,
     });
     setIsLoading(false);
-    if (success) {
+    if (result.success) {
       setSuccess('Registration successful! Welcome to the Resulta affiliate program.');
       setTimeout(() => {
         navigate('/affiliate/dashboard', { replace: true });
       }, 1500);
     } else {
-      setError('Registration failed. Please try again.');
+      setError(result.error || 'Registration failed. Please try again.');
     }
   };
 
@@ -254,6 +256,16 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
                           {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                         </button>
                       </div>
+                    </div>
+
+                    <div className="flex items-center justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setIsForgotPasswordOpen(true)}
+                        className="text-xs font-semibold text-secondary hover:underline"
+                      >
+                        Forgot password?
+                      </button>
                     </div>
 
                     <Button
@@ -543,6 +555,14 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
           </div>
         </div>
       </div>
+      
+      {/* Forgot Password OTP Modal */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+        isLight={false}
+        initialEmail={loginForm.email}
+      />
     </div>
   );
 };

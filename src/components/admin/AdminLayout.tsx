@@ -22,7 +22,9 @@ import {
   FiX,
   FiLogOut,
   FiSun,
-  FiMoon
+  FiMoon,
+  FiDollarSign,
+  FiShield
 } from 'react-icons/fi';
 
 export interface AdminLayoutProps extends BaseComponentProps {
@@ -60,10 +62,17 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
       ],
     },
     {
+      title: 'FINANCE & PAYMENTS',
+      items: [
+        { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawals', icon: FiDollarSign },
+      ],
+    },
+    {
       title: 'TOOLS & REPORTS',
       items: [
         { id: 'sms', path: '/admin/sms', label: 'SMS Module', icon: FiMessageSquare },
         { id: 'reports', path: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
+        { id: 'audit', path: '/admin/audit', label: 'Audit Logs', icon: FiShield },
         { id: 'settings', path: '/admin/settings', label: 'Settings', icon: FiSettings },
         { id: 'notifications', path: '/admin/notifications', label: 'Notifications', icon: FiBell },
       ],

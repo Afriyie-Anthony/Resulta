@@ -50,3 +50,8 @@ export const isoDateStringSchema = z.string().datetime({ offset: true });
 // ─── Exported Types ──────────────────────────────────────────────────────────
 export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
 export type ApiError = z.infer<typeof apiErrorSchema>;
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}

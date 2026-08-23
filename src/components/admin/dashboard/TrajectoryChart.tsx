@@ -2,43 +2,52 @@ import React, { useState } from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
 import { FiBarChart2, FiCalendar } from 'react-icons/fi';
+import type { RevenueDataPoint } from '../../../schemas/dashboard';
 
 type TimeFrame = '24h' | '7d' | '30d';
 
-export const TrajectoryChart: React.FC = () => {
+export interface TrajectoryChartProps {
+  data?: RevenueDataPoint[];
+  isLoading: boolean;
+}
+
+export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
   const { isLight } = useAdminTheme();
   const [timeframe, setTimeframe] = useState<TimeFrame>('7d');
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(2);
 
-  const chartDatasets: Record<TimeFrame, Array<{ label: string; revenue: number; orders: number; ussdPct: number }>> = {
+  const fallbackDatasets: Record<TimeFrame, Array<{ label: string; total: number; orders: number; ussdPct: number }>> = {
     '24h': [
-      { label: '00:00', revenue: 420, orders: 18, ussdPct: 38 },
-      { label: '04:00', revenue: 150, orders: 6, ussdPct: 45 },
-      { label: '08:00', revenue: 1850, orders: 74, ussdPct: 28 },
-      { label: '12:00', revenue: 3100, orders: 124, ussdPct: 31 },
-      { label: '16:00', revenue: 2400, orders: 96, ussdPct: 35 },
-      { label: '20:00', revenue: 1480, orders: 59, ussdPct: 42 },
+      { label: '00:00', total: 420, orders: 18, ussdPct: 38 },
+      { label: '04:00', total: 150, orders: 6, ussdPct: 45 },
+      { label: '08:00', total: 1850, orders: 74, ussdPct: 28 },
+      { label: '12:00', total: 3100, orders: 124, ussdPct: 31 },
+      { label: '16:00', total: 2400, orders: 96, ussdPct: 35 },
+      { label: '20:00', total: 1480, orders: 59, ussdPct: 42 },
     ],
     '7d': [
-      { label: 'Mon', revenue: 5400, orders: 216, ussdPct: 32 },
-      { label: 'Tue', revenue: 6800, orders: 272, ussdPct: 30 },
-      { label: 'Wed', revenue: 8450, orders: 338, ussdPct: 28 },
-      { label: 'Thu', revenue: 7100, orders: 284, ussdPct: 33 },
-      { label: 'Fri', revenue: 9200, orders: 368, ussdPct: 26 },
-      { label: 'Sat', revenue: 11400, orders: 456, ussdPct: 35 },
-      { label: 'Sun', revenue: 8900, orders: 356, ussdPct: 38 },
+      { label: 'Mon', total: 5400, orders: 216, ussdPct: 32 },
+      { label: 'Tue', total: 6800, orders: 272, ussdPct: 30 },
+      { label: 'Wed', total: 8450, orders: 338, ussdPct: 28 },
+      { label: 'Thu', total: 7100, orders: 284, ussdPct: 33 },
+      { label: 'Fri', total: 9200, orders: 368, ussdPct: 26 },
+      { label: 'Sat', total: 11400, orders: 456, ussdPct: 35 },
+      { label: 'Sun', total: 8900, orders: 356, ussdPct: 38 },
     ],
     '30d': [
-      { label: 'Wk 1', revenue: 38500, orders: 1540, ussdPct: 34 },
-      { label: 'Wk 2', revenue: 44200, orders: 1768, ussdPct: 31 },
-      { label: 'Wk 3', revenue: 52100, orders: 2084, ussdPct: 29 },
-      { label: 'Wk 4', revenue: 61800, orders: 2472, ussdPct: 27 },
+      { label: 'Wk 1', total: 38500, orders: 1540, ussdPct: 34 },
+      { label: 'Wk 2', total: 44200, orders: 1768, ussdPct: 31 },
+      { label: 'Wk 3', total: 52100, orders: 2084, ussdPct: 29 },
+      { label: 'Wk 4', total: 61800, orders: 2472, ussdPct: 27 },
     ],
   };
 
-  const activeData = chartDatasets[timeframe];
-  const maxRevenue = Math.max(...activeData.map((d) => d.revenue));
-  const totalRevenue = activeData.reduce((acc, d) => acc + d.revenue, 0);
+  const activeData = (data && data.length > 0)
+    ? data.map(d => ({ ...d, ussdPct: 30 })) // Mock ussdPct since it's not in schema
+    : fallbackDatasets[timeframe];
+
+  const maxRevenue = Math.max(...activeData.map((d) => d.total));
+  const totalRevenue = activeData.reduce((acc, d) => acc + d.total, 0);
   const totalOrders = activeData.reduce((acc, d) => acc + d.orders, 0);
 
   return (
@@ -113,7 +122,7 @@ export const TrajectoryChart: React.FC = () => {
         <div className="relative pt-2 pb-2 overflow-x-auto no-scrollbar">
           <div className="h-52 min-w-[300px] sm:min-w-0 flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-2 pt-6 pb-2 border-b border-dashed border-slate-300 dark:border-slate-800">
             {activeData.map((data, idx) => {
-              const heightPct = Math.max(15, (data.revenue / maxRevenue) * 100);
+              const heightPct = Math.max(15, (data.total / maxRevenue) * 100);
               const isSelected = selectedBarIndex === idx;
 
               return (
@@ -127,7 +136,7 @@ export const TrajectoryChart: React.FC = () => {
                       ? isLight ? 'bg-slate-950 text-white opacity-100 scale-105' : 'bg-teal-400 text-slate-950 opacity-100 scale-105 font-black'
                       : 'opacity-0 group-hover:opacity-100 bg-slate-950 text-white'
                   }`}>
-                    {formatCedi(data.revenue)}
+                    {formatCedi(data.total)}
                   </span>
 
                   <div
@@ -189,7 +198,7 @@ export const TrajectoryChart: React.FC = () => {
                 <div>
                   <span className="text-[9px] uppercase font-black text-slate-500 block">Spotlight Revenue</span>
                   <span className={`text-xs sm:text-sm font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
-                    {formatCedi(activeData[selectedBarIndex].revenue)}
+                    {formatCedi(activeData[selectedBarIndex].total)}
                   </span>
                 </div>
               </div>

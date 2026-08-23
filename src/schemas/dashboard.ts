@@ -5,18 +5,30 @@ import { z } from 'zod';
  * Covers KPI metrics, revenue charts, and live transaction queue.
  */
 
-// ─── KPI Metrics ─────────────────────────────────────────────────────────────
-export const kpiMetricsSchema = z.object({
-  totalRevenue: z.number().nonnegative(),
-  revenueToday: z.number().nonnegative(),
-  totalOrders: z.number().int().nonnegative(),
-  ordersToday: z.number().int().nonnegative(),
-  wascceStockAvailable: z.number().int().nonnegative(),
-  beceStockAvailable: z.number().int().nonnegative(),
-  pendingWithdrawals: z.number().nonnegative(),
-  pendingWithdrawalCount: z.number().int().nonnegative(),
-  activeAffiliates: z.number().int().nonnegative(),
-  conversionRate: z.number().min(0).max(100).optional(),
+// ─── Shared Nested Schemas ───────────────────────────────────────────────────
+
+export const systemStatusSchema = z.object({
+  status: z.string(),
+  smsGatewayRelay: z.string(),
+  webhookStatus: z.string(),
+});
+
+export const overviewCardsSchema = z.object({
+  totalRevenue: z.object({ totalAmount: z.number(), todayAmount: z.number() }),
+  totalOrders: z.object({ count: z.number(), todayCount: z.number() }),
+  wassceStock: z.object({ availableCount: z.number(), status: z.string() }),
+  beceStock: z.object({ availableCount: z.number(), status: z.string() }),
+  pendingWithdrawals: z.object({ totalAmount: z.number(), count: z.number() }),
+  activeAffiliates: z.object({ count: z.number() }),
+  conversionRate: z.object({ rate: z.number(), label: z.string() }),
+  todaysOrders: z.object({ count: z.number(), todayEarnedRevenue: z.number() }),
+});
+
+export const channelFulfillmentSplitSchema = z.object({
+  title: z.string(),
+  subtitle: z.string(),
+  webHttps: z.object({ name: z.string(), percentage: z.number() }),
+  ussdCode: z.object({ name: z.string(), percentage: z.number() }),
 });
 
 // ─── Revenue Data Point ──────────────────────────────────────────────────────
@@ -49,12 +61,30 @@ export const gatewayTelemetrySchema = z.object({
   queueDepth: z.number().int().nonnegative(),
 });
 
+// ─── Unified Telemetry Schema ────────────────────────────────────────────────
+export const dashboardTelemetrySchema = z.object({
+  systemStatus: systemStatusSchema.optional(),
+  overviewCards: overviewCardsSchema.optional(),
+  channelFulfillmentSplit: channelFulfillmentSplitSchema.optional(),
+  revenueTrajectory: z.array(revenueDataPointSchema).optional(),
+  liveTransactions: z.array(liveTransactionSchema).optional(),
+  gatewayTelemetry: gatewayTelemetrySchema.optional(),
+  targetVelocity: z.any().optional(),
+  examSalesDistribution: z.any().optional(),
+  inventoryAllocation: z.any().optional(),
+  ordersByChannel: z.any().optional(),
+  dailyOrdersChart: z.any().optional(),
+});
+
 // ─── Revenue Period ──────────────────────────────────────────────────────────
 export const revenuePeriodSchema = z.enum(['7d', '30d', '90d', 'ytd']);
 
 // ─── Exported Types ──────────────────────────────────────────────────────────
-export type KpiMetrics = z.infer<typeof kpiMetricsSchema>;
+export type SystemStatus = z.infer<typeof systemStatusSchema>;
+export type OverviewCards = z.infer<typeof overviewCardsSchema>;
+export type ChannelFulfillmentSplit = z.infer<typeof channelFulfillmentSplitSchema>;
 export type RevenueDataPoint = z.infer<typeof revenueDataPointSchema>;
 export type LiveTransaction = z.infer<typeof liveTransactionSchema>;
 export type GatewayTelemetry = z.infer<typeof gatewayTelemetrySchema>;
+export type DashboardTelemetry = z.infer<typeof dashboardTelemetrySchema>;
 export type RevenuePeriod = z.infer<typeof revenuePeriodSchema>;

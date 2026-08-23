@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAuthStore } from '../../store/authStore';
-import { useToast } from '../../components/ui/Toast';
 
 import { loginRequestSchema } from '../../schemas/auth';
+import { ForgotPasswordModal } from '../../components/auth/ForgotPasswordModal';
 import {
   FiMail,
   FiLock,
@@ -40,12 +40,12 @@ const AdminLogin: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [submitError, setSubmitError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
     return localStorage.getItem('resulta_remember_admin') === 'true';
   });
 
   const { login } = useAuth();
-  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -69,11 +69,11 @@ const AdminLogin: React.FC = () => {
     }
 
     setIsLoading(true);
-    const success = await login(email, password, 'admin');
+    const result = await login(email, password, 'admin');
     setIsLoading(false);
 
-    if (!success) {
-      setSubmitError('Invalid administrator credentials. Please verify your email and password.');
+    if (!result.success) {
+      setSubmitError(result.error || 'Invalid administrator credentials. Please verify your email and password.');
       return;
     }
 
@@ -96,15 +96,18 @@ const AdminLogin: React.FC = () => {
     navigate(from, { replace: true });
   };
 
+  // ── Fill Demo Admin Credentials ────────────────────────────────────────────
+  const handleFillDemoAdmin = () => {
+    setEmail('superadmin@example.com');
+    setPassword('password123');
+    setFieldErrors({});
+    setSubmitError('');
+  };
+
   // ── Forgot password ────────────────────────────────────────────────────────
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
-    addToast({
-      title: 'Password Reset',
-      message: 'For administrative security resets, contact support@owelynholdings.com',
-      type: 'info',
-      duration: 6000,
-    });
+    setIsForgotPasswordOpen(true);
   };
 
   const isLight = theme === 'light';
@@ -296,6 +299,26 @@ const AdminLogin: React.FC = () => {
                 </p>
               </div>
 
+              {/* Demo Credentials Quick Fill */}
+              <div className={`p-2.5 rounded-2xl border flex items-center justify-between gap-2 text-xs transition-colors ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800'
+              }`}>
+                <span className="text-[11px] font-bold text-slate-500 truncate">
+                  Test Credentials: <strong className={isLight ? 'text-slate-800' : 'text-slate-200'}>superadmin@example.com</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleFillDemoAdmin}
+                  className={`text-[11px] font-black px-3 py-1 rounded-xl border shrink-0 transition-all ${
+                    isLight
+                      ? 'bg-teal-50 border-teal-300 text-[#0F8B8D] hover:bg-teal-100'
+                      : 'bg-teal-500/10 border-teal-500/30 text-teal-300 hover:bg-teal-500/20'
+                  }`}
+                >
+                  Quick Fill
+                </button>
+              </div>
+
               {/* Submit Error Banner */}
               {submitError && (
                 <div
@@ -419,15 +442,15 @@ const AdminLogin: React.FC = () => {
                     </span>
                   </label>
 
-                  <a
-                    href="#forgot-password"
+                  <button
+                    type="button"
                     onClick={handleForgotPassword}
                     className={`font-black hover:underline ${
                       isLight ? 'text-[#0F8B8D]' : 'text-teal-400'
                     }`}
                   >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
 
                 {/* Submit */}
@@ -466,6 +489,14 @@ const AdminLogin: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password OTP Modal */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+        isLight={isLight}
+        initialEmail={email || rememberedEmail}
+      />
     </div>
   );
 };

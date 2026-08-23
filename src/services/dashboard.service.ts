@@ -1,9 +1,6 @@
 import apiClient from '../lib/axios';
 import type {
-  KpiMetrics,
-  RevenueDataPoint,
-  LiveTransaction,
-  GatewayTelemetry,
+  DashboardTelemetry,
   RevenuePeriod,
 } from '../schemas/dashboard';
 
@@ -18,26 +15,11 @@ import type {
  *   GET /admin/dashboard/gateway           → gateway telemetry snapshot
  */
 
-export const getKpiMetrics = async (): Promise<KpiMetrics> => {
-  const { data } = await apiClient.get('/admin/dashboard/kpis');
-  return data;
-};
-
-export const getRevenueTrajectory = async (
-  period: RevenuePeriod = '30d',
-): Promise<RevenueDataPoint[]> => {
-  const { data } = await apiClient.get('/admin/dashboard/revenue', {
-    params: { period },
+export const getDashboardTelemetry = async (
+  timeframe: RevenuePeriod = '7d',
+): Promise<DashboardTelemetry> => {
+  const { data } = await apiClient.get('/admin/dashboard/', {
+    params: { timeframe },
   });
-  return data;
-};
-
-export const getLiveTransactions = async (): Promise<LiveTransaction[]> => {
-  const { data } = await apiClient.get('/admin/dashboard/transactions/live');
-  return data;
-};
-
-export const getGatewayTelemetry = async (): Promise<GatewayTelemetry> => {
-  const { data } = await apiClient.get('/admin/dashboard/gateway');
   return data;
 };

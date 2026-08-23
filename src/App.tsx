@@ -22,11 +22,10 @@ import TermsPage from './pages/website/legal/TermsPage';
 import PrivacyPage from './pages/website/legal/PrivacyPage';
 import RefundPolicyPage from './pages/website/legal/RefundPolicyPage';
 import NotFound from './pages/website/NotFound';
-import AffiliateAuth from './pages/website/affiliate/AffiliateAuth';
 import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
 import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
-import AdminLogin from './pages/admin/Login';
+import UnifiedLogin from './pages/auth/UnifiedLogin';
 import { AdminRouter } from './pages/admin/AdminRouter';
 import type { LayoutMode } from './types/ui';
 import {
@@ -381,7 +380,11 @@ export const AppContent: React.FC = () => {
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/admin/login" element={<AdminLogin />} />
+      {/* Unified Login — handles both Admin and Affiliate auth */}
+      <Route path="/admin/login" element={<UnifiedLogin />} />
+      <Route path="/affiliate/login" element={<UnifiedLogin />} />
+      <Route path="/affiliate/apply" element={<UnifiedLogin />} />
+      <Route path="/login" element={<UnifiedLogin />} />
       <Route
         path="/admin/*"
         element={
@@ -400,8 +403,6 @@ const AppRoutes: React.FC = () => {
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/refund" element={<RefundPolicyPage />} />
       <Route path="/affiliate" element={<AffiliatePage />} />
-      <Route path="/affiliate/apply" element={<AffiliateAuth defaultView="register" />} />
-      <Route path="/affiliate/login" element={<AffiliateAuth defaultView="login" />} />
       <Route
         path="/affiliate/dashboard"
         element={

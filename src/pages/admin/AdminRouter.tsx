@@ -4,9 +4,8 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DashboardOverviewView } from './views/DashboardOverviewView';
 import { VoucherInventoryView } from './views/VoucherInventoryView';
 import { OrdersFulfillmentView } from './views/OrdersFulfillmentView';
-import { PaymentsCallbacksView } from './views/PaymentsCallbacksView';
 import { AffiliatesPartnersView } from './views/AffiliatesPartnersView';
-import { WithdrawalApprovalsView } from './views/WithdrawalApprovalsView';
+import { WithdrawalsView } from './views/WithdrawalsView';
 import { ReportsAnalyticsView } from './views/ReportsAnalyticsView';
 import { AuditLogsView } from './views/AuditLogsView';
 import { SystemSettingsView } from './views/SystemSettingsView';
@@ -20,7 +19,7 @@ export const AdminRouter: React.FC = () => {
   return (
     <AdminLayout>
       <Routes>
-        <Route path="/" element={<Navigate to="overview" replace />} />
+        <Route path="/" element={<Navigate to="/admin/overview" replace />} />
         <Route path="overview" element={<DashboardOverviewView />} />
         <Route path="inventory" element={<VoucherInventoryView />} />
         <Route path="orders" element={<OrdersFulfillmentView />} />
@@ -34,11 +33,10 @@ export const AdminRouter: React.FC = () => {
         <Route path="notifications" element={<NotificationsView />} />
         
         {/* Supporting historical/secondary administrative subviews */}
-        <Route path="payments" element={<PaymentsCallbacksView />} />
-        <Route path="withdrawals" element={<WithdrawalApprovalsView />} />
+        <Route path="withdrawals" element={<WithdrawalsView />} />
         <Route path="audit" element={<AuditLogsView />} />
         
-        <Route path="*" element={<Navigate to="overview" replace />} />
+        <Route path="*" element={<Navigate to="/admin/overview" replace />} />
       </Routes>
     </AdminLayout>
   );

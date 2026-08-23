@@ -1,8 +1,13 @@
 import React from 'react';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { FiServer, FiActivity, FiGlobe, FiSmartphone } from 'react-icons/fi';
+import type { ChannelFulfillmentSplit } from '../../../schemas/dashboard';
 
-export const GatewayTelemetryCard: React.FC = () => {
+export interface GatewayTelemetryCardProps {
+  channelSplit?: ChannelFulfillmentSplit;
+}
+
+export const GatewayTelemetryCard: React.FC<GatewayTelemetryCardProps> = ({ channelSplit }) => {
   const { isLight } = useAdminTheme();
 
   const gateways = [
@@ -11,6 +16,9 @@ export const GatewayTelemetryCard: React.FC = () => {
     { name: 'SMS Dispatch Engine', status: 'ONLINE', latency: '42ms', successRate: '99.4%', iconColor: 'text-cyan-700 bg-cyan-100 border border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-400' },
     { name: 'WAEC PIN Registry DB', status: 'ONLINE', latency: '18ms', successRate: '100%', iconColor: 'text-purple-700 bg-purple-100 border border-purple-300 dark:bg-purple-500/20 dark:text-purple-400' },
   ];
+
+  const webHttpsPct = channelSplit?.webHttps.percentage ?? 68.4;
+  const ussdCodePct = channelSplit?.ussdCode.percentage ?? 31.6;
 
   return (
     <div className="space-y-6 flex flex-col justify-between h-full">
@@ -69,34 +77,34 @@ export const GatewayTelemetryCard: React.FC = () => {
         isLight ? 'bg-white border-slate-300 text-slate-950' : 'bg-slate-900/90 border-slate-800 text-white shadow-xl'
       }`}>
         <h3 className={`text-base font-black mb-1 flex items-center gap-2 ${isLight ? 'text-slate-950' : 'text-white'}`}>
-          <FiGlobe className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Channel Fulfillment Split
+          <FiGlobe className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> {channelSplit?.title ?? 'Channel Fulfillment Split'}
         </h3>
         <p className={`text-xs font-semibold mb-4 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-          Storefront Web vs Offline GSM Feature Phones
+          {channelSplit?.subtitle ?? 'Storefront Web vs Offline GSM Feature Phones'}
         </p>
 
         <div className="space-y-4">
           <div>
             <div className="flex justify-between text-xs font-black mb-1">
               <span className={`flex items-center gap-1.5 ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
-                <FiGlobe className="text-[#0F8B8D]" /> Web HTTPS (Online)
+                <FiGlobe className="text-[#0F8B8D]" /> {channelSplit?.webHttps.name ?? 'Web HTTPS (Online)'}
               </span>
-              <span className="text-[#0F8B8D] dark:text-teal-400 font-mono font-black">68.4%</span>
+              <span className="text-[#0F8B8D] dark:text-teal-400 font-mono font-black">{webHttpsPct.toFixed(1)}%</span>
             </div>
             <div className={`w-full h-2.5 rounded-full overflow-hidden border ${isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-800'}`}>
-              <div className="h-full rounded-full bg-[#0F8B8D] transition-all duration-500" style={{ width: '68.4%' }} />
+              <div className="h-full rounded-full bg-[#0F8B8D] transition-all duration-500" style={{ width: `${webHttpsPct}%` }} />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-xs font-black mb-1">
               <span className={`flex items-center gap-1.5 ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
-                <FiSmartphone className="text-amber-600" /> USSD Code (*713# GSM)
+                <FiSmartphone className="text-amber-600" /> {channelSplit?.ussdCode.name ?? 'USSD Code (*713# GSM)'}
               </span>
-              <span className="text-amber-600 dark:text-amber-400 font-mono font-black">31.6%</span>
+              <span className="text-amber-600 dark:text-amber-400 font-mono font-black">{ussdCodePct.toFixed(1)}%</span>
             </div>
             <div className={`w-full h-2.5 rounded-full overflow-hidden border ${isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-800'}`}>
-              <div className="h-full rounded-full bg-amber-500 transition-all duration-500" style={{ width: '31.6%' }} />
+              <div className="h-full rounded-full bg-amber-500 transition-all duration-500" style={{ width: `${ussdCodePct}%` }} />
             </div>
           </div>
         </div>

@@ -1,9 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { useKpiMetrics } from '../../../hooks/useDashboard';
 import { formatCedi } from '../../../utils/formatters';
-import type { KpiMetrics } from '../../../schemas/dashboard';
+import type { OverviewCards } from '../../../schemas/dashboard';
 import {
   FiDollarSign,
   FiShoppingBag,
@@ -16,17 +15,15 @@ import {
 } from 'react-icons/fi';
 
 // ─── Default Fallback Dummy Data ──────────────────────────────────────────────
-const FALLBACK_KPIS: KpiMetrics = {
-  totalRevenue: 184500,
-  revenueToday: 8450,
-  totalOrders: 7875,
-  ordersToday: 338,
-  wascceStockAvailable: 4850,
-  beceStockAvailable: 2340,
-  pendingWithdrawals: 1420,
-  pendingWithdrawalCount: 4,
-  activeAffiliates: 68,
-  conversionRate: 98.4,
+const FALLBACK_KPIS: OverviewCards = {
+  totalRevenue: { totalAmount: 184500, todayAmount: 8450 },
+  totalOrders: { count: 7875, todayCount: 338 },
+  wassceStock: { availableCount: 4850, status: 'HEALTHY_STOCK' },
+  beceStock: { availableCount: 2340, status: 'HEALTHY_STOCK' },
+  pendingWithdrawals: { totalAmount: 1420, count: 4 },
+  activeAffiliates: { count: 68 },
+  conversionRate: { rate: 98.4, label: 'Payment -> fulfillment' },
+  todaysOrders: { count: 338, todayEarnedRevenue: 8450 },
 };
 
 // ─── Skeleton Card ─────────────────────────────────────────────────────────
@@ -46,19 +43,23 @@ const SkeletonKpiCard: React.FC<{ isLight: boolean }> = ({ isLight }) => (
 );
 
 // ─── KpiGrid ───────────────────────────────────────────────────────────────
-export const KpiGrid: React.FC = () => {
+export interface KpiGridProps {
+  data?: OverviewCards;
+  isLoading: boolean;
+}
+
+export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
   const navigate = useNavigate();
   const { isLight } = useAdminTheme();
-  const { data: realKpis, isLoading } = useKpiMetrics();
 
   // Use real data when available, otherwise gracefully fallback to realistic dummy data
-  const kpis: KpiMetrics = realKpis || FALLBACK_KPIS;
+  const kpis: OverviewCards = data || FALLBACK_KPIS;
 
   const kpiCards = [
     {
       title: 'TOTAL REVENUE',
-      value: formatCedi(kpis.totalRevenue),
-      badgeText: `Today: ${formatCedi(kpis.revenueToday)}`,
+      value: formatCedi(kpis.totalRevenue.totalAmount),
+      badgeText: `Today: ${formatCedi(kpis.totalRevenue.todayAmount)}`,
       badgeType: 'success',
       bgLight: 'bg-emerald-100 border border-emerald-300 hover:bg-emerald-200/70 shadow-xs',
       bgDark: 'bg-emerald-950/40 border border-emerald-500/40 hover:border-emerald-500/60 text-white',
@@ -71,8 +72,8 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'TOTAL ORDERS',
-      value: kpis.totalOrders.toLocaleString(),
-      badgeText: `Today: ${kpis.ordersToday.toLocaleString()} orders`,
+      value: kpis.totalOrders.count.toLocaleString(),
+      badgeText: `Today: ${kpis.totalOrders.todayCount.toLocaleString()} orders`,
       badgeType: 'success',
       bgLight: 'bg-slate-200/90 border border-slate-300 hover:bg-slate-300/80 shadow-xs',
       bgDark: 'bg-slate-900 border border-slate-700 hover:border-slate-600 text-white',
@@ -85,9 +86,9 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'WASSCE STOCK',
-      value: kpis.wascceStockAvailable.toLocaleString(),
-      badgeText: kpis.wascceStockAvailable < 500 ? '⚠ Low stock' : 'Healthy stock',
-      badgeType: kpis.wascceStockAvailable < 500 ? 'warning' : 'success',
+      value: kpis.wassceStock.availableCount.toLocaleString(),
+      badgeText: kpis.wassceStock.availableCount < 500 ? '⚠ Low stock' : 'Healthy stock',
+      badgeType: kpis.wassceStock.availableCount < 500 ? 'warning' : 'success',
       bgLight: 'bg-[#0F8B8D]/20 border border-[#0F8B8D]/40 hover:bg-[#0F8B8D]/30 shadow-xs',
       bgDark: 'bg-teal-950/40 border border-teal-500/40 hover:border-teal-500/60 text-white',
       titleLight: 'text-[#0A2540] font-extrabold',
@@ -99,9 +100,9 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'BECE STOCK',
-      value: kpis.beceStockAvailable.toLocaleString(),
-      badgeText: kpis.beceStockAvailable < 200 ? '⚠ Low stock' : 'Healthy stock',
-      badgeType: kpis.beceStockAvailable < 200 ? 'warning' : 'success',
+      value: kpis.beceStock.availableCount.toLocaleString(),
+      badgeText: kpis.beceStock.availableCount < 200 ? '⚠ Low stock' : 'Healthy stock',
+      badgeType: kpis.beceStock.availableCount < 200 ? 'warning' : 'success',
       bgLight: 'bg-amber-100 border border-amber-300 hover:bg-amber-200/70 shadow-xs',
       bgDark: 'bg-amber-950/40 border border-amber-500/40 hover:border-amber-500/60 text-white',
       titleLight: 'text-amber-950 font-extrabold',
@@ -113,9 +114,9 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'PENDING WITHDRAWALS',
-      value: formatCedi(kpis.pendingWithdrawals),
-      badgeText: `${kpis.pendingWithdrawalCount} payouts pending`,
-      badgeType: kpis.pendingWithdrawalCount > 0 ? 'neutral' : 'success',
+      value: formatCedi(kpis.pendingWithdrawals.totalAmount),
+      badgeText: `${kpis.pendingWithdrawals.count} payouts pending`,
+      badgeType: kpis.pendingWithdrawals.count > 0 ? 'neutral' : 'success',
       bgLight: 'bg-rose-100 border border-rose-300 hover:bg-rose-200/70 shadow-xs',
       bgDark: 'bg-rose-950/40 border border-rose-500/40 hover:border-rose-500/60 text-white',
       titleLight: 'text-rose-900 font-extrabold',
@@ -127,7 +128,7 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'ACTIVE AFFILIATES',
-      value: kpis.activeAffiliates.toLocaleString(),
+      value: kpis.activeAffiliates.count.toLocaleString(),
       badgeText: 'Partner network',
       badgeType: 'success',
       bgLight: 'bg-blue-100 border border-blue-300 hover:bg-blue-200/70 shadow-xs',
@@ -141,8 +142,8 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'CONVERSION RATE',
-      value: `${(kpis.conversionRate ?? 98.4).toFixed(1)}%`,
-      badgeText: 'Payment → fulfillment',
+      value: `${(kpis.conversionRate.rate ?? 98.4).toFixed(1)}%`,
+      badgeText: kpis.conversionRate.label,
       badgeType: 'success',
       bgLight: 'bg-cyan-100 border border-cyan-300 hover:bg-cyan-200/70 shadow-xs',
       bgDark: 'bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-500/60 text-white',
@@ -155,8 +156,8 @@ export const KpiGrid: React.FC = () => {
     },
     {
       title: 'TODAY\'S ORDERS',
-      value: kpis.ordersToday.toLocaleString(),
-      badgeText: `${formatCedi(kpis.revenueToday)} earned today`,
+      value: kpis.todaysOrders.count.toLocaleString(),
+      badgeText: `${formatCedi(kpis.todaysOrders.todayEarnedRevenue)} earned today`,
       badgeType: 'success',
       bgLight: 'bg-indigo-100 border border-indigo-300 hover:bg-indigo-200/70 shadow-xs',
       bgDark: 'bg-indigo-950/40 border border-indigo-500/40 hover:border-indigo-500/60 text-white',

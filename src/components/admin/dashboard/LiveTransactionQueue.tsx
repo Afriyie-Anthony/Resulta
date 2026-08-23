@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
-import { useLiveTransactions } from '../../../hooks/useDashboard';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { formatCedi } from '../../../utils/formatters';
@@ -75,15 +74,19 @@ const SkeletonRow: React.FC<{ isLight: boolean }> = ({ isLight }) => (
   </tr>
 );
 
-export const LiveTransactionQueue: React.FC = () => {
+export interface LiveTransactionQueueProps {
+  data?: LiveTransaction[];
+  isLoading: boolean;
+  isFetching?: boolean;
+}
+
+export const LiveTransactionQueue: React.FC<LiveTransactionQueueProps> = ({ data, isLoading, isFetching }) => {
   const navigate = useNavigate();
   const { isLight } = useAdminTheme();
   const [orderFilter, setOrderFilter] = useState<OrderStatus>('ALL');
 
-  const { data: realTransactions, isLoading, isFetching } = useLiveTransactions();
-
-  const transactions: LiveTransaction[] = (realTransactions && realTransactions.length > 0)
-    ? realTransactions
+  const transactions: LiveTransaction[] = (data && data.length > 0)
+    ? data
     : FALLBACK_TRANSACTIONS;
 
   const filteredOrders = orderFilter === 'ALL'
