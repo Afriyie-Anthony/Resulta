@@ -5,22 +5,16 @@ import { Button } from '../../../components/ui/Button';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
+import { useAuditStats, usePaginatedAuditLogs } from '../../../hooks/useAuditAPI';
 import {
   FiSearch,
   FiDownload,
   FiLock,
-  FiTerminal
+  FiTerminal,
+  FiActivity,
+  FiUsers,
+  FiFileText
 } from 'react-icons/fi';
-
-interface AuditLogEntry {
-  id: string;
-  timestamp: string;
-  actor: string;
-  action: string;
-  details: string;
-  severity: string;
-  ip: string;
-}
 
 export const AuditLogsView: React.FC = () => {
   const { isLight } = useAdminTheme();
@@ -29,15 +23,16 @@ export const AuditLogsView: React.FC = () => {
   const [severityFilter, setSeverityFilter] = useState('ALL');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const logs: AuditLogEntry[] = [
-    { id: 'LOG-99182', timestamp: '2026-08-01 19:50:11', actor: 'System Administrator (SA)', action: 'REVEAL_VOUCHER_PIN', details: 'Admin inspected plaintext PIN for order RSL-ORD-2026-8812', severity: 'SECURITY', ip: '102.176.44.12' },
-    { id: 'LOG-99181', timestamp: '2026-08-01 19:10:04', actor: 'System Administrator (SA)', action: 'APPROVE_AFFILIATE', details: 'Activated affiliate Kwaku Frimpong (REF-GH-8823)', severity: 'SYSTEM', ip: '102.176.44.12' },
-    { id: 'LOG-99180', timestamp: '2026-08-01 18:05:32', actor: 'System Administrator (SA)', action: 'INGEST_VOUCHER_BATCH', details: 'Uploaded BATCH-2026-W09 containing 1,000 WASSCE PINs (AES-256 encrypted)', severity: 'CRITICAL', ip: '102.176.44.12' },
-    { id: 'LOG-99179', timestamp: '2026-08-01 15:40:19', actor: 'Unidentified Attempt', action: 'FAILED_ADMIN_LOGIN', details: 'Invalid credential login attempt to Control Center', severity: 'SECURITY', ip: '197.255.42.11' },
-    { id: 'LOG-99178', timestamp: '2026-08-01 14:02:55', actor: 'System Administrator (SA)', action: 'PROCESS_WITHDRAWAL', details: 'Authorized MoMo payout of GH₵ 350.00 to Kwesi Owoso (WD-2026-101)', severity: 'CRITICAL', ip: '102.176.44.12' },
-  ];
+  // Queries
+  const { data: stats, isLoading: isStatsLoading } = useAuditStats();
+  const { data: logsData, isLoading: isLogsLoading } = usePaginatedAuditLogs({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm || undefined,
+    action: severityFilter === 'ALL' ? undefined : severityFilter, // Using action filter as severity for now
+  });
 
   const handleExportAudit = () => {
     addToast({
@@ -47,19 +42,11 @@ export const AuditLogsView: React.FC = () => {
     });
   };
 
-  const filtered = logs.filter(l => {
-    const matchesSev = severityFilter === 'ALL' || l.severity === severityFilter;
-    const matchesSearch = l.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          l.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          l.actor.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSev && matchesSearch;
-  });
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginated = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const determineSeverity = (action: string) => {
+    if (action.includes('LOGIN') || action.includes('PASSWORD')) return 'SECURITY';
+    if (action.includes('WITHDRAWAL') || action.includes('UPLOAD')) return 'CRITICAL';
+    return 'INFO';
+  };
 
   return (
     <div className="space-y-8">
@@ -89,6 +76,43 @@ export const AuditLogsView: React.FC = () => {
             To ensure zero-trust compliance, audit records are append-only and cannot be altered or purged from the Control Center.
           </p>
         </div>
+      </div>
+
+      {/* KPI Stats Strip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card glass className={`p-5 border flex items-center gap-4 ${isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'}`}>
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isLight ? 'bg-blue-100 text-blue-600' : 'bg-blue-500/20 text-blue-400'}`}>
+            <FiFileText className="w-6 h-6" />
+          </div>
+          <div>
+            <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Total Logs</p>
+            <h3 className={`text-2xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              {isStatsLoading ? '...' : stats?.totalLogsCount.toLocaleString()}
+            </h3>
+          </div>
+        </Card>
+        <Card glass className={`p-5 border flex items-center gap-4 ${isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'}`}>
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isLight ? 'bg-teal-100 text-teal-600' : 'bg-teal-500/20 text-teal-400'}`}>
+            <FiActivity className="w-6 h-6" />
+          </div>
+          <div>
+            <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Today's Logs</p>
+            <h3 className={`text-2xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              {isStatsLoading ? '...' : stats?.todayLogsCount.toLocaleString()}
+            </h3>
+          </div>
+        </Card>
+        <Card glass className={`p-5 border flex items-center gap-4 ${isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'}`}>
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isLight ? 'bg-purple-100 text-purple-600' : 'bg-purple-500/20 text-purple-400'}`}>
+            <FiUsers className="w-6 h-6" />
+          </div>
+          <div>
+            <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Active Users</p>
+            <h3 className={`text-2xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              {isStatsLoading ? '...' : stats?.uniqueActiveUsersCount.toLocaleString()}
+            </h3>
+          </div>
+        </Card>
       </div>
 
       {/* Filter & Search */}
@@ -147,33 +171,54 @@ export const AuditLogsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className={`divide-y font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/50'}`}>
-              {paginated.map((log) => (
-                <tr key={log.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>
-                  <td className={`py-3.5 px-4 text-[11px] font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{log.timestamp}</td>
-                  <td className={`py-3.5 px-4 font-black flex items-center gap-1.5 ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
-                    <FiTerminal className="text-slate-400" /> {log.action}
-                  </td>
-                  <td className={`py-3.5 px-4 font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>{log.actor}</td>
-                  <td className={`py-3.5 px-4 font-sans font-bold text-xs ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>{log.details}</td>
-                  <td className={`py-3.5 px-4 font-mono font-bold text-[11px] ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{log.ip}</td>
-                  <td className="py-3.5 px-4 text-right font-sans">
-                    <Badge
-                      variant={log.severity === 'CRITICAL' ? 'error' : log.severity === 'SECURITY' ? 'warning' : 'info'}
-                      className="text-[10px] font-bold"
-                    >
-                      {log.severity}
-                    </Badge>
-                  </td>
+              {isLogsLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-slate-400">Loading audit logs...</td>
                 </tr>
-              ))}
+              ) : logsData?.data.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-slate-400">No logs found.</td>
+                </tr>
+              ) : (
+                logsData?.data.map((log) => {
+                  const severity = determineSeverity(log.action);
+                  return (
+                    <tr key={log.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>
+                      <td className={`py-3.5 px-4 text-[11px] font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        {new Date(log.createdAt).toLocaleString()}
+                      </td>
+                      <td className={`py-3.5 px-4 font-black flex items-center gap-1.5 ${isLight ? 'text-[#0B2545]' : 'text-teal-400'}`}>
+                        <FiTerminal className="text-slate-400" /> {log.action}
+                      </td>
+                      <td className={`py-3.5 px-4 font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
+                        {log.user ? `${log.user.name} (${log.user.email})` : log.userId || 'SYSTEM'}
+                      </td>
+                      <td className={`py-3.5 px-4 font-sans font-bold text-xs ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
+                        {typeof log.details === 'object' ? JSON.stringify(log.details) : String(log.details || 'N/A')}
+                      </td>
+                      <td className={`py-3.5 px-4 font-mono font-bold text-[11px] ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                        {log.ipAddress}
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-sans">
+                        <Badge
+                          variant={severity === 'CRITICAL' ? 'error' : severity === 'SECURITY' ? 'warning' : 'info'}
+                          className="text-[10px] font-bold"
+                        >
+                          {severity}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
         <div className={`p-4 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filtered.length}
+            totalPages={logsData?.pagination.totalPages || 1}
+            totalItems={logsData?.pagination.total || 0}
             itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
             onItemsPerPageChange={(newSize) => {

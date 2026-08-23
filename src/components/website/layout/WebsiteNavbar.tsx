@@ -5,8 +5,8 @@ import BuyBottomSheet from './BuyBottomSheet';
 
 const navLinks = [
   { label: 'Home', href: '/' },
-  { label: 'Get Help', href: '/help/contact' },
   { label: 'Retrieve Voucher', href: '/retrieve-voucher' },
+  { label: 'Timetables', href: '/timetables' },
 ];
 
 const purchaseOptions = [
@@ -49,7 +49,6 @@ const WebsiteNavbar: React.FC = () => {
   const dropdownBg = 'bg-white';
   const dropdownBorder = 'border-border';
   const dropdownShadow = 'shadow-lg shadow-slate-900/10';
-  const dropdownText = 'text-text-secondary hover:text-primary';
   const dropdownLabel = 'text-text-secondary';
 
   const handlePurchaseNavigate = (href: string) => {
@@ -91,7 +90,7 @@ const WebsiteNavbar: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsPurchaseOpen(!isPurchaseOpen)}
-                className={`flex items-center gap-1 ${dropdownText} transition-colors`}
+                className={`flex items-center gap-1 ${navTextColor} transition-colors`}
                 aria-expanded={isPurchaseOpen}
                 aria-haspopup="true"
               >

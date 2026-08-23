@@ -13,6 +13,7 @@ const MoreBottomSheet: React.FC<MoreBottomSheetProps> = ({ isOpen, onClose }) =>
   const supportLinks = [
     { label: 'Get Help', href: '/help/contact', icon: FiHelpCircle },
     { label: 'FAQs', href: '/help/faq', icon: FiMessageCircle },
+    { label: 'Timetables', href: '/timetables', icon: FiFileText },
     { label: 'Contact Support', href: '/help/contact', icon: FiMessageCircle },
   ];
 

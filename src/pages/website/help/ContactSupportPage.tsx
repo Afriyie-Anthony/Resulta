@@ -6,6 +6,8 @@ import MobileBottomNav from '../../../components/website/layout/MobileBottomNav'
 import BuyBottomSheet from '../../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../../components/website/layout/MoreBottomSheet';
 import { Button } from '../../../components/ui/Button';
+import { useSubmitContact } from '../../../hooks/usePublicAPI';
+import { useToast } from '../../../components/ui/Toast';
 
 const ContactSupportPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +21,9 @@ const ContactSupportPage: React.FC = () => {
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
+  const { mutate: submitContact } = useSubmitContact();
+  const { addToast } = useToast();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -26,10 +31,27 @@ const ContactSupportPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
-    }, 1200);
+    
+    submitContact({
+      fullName: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phone || undefined,
+      subject: 'Website Inquiry',
+      message: formData.message,
+    }, {
+      onSuccess: () => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      },
+      onError: (error: any) => {
+        setIsSubmitting(false);
+        addToast({
+          title: 'Submission Failed',
+          message: error?.response?.data?.message || 'Failed to submit your message. Please try again.',
+          type: 'error',
+        });
+      }
+    });
   };
 
   return (

@@ -30,6 +30,16 @@ const WebsiteFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/pricing" className="hover:text-white transition-colors">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link to="/timetables" className="hover:text-white transition-colors">
+                  Timetables
+                </Link>
+              </li>
+              <li>
                 <Link to="/retrieve-voucher" className="hover:text-white transition-colors">
                   Retrieve Voucher
                 </Link>

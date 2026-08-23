@@ -22,6 +22,7 @@ import TermsPage from './pages/website/legal/TermsPage';
 import PrivacyPage from './pages/website/legal/PrivacyPage';
 import RefundPolicyPage from './pages/website/legal/RefundPolicyPage';
 import NotFound from './pages/website/NotFound';
+import TimetablesPage from './pages/website/TimetablesPage';
 import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
 import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
@@ -402,6 +403,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/legal/terms" element={<TermsPage />} />
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/refund" element={<RefundPolicyPage />} />
+      <Route path="/timetables" element={<TimetablesPage />} />
       <Route path="/affiliate" element={<AffiliatePage />} />
       <Route
         path="/affiliate/dashboard"
