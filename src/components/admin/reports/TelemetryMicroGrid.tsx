@@ -21,7 +21,7 @@ export const TelemetryMicroGrid: React.FC = () => {
         </div>
 
         <div className="h-32 flex items-end justify-between gap-1.5 px-1 pt-2">
-          {[].map((slot, i) => (
+          {([] as { time: string; val: number }[]).map((slot, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
               <div
                 className="w-full bg-gradient-to-t from-teal-600 to-cyan-400 rounded-t-lg transition-all duration-300 group-hover:brightness-125"
