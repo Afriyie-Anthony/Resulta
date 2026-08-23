@@ -14,18 +14,7 @@ import {
   FiFileText,
 } from 'react-icons/fi';
 
-// ─── Default Fallback Dummy Data ──────────────────────────────────────────────
-const FALLBACK_KPIS: OverviewCards = {
-  totalRevenue: { totalAmount: 184500, todayAmount: 8450 },
-  totalOrders: { count: 7875, todayCount: 338 },
-  wassceStock: { availableCount: 4850, status: 'HEALTHY_STOCK' },
-  beceStock: { availableCount: 2340, status: 'HEALTHY_STOCK' },
-  pendingWithdrawals: { totalAmount: 1420, count: 4 },
-  activeAffiliates: { count: 68 },
-  conversionRate: { rate: 98.4, label: 'Payment -> fulfillment' },
-  todaysOrders: { count: 338, todayEarnedRevenue: 8450 },
-};
-
+// Fallbacks removed per user request
 // ─── Skeleton Card ─────────────────────────────────────────────────────────
 const SkeletonKpiCard: React.FC<{ isLight: boolean }> = ({ isLight }) => (
   <div className={`p-5 rounded-2xl border animate-pulse ${
@@ -52,8 +41,17 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
   const navigate = useNavigate();
   const { isLight } = useAdminTheme();
 
-  // Use real data when available, otherwise gracefully fallback to realistic dummy data
-  const kpis: OverviewCards = data || FALLBACK_KPIS;
+  // Use actual data or safe empty default if missing
+  const kpis: OverviewCards = data || {
+    totalRevenue: { totalAmount: 0, todayAmount: 0 },
+    totalOrders: { count: 0, todayCount: 0 },
+    wassceStock: { availableCount: 0, status: 'LOW_STOCK_ALERT' },
+    beceStock: { availableCount: 0, status: 'LOW_STOCK_ALERT' },
+    pendingWithdrawals: { totalAmount: 0, count: 0 },
+    activeAffiliates: { count: 0 },
+    conversionRate: { rate: 0, label: 'Payment -> fulfillment' },
+    todaysOrders: { count: 0, todayEarnedRevenue: 0 },
+  };
 
   const kpiCards = [
     {

@@ -9,7 +9,6 @@ import {
   OrdersByChannelCard,
   DailyOrdersCard,
   LiveTransactionQueue,
-  GatewayTelemetryCard,
 } from '../../../components/admin/dashboard';
 import { useDashboardTelemetry } from '../../../hooks/useDashboard';
 
@@ -50,14 +49,9 @@ export const DashboardOverviewView: React.FC = () => {
         <DailyOrdersCard />
       </div>
 
-      {/* 6. Live Gateway Telemetry & Transaction Dispatch Queue */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <LiveTransactionQueue data={telemetry?.liveTransactions} isLoading={isLoading} isFetching={isFetching} />
-        </div>
-        <div className="lg:col-span-1">
-          <GatewayTelemetryCard channelSplit={telemetry?.channelFulfillmentSplit} />
-        </div>
+      {/* 6. Live Transaction Dispatch Queue */}
+      <div className="grid grid-cols-1 gap-6">
+        <LiveTransactionQueue data={telemetry?.liveTransactions} isLoading={isLoading} isFetching={isFetching} />
       </div>
     </div>
   );

@@ -9,60 +9,7 @@ import { FiShoppingBag, FiArrowUpRight, FiRefreshCw } from 'react-icons/fi';
 
 type OrderStatus = 'ALL' | 'FULFILLED' | 'PENDING_MOMO' | 'FAILED' | 'PROCESSING';
 
-// ─── Default Fallback Dummy Transactions ──────────────────────────────────────
-const FALLBACK_TRANSACTIONS: LiveTransaction[] = [
-  {
-    id: 'ORD-GH-98421',
-    phone: '0244123456',
-    network: 'USSD MoMo',
-    product: 'WASSCE 2026',
-    amount: 25.0,
-    status: 'FULFILLED',
-    timestamp: new Date().toISOString(),
-    affiliateRef: 'REF-GH-8823',
-  },
-  {
-    id: 'ORD-GH-98420',
-    phone: '0555987654',
-    network: 'Web Hubtel',
-    product: 'BECE 2026',
-    amount: 20.0,
-    status: 'FULFILLED',
-    timestamp: new Date(Date.now() - 3 * 60000).toISOString(),
-    affiliateRef: null,
-  },
-  {
-    id: 'ORD-GH-98419',
-    phone: '0277334455',
-    network: 'USSD MoMo',
-    product: 'WASSCE 2026',
-    amount: 50.0,
-    status: 'PROCESSING',
-    timestamp: new Date(Date.now() - 6 * 60000).toISOString(),
-    affiliateRef: 'REF-GH-4412',
-  },
-  {
-    id: 'ORD-GH-98418',
-    phone: '0200112233',
-    network: 'Web Hubtel',
-    product: 'WASSCE 2026',
-    amount: 25.0,
-    status: 'PENDING_MOMO',
-    timestamp: new Date(Date.now() - 10 * 60000).toISOString(),
-    affiliateRef: null,
-  },
-  {
-    id: 'ORD-GH-98417',
-    phone: '0244998877',
-    network: 'USSD MoMo',
-    product: 'BECE 2026',
-    amount: 20.0,
-    status: 'FULFILLED',
-    timestamp: new Date(Date.now() - 14 * 60000).toISOString(),
-    affiliateRef: null,
-  },
-];
-
+// Fallbacks removed per user request
 // ─── Row Skeleton ───────────────────────────────────────────────────────────
 const SkeletonRow: React.FC<{ isLight: boolean }> = ({ isLight }) => (
   <tr>
@@ -85,9 +32,7 @@ export const LiveTransactionQueue: React.FC<LiveTransactionQueueProps> = ({ data
   const { isLight } = useAdminTheme();
   const [orderFilter, setOrderFilter] = useState<OrderStatus>('ALL');
 
-  const transactions: LiveTransaction[] = (data && data.length > 0)
-    ? data
-    : FALLBACK_TRANSACTIONS;
+  const transactions: LiveTransaction[] = data || [];
 
   const filteredOrders = orderFilter === 'ALL'
     ? transactions

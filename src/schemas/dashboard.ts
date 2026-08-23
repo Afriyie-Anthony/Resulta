@@ -33,11 +33,23 @@ export const channelFulfillmentSplitSchema = z.object({
 
 // ─── Revenue Data Point ──────────────────────────────────────────────────────
 export const revenueDataPointSchema = z.object({
-  label: z.string(),      // e.g. "Aug 1", "Week 32"
-  wassce: z.number().nonnegative(),
-  bece: z.number().nonnegative(),
-  total: z.number().nonnegative(),
-  orders: z.number().int().nonnegative(),
+  day: z.string(),
+  date: z.string().optional(),
+  revenue: z.number().nonnegative(),
+  ordersCount: z.number().int().nonnegative(),
+});
+
+export const revenueTrajectorySchema = z.object({
+  timeframe: z.string(),
+  totalPeriodRevenue: z.number(),
+  vouchersDispensed: z.number(),
+  averageOrderValue: z.number(),
+  ussdVsWebRatio: z.object({
+    ussdPercentage: z.number(),
+    webPercentage: z.number(),
+  }).optional(),
+  weeklyTrend: z.array(revenueDataPointSchema),
+  spotlight: z.any().optional(),
 });
 
 // ─── Live Transaction ────────────────────────────────────────────────────────
@@ -66,7 +78,7 @@ export const dashboardTelemetrySchema = z.object({
   systemStatus: systemStatusSchema.optional(),
   overviewCards: overviewCardsSchema.optional(),
   channelFulfillmentSplit: channelFulfillmentSplitSchema.optional(),
-  revenueTrajectory: z.array(revenueDataPointSchema).optional(),
+  revenueTrajectory: revenueTrajectorySchema.optional(),
   liveTransactions: z.array(liveTransactionSchema).optional(),
   gatewayTelemetry: gatewayTelemetrySchema.optional(),
   targetVelocity: z.any().optional(),

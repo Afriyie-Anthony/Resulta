@@ -7,7 +7,15 @@ import type { RevenueDataPoint } from '../../../schemas/dashboard';
 type TimeFrame = '24h' | '7d' | '30d';
 
 export interface TrajectoryChartProps {
-  data?: RevenueDataPoint[];
+  data?: {
+    timeframe: string;
+    totalPeriodRevenue: number;
+    vouchersDispensed: number;
+    averageOrderValue: number;
+    ussdVsWebRatio?: { ussdPercentage: number; webPercentage: number };
+    weeklyTrend: Array<{ day: string; date?: string; revenue: number; ordersCount: number }>;
+    spotlight?: any;
+  };
   isLoading: boolean;
 }
 
@@ -16,39 +24,16 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
   const [timeframe, setTimeframe] = useState<TimeFrame>('7d');
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(2);
 
-  const fallbackDatasets: Record<TimeFrame, Array<{ label: string; total: number; orders: number; ussdPct: number }>> = {
-    '24h': [
-      { label: '00:00', total: 420, orders: 18, ussdPct: 38 },
-      { label: '04:00', total: 150, orders: 6, ussdPct: 45 },
-      { label: '08:00', total: 1850, orders: 74, ussdPct: 28 },
-      { label: '12:00', total: 3100, orders: 124, ussdPct: 31 },
-      { label: '16:00', total: 2400, orders: 96, ussdPct: 35 },
-      { label: '20:00', total: 1480, orders: 59, ussdPct: 42 },
-    ],
-    '7d': [
-      { label: 'Mon', total: 5400, orders: 216, ussdPct: 32 },
-      { label: 'Tue', total: 6800, orders: 272, ussdPct: 30 },
-      { label: 'Wed', total: 8450, orders: 338, ussdPct: 28 },
-      { label: 'Thu', total: 7100, orders: 284, ussdPct: 33 },
-      { label: 'Fri', total: 9200, orders: 368, ussdPct: 26 },
-      { label: 'Sat', total: 11400, orders: 456, ussdPct: 35 },
-      { label: 'Sun', total: 8900, orders: 356, ussdPct: 38 },
-    ],
-    '30d': [
-      { label: 'Wk 1', total: 38500, orders: 1540, ussdPct: 34 },
-      { label: 'Wk 2', total: 44200, orders: 1768, ussdPct: 31 },
-      { label: 'Wk 3', total: 52100, orders: 2084, ussdPct: 29 },
-      { label: 'Wk 4', total: 61800, orders: 2472, ussdPct: 27 },
-    ],
-  };
-
-  const activeData = (data && data.length > 0)
-    ? data.map(d => ({ ...d, ussdPct: 30 })) // Mock ussdPct since it's not in schema
-    : fallbackDatasets[timeframe];
-
-  const maxRevenue = Math.max(...activeData.map((d) => d.total));
-  const totalRevenue = activeData.reduce((acc, d) => acc + d.total, 0);
-  const totalOrders = activeData.reduce((acc, d) => acc + d.orders, 0);
+  // Use actual data or safe empty default
+  const activeData = data?.weeklyTrend || [];
+  const maxRevenue = activeData.length > 0 ? Math.max(...activeData.map((d) => d.revenue)) : 100;
+  
+  const totalRevenue = data?.totalPeriodRevenue || 0;
+  const totalOrders = data?.vouchersDispensed || 0;
+  const averageOrderValue = data?.averageOrderValue || 0;
+  
+  const ussdPct = data?.ussdVsWebRatio?.ussdPercentage || 0;
+  const webPct = data?.ussdVsWebRatio?.webPercentage || 0;
 
   return (
     <div className={`p-4 sm:p-6 rounded-3xl border flex flex-col justify-between h-full transition-colors shadow-sm ${
@@ -107,13 +92,13 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
           <div>
             <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Average Order Value</span>
             <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-slate-950' : 'text-white'}`}>
-              {formatCedi(totalOrders > 0 ? totalRevenue / totalOrders : 0)}
+              {formatCedi(averageOrderValue)}
             </span>
           </div>
           <div>
             <span className="text-[10px] uppercase font-black text-slate-500 block truncate">USSD vs Web Ratio</span>
             <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400 block truncate">
-              31% / 69%
+              {ussdPct}% / {webPct}%
             </span>
           </div>
         </div>
@@ -121,13 +106,13 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
         {/* Responsive Bar Chart Container */}
         <div className="relative pt-2 pb-2 overflow-x-auto no-scrollbar">
           <div className="h-52 min-w-[300px] sm:min-w-0 flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-2 pt-6 pb-2 border-b border-dashed border-slate-300 dark:border-slate-800">
-            {activeData.map((data, idx) => {
-              const heightPct = Math.max(15, (data.total / maxRevenue) * 100);
+            {activeData.map((d, idx) => {
+              const heightPct = Math.max(5, (d.revenue / maxRevenue) * 100);
               const isSelected = selectedBarIndex === idx;
 
               return (
                 <div
-                  key={data.label}
+                  key={d.day + idx}
                   onClick={() => setSelectedBarIndex(idx)}
                   className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group cursor-pointer"
                 >
@@ -136,7 +121,7 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                       ? isLight ? 'bg-slate-950 text-white opacity-100 scale-105' : 'bg-teal-400 text-slate-950 opacity-100 scale-105 font-black'
                       : 'opacity-0 group-hover:opacity-100 bg-slate-950 text-white'
                   }`}>
-                    {formatCedi(data.total)}
+                    {formatCedi(d.revenue)}
                   </span>
 
                   <div
@@ -159,11 +144,17 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                       ? isLight ? 'text-[#0F8B8D] font-black scale-105' : 'text-teal-400 font-black'
                       : isLight ? 'text-slate-700 group-hover:text-slate-950' : 'text-slate-400 group-hover:text-white'
                   }`}>
-                    {data.label}
+                    {d.day}
                   </span>
                 </div>
               );
             })}
+            
+            {activeData.length === 0 && (
+              <div className="w-full flex items-center justify-center text-xs font-bold text-slate-400">
+                No revenue data available for this timeframe
+              </div>
+            )}
           </div>
 
           {/* Telemetry Spotlight Card */}
@@ -179,10 +170,10 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                 </div>
                 <div>
                   <h4 className={`text-xs sm:text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                    Telemetry Spotlight: <span className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}>{activeData[selectedBarIndex].label}</span>
+                    Telemetry Spotlight: <span className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}>{activeData[selectedBarIndex].day}</span>
                   </h4>
                   <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-                    {activeData[selectedBarIndex].orders} successful transactions processed without manual intervention.
+                    {activeData[selectedBarIndex].ordersCount} successful transactions processed without manual intervention.
                   </p>
                 </div>
               </div>
@@ -191,14 +182,14 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                 <div>
                   <span className="text-[9px] uppercase font-black text-slate-500 block">Web vs USSD</span>
                   <span className={`text-xs font-black ${isLight ? 'text-slate-950' : 'text-slate-200'}`}>
-                    {100 - activeData[selectedBarIndex].ussdPct}% Web / {activeData[selectedBarIndex].ussdPct}% USSD
+                    {webPct}% Web / {ussdPct}% USSD
                   </span>
                 </div>
                 <div className="h-7 w-px bg-slate-300 dark:bg-slate-700" />
                 <div>
                   <span className="text-[9px] uppercase font-black text-slate-500 block">Spotlight Revenue</span>
                   <span className={`text-xs sm:text-sm font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
-                    {formatCedi(activeData[selectedBarIndex].total)}
+                    {formatCedi(activeData[selectedBarIndex].revenue)}
                   </span>
                 </div>
               </div>
@@ -209,3 +200,4 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
     </div>
   );
 };
+
