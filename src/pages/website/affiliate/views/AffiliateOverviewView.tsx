@@ -21,16 +21,8 @@ interface AffiliateOverviewViewProps {
 
 const EarningsChart: React.FC = () => {
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(6);
-  const data = [
-    { label: 'Mon', revenue: 145 },
-    { label: 'Tue', revenue: 280 },
-    { label: 'Wed', revenue: 120 },
-    { label: 'Thu', revenue: 450 },
-    { label: 'Fri', revenue: 320 },
-    { label: 'Sat', revenue: 650 },
-    { label: 'Sun', revenue: 840 },
-  ];
-  const maxRevenue = Math.max(...data.map((d) => d.revenue));
+  const data: any[] = [];
+  const maxRevenue = data.length > 0 ? Math.max(...data.map((d) => d.revenue)) : 1;
 
   return (
     <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm h-full flex flex-col">
@@ -152,48 +144,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
     }
   };
 
-  const recentSales = [
-    {
-      id: 'ORD-98231',
-      date: '2026-08-19T14:22:00Z',
-      product: 'WASSCE Voucher',
-      qty: 2,
-      totalAmount: 50.0,
-      commission: 5.0,
-      status: 'AVAILABLE',
-      customerPhone: '024 *** 8812',
-    },
-    {
-      id: 'ORD-98215',
-      date: '2026-08-19T11:05:00Z',
-      product: 'BECE Voucher',
-      qty: 1,
-      totalAmount: 22.0,
-      commission: 2.2,
-      status: 'AVAILABLE',
-      customerPhone: '055 *** 1920',
-    },
-    {
-      id: 'ORD-98189',
-      date: '2026-08-18T18:40:00Z',
-      product: 'WASSCE Voucher',
-      qty: 4,
-      totalAmount: 100.0,
-      commission: 10.0,
-      status: 'PENDING',
-      customerPhone: '020 *** 4410',
-    },
-    {
-      id: 'ORD-98150',
-      date: '2026-08-18T09:15:00Z',
-      product: 'BECE Voucher',
-      qty: 2,
-      totalAmount: 44.0,
-      commission: 4.4,
-      status: 'AVAILABLE',
-      customerPhone: '027 *** 9931',
-    },
-  ];
+  const recentSales: any[] = [];
 
   return (
     <div className="space-y-6 pb-12">

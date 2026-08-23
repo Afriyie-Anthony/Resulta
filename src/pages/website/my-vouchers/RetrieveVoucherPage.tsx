@@ -6,6 +6,7 @@ import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../../components/website/layout/MobileBottomNav';
 import BuyBottomSheet from '../../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../../components/website/layout/MoreBottomSheet';
+import { retrieveVoucher } from '../../../services/purchase.service';
 
 type PageState = 'idle' | 'loading' | 'success' | 'notFound' | 'error' | 'multiple';
 
@@ -67,7 +68,7 @@ const RetrieveVoucherPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let hasError = false;
 
@@ -84,44 +85,36 @@ const RetrieveVoucherPage: React.FC = () => {
 
     setState('loading');
 
-    setTimeout(() => {
-      const ref = reference.trim().toUpperCase();
-      if (ref === 'RES-MULTI-001') {
-        setVouchers([
-          {
-            id: '1',
-            type: 'WASSCE Result Checker',
-            serialNumber: 'RES-WAS-2026-4829',
-            pin: '8849-2217-6634',
-            purchasedAt: '01 Aug 2026',
-            status: 'Unused',
-          },
-          {
-            id: '2',
-            type: 'BECE Result Checker',
-            serialNumber: 'RES-BEC-2026-1102',
-            pin: '3341-8872-9910',
-            purchasedAt: '28 Jul 2026',
-            status: 'Used',
-          },
-        ]);
-        setState('multiple');
-      } else if (ref === 'RES-NOTFOUND') {
-        setState('notFound');
-      } else if (ref === 'RES-ERROR') {
-        setState('error');
+    try {
+      const response = await retrieveVoucher({ phone, identifier: reference.trim() });
+      
+      if (response && response.vouchers && response.vouchers.length > 0) {
+        const mappedVouchers: Voucher[] = response.vouchers.map((v: any, index: number) => ({
+          id: String(index + 1),
+          type: response.product,
+          serialNumber: v.serial,
+          pin: v.pin,
+          purchasedAt: response.purchasedAt,
+          status: 'Available',
+        }));
+
+        if (mappedVouchers.length > 1) {
+          setVouchers(mappedVouchers);
+          setState('multiple');
+        } else {
+          setSelectedVoucher(mappedVouchers[0]);
+          setState('success');
+        }
       } else {
-        setSelectedVoucher({
-          id: '1',
-          type: 'WASSCE Result Checker',
-          serialNumber: 'RES-WAS-2026-4829',
-          pin: '8849-2217-6634',
-          purchasedAt: '01 Aug 2026',
-          status: 'Unused',
-        });
-        setState('success');
+        setState('notFound');
       }
-    }, 1500);
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        setState('notFound');
+      } else {
+        setState('error');
+      }
+    }
   };
 
   const handleCopy = (text: string, field: string) => {

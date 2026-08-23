@@ -9,22 +9,7 @@ interface AffiliateAttributionTableProps {
   items?: AffiliateAttributionItem[];
 }
 
-const DEFAULT_AFFILIATES: AffiliateAttributionItem[] = [
-  {
-    partnerName: 'Kwaku Frimpong',
-    referralCode: 'REF-GH-8823',
-    ordersGenerated: 142,
-    grossSalesGenerated: 3550.0,
-    commissionEarned: 710.0,
-  },
-  {
-    partnerName: 'Esi Ansah',
-    referralCode: 'REF-GH-4412',
-    ordersGenerated: 98,
-    grossSalesGenerated: 2450.0,
-    commissionEarned: 490.0,
-  },
-];
+const DEFAULT_AFFILIATES: AffiliateAttributionItem[] = [];
 
 export const AffiliateAttributionTable: React.FC<AffiliateAttributionTableProps> = ({
   items = DEFAULT_AFFILIATES,

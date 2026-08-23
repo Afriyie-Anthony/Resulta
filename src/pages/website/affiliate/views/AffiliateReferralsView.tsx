@@ -7,48 +7,7 @@ import { FiSearch, FiDownload, FiUsers } from 'react-icons/fi';
 export const AffiliateReferralsView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const allLeads = [
-    {
-      id: 'L-1001',
-      customerPhone: '024 *** 8812',
-      firstSeen: '2026-08-10T14:22:00Z',
-      totalOrders: 3,
-      totalCommissionGenerated: 15.0,
-      status: 'Active',
-    },
-    {
-      id: 'L-1002',
-      customerPhone: '055 *** 1920',
-      firstSeen: '2026-08-11T11:05:00Z',
-      totalOrders: 1,
-      totalCommissionGenerated: 2.2,
-      status: 'Active',
-    },
-    {
-      id: 'L-1003',
-      customerPhone: '020 *** 4410',
-      firstSeen: '2026-08-12T18:40:00Z',
-      totalOrders: 2,
-      totalCommissionGenerated: 15.0,
-      status: 'Active',
-    },
-    {
-      id: 'L-1004',
-      customerPhone: '027 *** 9931',
-      firstSeen: '2026-08-15T09:15:00Z',
-      totalOrders: 1,
-      totalCommissionGenerated: 4.4,
-      status: 'Inactive',
-    },
-    {
-      id: 'L-1005',
-      customerPhone: '024 *** 0044',
-      firstSeen: '2026-08-17T16:30:00Z',
-      totalOrders: 5,
-      totalCommissionGenerated: 25.0,
-      status: 'Active',
-    },
-  ];
+  const allLeads: any[] = [];
 
   const filteredLeads = allLeads.filter((lead) =>
     lead.customerPhone.includes(searchTerm)

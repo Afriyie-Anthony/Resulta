@@ -4,17 +4,7 @@ export const AffiliateSalesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [timeFilter, setTimeFilter] = useState<'All Time' | 'Today' | 'This Week' | 'This Month'>('All Time');
 
-  const allSales = [
-    {
-      id: '#CT-9188-3ALX',
-      date: '9 Aug 2026',
-      product: 'WASSCE NOVDEC',
-      saleAmount: 30.0,
-      commission: 4.0,
-      status: 'Completed',
-      customerPhone: '0556069880',
-    },
-  ];
+  const allSales: any[] = [];
 
   const filteredSales = allSales.filter((sale) =>
     sale.id.toLowerCase().includes(searchTerm.toLowerCase()) ||

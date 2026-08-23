@@ -1,16 +1,7 @@
 import React from 'react';
 
 export const AffiliateEarningsView: React.FC = () => {
-  const commissionLogs = [
-    {
-      id: '#CT-9188-3ALX',
-      date: '9 Aug 2026',
-      product: 'WASSCE NOVDEC',
-      saleAmount: 30,
-      commission: 4,
-      status: 'Approved',
-    },
-  ];
+  const commissionLogs: any[] = [];
 
   return (
     <div className="space-y-6">

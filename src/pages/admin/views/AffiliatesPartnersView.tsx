@@ -29,14 +29,7 @@ export const AffiliatesPartnersView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const [affiliates, setAffiliates] = useState<Affiliate[]>([
-    { id: 'AFF-01', name: 'Kofi Mensah', email: 'kofi.mensah@ghana-uni.edu', phone: '+233 24 551 0921', referralCode: 'REF-GH-KOFI26', ussdCode: '*713*5912*1#', location: 'Kumasi', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 14:20' },
-    { id: 'AFF-02', name: 'Ama Osei Boateng', email: 'ama.osei92@gmail.com', phone: '+233 50 182 3310', referralCode: 'REF-GH-AMA92', ussdCode: '*713*5913*1#', location: 'Accra', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-08-01 12:15' },
-    { id: 'AFF-03', name: 'Yaw Ampem Tech House', email: 'support@ampemtech.com.gh', phone: '+233 27 409 1192', referralCode: 'REF-GH-AMPEM', ussdCode: '*713*5914*1#', location: 'Sunyani', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 18:04' },
-    { id: 'AFF-04', name: 'Abigail Owusu', email: 'abigail@campusresale.gh', phone: '+233 54 902 4418', referralCode: 'REF-GH-ABIE', ussdCode: '*713*5915*1#', location: 'Cape Coast', totalSales: 0, totalCommission: 0, status: 'PENDING', appliedDate: '2026-07-31 09:30' },
-    { id: 'AFF-05', name: 'Kwaku Frimpong', email: 'kwaku.f@business.gh', phone: '+233 24 991 0293', referralCode: 'REF-GH-8823', ussdCode: '*713*5916*1#', location: 'Takoradi', totalSales: 142, totalCommission: 710.0, status: 'ACTIVE', appliedDate: '2026-07-10 11:00' },
-    { id: 'AFF-06', name: 'Esi Ansah', email: 'esi.ansah@outlook.com', phone: '+233 55 201 8839', referralCode: 'REF-GH-4412', ussdCode: '*713*5917*1#', location: 'Tamale', totalSales: 98, totalCommission: 490.0, status: 'ACTIVE', appliedDate: '2026-07-12 16:45' },
-  ]);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
 
   const pendingCount = affiliates.filter(a => a.status === 'PENDING').length;
   const activeCount = affiliates.filter(a => a.status === 'ACTIVE').length;
