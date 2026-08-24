@@ -26,7 +26,8 @@ import TimetablesPage from './pages/website/TimetablesPage';
 import AffiliateDashboard from './pages/website/affiliate/AffiliateDashboard';
 import AffiliatePage from './pages/website/affiliate/AffiliatePage';
 import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
-import UnifiedLogin from './pages/auth/UnifiedLogin';
+import AdminLogin from './pages/auth/AdminLogin';
+import AffiliateLogin from './pages/auth/AffiliateLogin';
 import { AdminRouter } from './pages/admin/AdminRouter';
 import type { LayoutMode } from './types/ui';
 import {
@@ -381,11 +382,11 @@ export const AppContent: React.FC = () => {
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Unified Login — handles both Admin and Affiliate auth */}
-      <Route path="/admin/login" element={<UnifiedLogin />} />
-      <Route path="/affiliate/login" element={<UnifiedLogin />} />
-      <Route path="/affiliate/apply" element={<UnifiedLogin />} />
-      <Route path="/login" element={<UnifiedLogin />} />
+      {/* Separate Admin and Affiliate auth components */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/affiliate/login" element={<AffiliateLogin />} />
+      <Route path="/affiliate/apply" element={<AffiliateLogin />} />
+      <Route path="/login" element={<AffiliateLogin />} />
       <Route
         path="/admin/*"
         element={
