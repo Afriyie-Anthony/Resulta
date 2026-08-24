@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { CustomerLayout } from './components/layout/CustomerLayout';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -28,6 +29,7 @@ import AffiliatePage from './pages/website/affiliate/AffiliatePage';
 import AffiliateProtectedRoute from './components/website/layout/AffiliateProtectedRoute';
 import AdminLogin from './pages/auth/AdminLogin';
 import AffiliateLogin from './pages/auth/AffiliateLogin';
+import AffiliateRegister from './pages/auth/AffiliateRegister';
 import { AdminRouter } from './pages/admin/AdminRouter';
 import type { LayoutMode } from './types/ui';
 import {
@@ -385,7 +387,7 @@ const AppRoutes: React.FC = () => {
       {/* Separate Admin and Affiliate auth components */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/affiliate/login" element={<AffiliateLogin />} />
-      <Route path="/affiliate/apply" element={<AffiliateLogin />} />
+      <Route path="/affiliate/apply" element={<AffiliateRegister />} />
       <Route path="/login" element={<AffiliateLogin />} />
       <Route
         path="/admin/*"
@@ -423,12 +425,14 @@ const AppRoutes: React.FC = () => {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <ToastProvider>
+            <AppRoutes />
+          </ToastProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }

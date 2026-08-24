@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
@@ -134,6 +135,10 @@ const PurchasePage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
+      <Helmet>
+        <title>Buy {configInfo.title} Voucher - Resulta</title>
+        <meta name="description" content={`Purchase your ${configInfo.title} result checking voucher instantly. Secure payment, instant delivery.`} />
+      </Helmet>
       <WebsiteNavbar />
 
       <main className="flex-1 pb-20 md:pb-0">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import WebsiteNavbar from '../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../components/website/layout/MobileBottomNav';
@@ -16,6 +17,9 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Resulta - Fast & Secure WASSCE/NOVDEC & BECE Result Checkers</title>
+      </Helmet>
       <WebsiteNavbar />
       <main className="pb-20 md:pb-0">
         <HeroSection />
