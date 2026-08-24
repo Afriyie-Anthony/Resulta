@@ -11,7 +11,6 @@ import {
   FiLock,
   FiSun,
   FiMoon,
-  FiCheckCircle,
   FiArrowLeft,
   FiAlertCircle,
 } from 'react-icons/fi';
