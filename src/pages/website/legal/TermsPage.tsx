@@ -16,7 +16,7 @@ const terms: TermSection[] = [
     title: '1. About Resulta',
     content: (
       <p>
-        Resulta is a digital voucher distribution platform operated by <strong>Owelyn Holdings Ltd.</strong> The platform enables customers to purchase supported examination result-checking vouchers, including WASSCE and BECE vouchers, through supported online and USSD channels. Resulta acts as a distribution platform for supported voucher products.
+        Resulta is a digital voucher distribution platform operated by <strong>OWUBEX DIGITAL SERVICES</strong> The platform enables customers to purchase supported examination result-checking vouchers, including WASSCE and BECE vouchers, through supported online and USSD channels. Resulta acts as a distribution platform for supported voucher products.
       </p>
     ),
   },
@@ -165,7 +165,7 @@ const terms: TermSection[] = [
     title: '14. Intellectual Property',
     content: (
       <p>
-        All Resulta branding, logos, website content, graphics, designs, software, text, and other proprietary materials are owned by or licensed to Owelyn Holdings Ltd. unless otherwise stated. You may not reproduce, modify, distribute, sell, or commercially exploit Resulta intellectual property without prior written permission.
+        All Resulta branding, logos, website content, graphics, designs, software, text, and other proprietary materials are owned by or licensed to OWUBEX DIGITAL SERVICES unless otherwise stated. You may not reproduce, modify, distribute, sell, or commercially exploit Resulta intellectual property without prior written permission.
       </p>
     ),
   },
@@ -189,7 +189,7 @@ const terms: TermSection[] = [
     title: '17. Limitation of Liability',
     content: (
       <p>
-        To the extent permitted by applicable law, Resulta and Owelyn Holdings Ltd. will not be liable for indirect, incidental, special, or consequential losses arising from your use of the service. Nothing in these Terms excludes or limits liability where such exclusion or limitation is prohibited by applicable law.
+        To the extent permitted by applicable law, Resulta and OWUBEX DIGITAL SERVICES will not be liable for indirect, incidental, special, or consequential losses arising from your use of the service. Nothing in these Terms excludes or limits liability where such exclusion or limitation is prohibited by applicable law.
       </p>
     ),
   },
@@ -197,7 +197,7 @@ const terms: TermSection[] = [
     title: '18. Indemnity',
     content: (
       <p>
-        To the extent permitted by applicable law, you agree to indemnify and hold harmless Resulta and Owelyn Holdings Ltd. from claims, losses, damages, liabilities, or expenses arising from your misuse of the service, your violation of these Terms, fraudulent or unlawful activity, your unauthorized disclosure of voucher credentials, or your violation of third-party rights.
+        To the extent permitted by applicable law, you agree to indemnify and hold harmless Resulta and OWUBEX DIGITAL SERVICES from claims, losses, damages, liabilities, or expenses arising from your misuse of the service, your violation of these Terms, fraudulent or unlawful activity, your unauthorized disclosure of voucher credentials, or your violation of third-party rights.
       </p>
     ),
   },
@@ -232,7 +232,7 @@ const terms: TermSection[] = [
         <p>If you have questions regarding these Terms, please contact Resulta through the official support channels provided on our website.</p>
         <div className="bg-warm rounded-xl p-4 border border-border space-y-1">
           <p className="font-bold text-text-primary">Resulta</p>
-          <p className="text-sm text-text-secondary">A product of <strong>Owelyn Holdings Ltd.</strong></p>
+          <p className="text-sm text-text-secondary">A product of <strong>OWUBEX DIGITAL SERVICES</strong></p>
           <p className="text-sm text-text-secondary">Website: <span className="italic">[Insert Website URL]</span></p>
           <p className="text-sm text-text-secondary">Email: <span className="italic">[Insert Support Email]</span></p>
           <p className="text-sm text-text-secondary">Phone: <span className="italic">[Insert Support Number]</span></p>

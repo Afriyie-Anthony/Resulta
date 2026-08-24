@@ -140,7 +140,7 @@ const AdminLogin: React.FC = () => {
 
             {/* Footer */}
             <div className="relative z-10 text-[10px] font-bold text-white/60 border-t border-white/15 pt-3.5 flex items-center justify-between">
-              <span>OWELYN Holdings Ltd &bull; National Telecom &amp; WAEC Compliance</span>
+              <span>OWUBEX DIGITAL SERVICES &bull; National Telecom &amp; WAEC Compliance</span>
             </div>
           </div>
 
@@ -226,7 +226,7 @@ const AdminLogin: React.FC = () => {
 
             {/* Footer */}
             <div className={`mt-4 pt-3 border-t text-center text-[11px] font-bold ${isLight ? 'border-slate-200 text-slate-600' : 'border-slate-800 text-slate-400'}`}>
-              &copy; {new Date().getFullYear()} OWELYN Holdings Ltd. All rights reserved.
+              &copy; {new Date().getFullYear()} OWUBEX DIGITAL SERVICES | All rights reserved.
             </div>
           </div>
         </div>

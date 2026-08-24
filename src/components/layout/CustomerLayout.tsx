@@ -160,7 +160,7 @@ export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
               <span className="font-extrabold text-base text-white">RESULTA</span>
             </div>
             <p className="text-slate-400 leading-relaxed mb-4">
-              Ghana's premier instant digital voucher distribution platform for WASSCE & BECE examination result checking.
+              Ghana's premier instant digital voucher distribution platform for WASSCE/NOVDEC & BECE examination result checking.
             </p>
             <div className="flex items-center gap-2 text-emerald-400 font-medium">
               <FiCheckCircle className="w-4 h-4" />
@@ -192,7 +192,7 @@ export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
           <div>
             <h4 className="font-bold text-white mb-3 uppercase tracking-wider text-[11px]">Support & Contact</h4>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2"><FiPhoneCall className="text-teal-400" /> WhatsApp Support: +233 24 000 0000</li>
+              <li className="flex items-center gap-2"><FiPhoneCall className="text-teal-400" /> WhatsApp Support: 024 657 3062</li>
               <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Email: support@resulta.com.gh</li>
               <li>Operational Hours: 24/7 Automated Fulfillment</li>
             </ul>
@@ -200,7 +200,7 @@ export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 mt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px]">
-          <p>© {new Date().getFullYear()} Resulta (Owelyn Holdings Ltd). All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Resulta (OWUBEX DIGITAL SERVICES) | All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-slate-200">Terms of Service</a>
             <a href="#" className="hover:text-slate-200">Privacy Policy</a>

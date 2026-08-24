@@ -16,7 +16,7 @@ const steps = [
     id: 2,
     number: '02',
     title: 'SELECT',
-    description: 'Choose WASSCE or BECE',
+    description: 'Choose WASSCE/NOVDEC or BECE',
     phoneContent: {
       title: 'Welcome to RESULTA',
       lines: ['1. WASSCE Voucher', '2. BECE Voucher', '3. Check Voucher', '', 'Reply:'],

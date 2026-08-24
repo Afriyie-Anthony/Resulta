@@ -91,7 +91,7 @@ const WebsiteFooter: React.FC = () => {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
           <p>
-            &copy; {new Date().getFullYear()} Resulta. A product of Owelyn Holdings Ltd.
+            &copy; {new Date().getFullYear()} Resulta. A product of OWUBEX DIGITAL SERVICES | All rights reserved.
           </p>
         </div>
       </div>

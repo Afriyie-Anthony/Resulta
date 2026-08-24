@@ -50,7 +50,7 @@ export const SmsComposer: React.FC<SmsComposerProps> = ({
 
   // Message Copy
   const [messageText, setMessageText] = useState(
-    'WASSCE & BECE results are available! Use your PIN and serial number at results.waecdirect.org. Contact support: 0556069880'
+    'WASSCE/NOVDEC & BECE results are available! Use your PIN and serial number at results.waecdirect.org. Contact support: 0556069880'
   );
 
   // Live audience preview query from backend

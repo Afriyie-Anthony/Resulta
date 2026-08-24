@@ -211,7 +211,7 @@ const privacy: PrivacySection[] = [
         <p>If you have questions, concerns, or requests relating to this Privacy Policy or your personal information, please contact Resulta through the official support channels provided on our website.</p>
         <div className="bg-warm rounded-xl p-4 border border-border space-y-1">
           <p className="font-bold text-text-primary">Resulta</p>
-          <p className="text-sm text-text-secondary">A product of <strong>Owelyn Holdings Ltd.</strong></p>
+          <p className="text-sm text-text-secondary">A product of <strong>OWUBEX DIGITAL SERVICES</strong></p>
           <p className="text-sm text-text-secondary">Website: <span className="italic">[Insert Website URL]</span></p>
           <p className="text-sm text-text-secondary">Email: <span className="italic">[Insert Support Email]</span></p>
           <p className="text-sm text-text-secondary">Phone: <span className="italic">[Insert Support Number]</span></p>

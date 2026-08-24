@@ -126,7 +126,7 @@ export const AppContent: React.FC = () => {
             </Badge>
 
             <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight max-w-3xl mx-auto leading-tight">
-              Get Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-200">WASSCE & BECE</span> Result Checker Instantly
+              Get Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-200">WASSCE/NOVDEC & BECE</span> Result Checker Instantly
             </h1>
 
             <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">

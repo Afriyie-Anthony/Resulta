@@ -24,7 +24,7 @@ export const SMS_PRESETS: PresetTemplate[] = [
     id: 'ANNOUNCEMENT',
     label: 'Preset: Result Release Announcement',
     defaultText:
-      'WASSCE & BECE results are available! Use your PIN and serial number at results.waecdirect.org. Contact support: 0556069880',
+      'WASSCE/NOVDEC & BECE results are available! Use your PIN and serial number at results.waecdirect.org. Contact support: 0556069880',
   },
   {
     id: 'RETARGETING',
@@ -36,7 +36,7 @@ export const SMS_PRESETS: PresetTemplate[] = [
     id: 'PROMOTION',
     label: 'Preset: Promotional Voucher Discount',
     defaultText:
-      'Special Promo: Get instant discounts on bulk WASSCE & BECE result checker voucher orders today on RESULTA *713*5912#',
+      'Special Promo: Get instant discounts on bulk WASSCE/NOVDEC & BECE result checker voucher orders today on RESULTA *713*5912#',
   },
 ];
 

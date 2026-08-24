@@ -86,7 +86,7 @@ const ContactSupportPage: React.FC = () => {
                 <p className="text-sm text-secondary font-medium group-hover:underline underline-offset-2 transition-all">owelyn.ent@gmail.com</p>
               </a>
               <a
-                href="https://wa.me/0240897702?text=Hello%20Resulta%20Support%2C%20I%20need%20help%20with%20my%20voucher%20purchase."
+                href="https://wa.me/233246573062?text=Hello%20Resulta%20Support%2C%20I%20need%20help%20with%20my%20voucher%20purchase."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-warm rounded-xl border border-border p-5 text-center block transition-all duration-200 hover:scale-[1.03] hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer group"
@@ -97,7 +97,7 @@ const ContactSupportPage: React.FC = () => {
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-text-primary uppercase tracking-wider mb-1">WhatsApp</p>
-                <p className="text-sm text-secondary font-medium group-hover:underline underline-offset-2 transition-all">0240897702</p>
+                <p className="text-sm text-secondary font-medium group-hover:underline underline-offset-2 transition-all">024 657 3062</p>
               </a>
               <div className="bg-warm rounded-xl border border-border p-5 text-center">
                 <div className="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center text-lg mx-auto mb-3 border border-secondary/20">

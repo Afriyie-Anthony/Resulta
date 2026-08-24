@@ -311,7 +311,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
         <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
           <span className="text-xs text-slate-500 font-bold mr-2 uppercase tracking-wider">Share directly:</span>
           <a
-            href={`https://wa.me/?text=${encodeURIComponent(`Buy WASSCE & BECE Result Vouchers instantly on Resulta! ${referralLink}`)}`}
+            href={`https://wa.me/?text=${encodeURIComponent(`Buy WASSCE/NOVDEC & BECE Result Vouchers instantly on Resulta! ${referralLink}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm"

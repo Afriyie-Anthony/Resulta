@@ -17,7 +17,7 @@ const faqs: FAQ[] = [
     question: 'What is Resulta?',
     answer: (
       <p>
-        Resulta is a digital voucher distribution platform that allows customers to conveniently purchase WASSCE and BECE result-checking vouchers through supported online and USSD channels. Resulta is a product of <strong>Owelyn Holdings Ltd.</strong>
+        Resulta is a digital voucher distribution platform that allows customers to conveniently purchase WASSCE and BECE result-checking vouchers through supported online and USSD channels. Resulta is a product of <strong>OWUBEX DIGITAL SERVICES</strong>
       </p>
     ),
   },

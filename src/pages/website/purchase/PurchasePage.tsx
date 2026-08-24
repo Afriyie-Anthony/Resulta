@@ -255,21 +255,23 @@ const PurchasePage: React.FC = () => {
                   )}
                 </div>
                 
-                <div>
-                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-2">
-                    Email Address
-                    {quantity > 5 && <span className="text-rose-400 text-[10px]">(Required for Bulk)</span>}
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={quantity > 5}
-                    className="w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
-                    placeholder="Enter your email address"
-                  />
-                </div>
+                {mode === 'bulk' && (
+                  <div>
+                    <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-2">
+                      Email Address
+                      <span className="text-rose-400 text-[10px]">(Required for Bulk)</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
+                      placeholder="Enter your email address"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="bg-warm rounded-2xl border border-border p-6 sm:p-8 space-y-6">

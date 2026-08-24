@@ -5,7 +5,7 @@ const steps = [
   {
     number: '01',
     title: 'Choose Your Voucher',
-    description: 'Select WASSCE or BECE result checker and pick your voucher type.',
+    description: 'Select WASSCE/NOVDEC or BECE result checker and pick your voucher type.',
     icon: FiCheckCircle,
   },
   {
