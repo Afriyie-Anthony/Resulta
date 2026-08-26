@@ -42,15 +42,15 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
   const { isLight } = useAdminTheme();
 
   // Use actual data or safe empty default if missing
-  const kpis: OverviewCards = data || {
-    totalRevenue: { totalAmount: 0, todayAmount: 0 },
-    totalOrders: { count: 0, todayCount: 0 },
-    wassceStock: { availableCount: 0, status: 'LOW_STOCK_ALERT' },
-    beceStock: { availableCount: 0, status: 'LOW_STOCK_ALERT' },
-    pendingWithdrawals: { totalAmount: 0, count: 0 },
-    activeAffiliates: { count: 0 },
-    conversionRate: { rate: 0, label: 'Payment -> fulfillment' },
-    todaysOrders: { count: 0, todayEarnedRevenue: 0 },
+  const kpis: OverviewCards = {
+    totalRevenue: data?.totalRevenue || { totalAmount: 0, todayAmount: 0 },
+    totalOrders: data?.totalOrders || { count: 0, todayCount: 0 },
+    wassceStock: data?.wassceStock || { availableCount: 0, status: 'LOW_STOCK_ALERT' },
+    beceStock: data?.beceStock || { availableCount: 0, status: 'LOW_STOCK_ALERT' },
+    pendingWithdrawals: data?.pendingWithdrawals || { totalAmount: 0, count: 0 },
+    activeAffiliates: data?.activeAffiliates || { count: 0 },
+    conversionRate: data?.conversionRate || { rate: 0, label: 'Payment -> fulfillment' },
+    todaysOrders: data?.todaysOrders || { count: 0, todayEarnedRevenue: 0 },
   };
 
   const kpiCards = [
