@@ -60,25 +60,66 @@ export const withdrawalRequestSchema = z.object({
 
 // ─── Affiliate Dashboard Data ─────────────────────────────────────────────────
 export const affiliateDashboardSchema = z.object({
-  affiliate: affiliateSchema,
-  recentOrders: z.array(
-    z.object({
-      id: z.string(),
-      date: z.string(),
-      product: z.string(),
-      quantity: z.number().int(),
-      commission: z.number(),
-      status: z.string(),
+  headerBanner: z.object({
+    accountTier: z.string(),
+    activeCommissionRateText: z.string(),
+    greetingName: z.string()
+  }),
+  kpiCards: z.object({
+    totalReferrals: z.object({
+      count: z.number(),
+      monthOverMonthGrowthPercent: z.number(),
+      growthLabel: z.string()
     }),
-  ),
-  pendingWithdrawals: z.array(withdrawalSchema),
-  monthlySalesData: z.array(
-    z.object({
-      month: z.string(),
-      sales: z.number(),
-      earnings: z.number(),
+    totalEarnedGhs: z.number(),
+    availableCashoutGhs: z.number(),
+    conversionRate: z.object({
+      percentage: z.number(),
+      successfulOrders: z.number(),
+      totalOrdersCount: z.number()
+    })
+  }),
+  commissionTrajectory7Days: z.object({
+    sevenDayTotalGhs: z.number(),
+    trajectory: z.array(
+      z.object({
+        date: z.string(),
+        dayLabel: z.string(),
+        commissionGhs: z.number(),
+        ordersCount: z.number()
+      })
+    )
+  }),
+  channelBreakdown: z.object({
+    web: z.object({
+      channel: z.string(),
+      percentage: z.number(),
+      ordersCount: z.number(),
+      salesVolumeGhs: z.number()
     }),
-  ),
+    ussd: z.object({
+      channel: z.string(),
+      percentage: z.number(),
+      ordersCount: z.number(),
+      salesVolumeGhs: z.number()
+    }),
+    totalOrders: z.number()
+  }),
+  referralTools: z.object({
+    affiliateCode: z.string(),
+    ussdCode: z.string().nullable(),
+    referralLink: z.string()
+  }),
+  recentReferralSales: z.array(z.any()),
+  recentCommissions: z.array(z.any()),
+  profile: z.any(),
+  metrics: z.object({
+    totalEarnings: z.number(),
+    pendingBalance: z.number(),
+    paidBalance: z.number(),
+    totalReferredOrders: z.number(),
+    subAffiliatesCount: z.number()
+  })
 });
 
 // ─── Exported Types ──────────────────────────────────────────────────────────

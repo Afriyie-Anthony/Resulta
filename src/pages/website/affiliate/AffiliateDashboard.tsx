@@ -12,6 +12,7 @@ import { Input } from '../../../components/ui/Input';
 import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import { FiDollarSign, FiCheckCircle } from 'react-icons/fi';
+import { useAffiliateDashboard } from '../../../hooks/useAffiliate';
 
 const AffiliateDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -19,10 +20,27 @@ const AffiliateDashboard: React.FC = () => {
   const [payoutAmount, setPayoutAmount] = useState('320.00');
   const [momoNetwork, setMomoNetwork] = useState('MTN');
   const [momoPhone, setMomoPhone] = useState('0241234567');
-  const [accountName, setAccountName] = useState('Kofi Mensah');
+  const [accountName, setAccountName] = useState('');
 
   const { addToast } = useToast();
-  const availableBalance = 320.0;
+  
+  const { data, isLoading } = useAffiliateDashboard();
+  const availableBalance = data?.kpiCards?.availableCashoutGhs || 0;
+
+  // Set account name once data loads if empty
+  React.useEffect(() => {
+    if (data?.headerBanner?.greetingName && !accountName) {
+      setAccountName(data.headerBanner.greetingName);
+    }
+  }, [data, accountName]);
+
+  if (isLoading || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-sm font-medium text-slate-500 animate-pulse">Loading Dashboard...</p>
+      </div>
+    );
+  }
 
   const handlePayoutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +81,7 @@ const AffiliateDashboard: React.FC = () => {
       >
         {activeTab === 'overview' && (
           <AffiliateOverviewView
+            data={data}
             onNavigateTab={setActiveTab}
             onRequestPayout={() => setIsPayoutModalOpen(true)}
           />
@@ -88,11 +107,11 @@ const AffiliateDashboard: React.FC = () => {
         <form onSubmit={handlePayoutSubmit} className="space-y-4">
           <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-between text-xs">
             <span className="text-slate-600 font-medium">Available Wallet Balance:</span>
-            <span className="font-black text-emerald-600 text-sm">{formatCedi(availableBalance)}</span>
+            <span className="font-medium text-emerald-600 text-sm">{formatCedi(availableBalance)}</span>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-medium text-slate-700 mb-1.5">
               Withdrawal Amount (GH₵)
             </label>
             <Input
@@ -111,7 +130,7 @@ const AffiliateDashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 mb-1.5">
                 MoMo Network
               </label>
               <select
@@ -126,7 +145,7 @@ const AffiliateDashboard: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 mb-1.5">
                 Receiver Mobile Number
               </label>
               <Input
@@ -139,7 +158,7 @@ const AffiliateDashboard: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-medium text-slate-700 mb-1.5">
               Account Holder Name
             </label>
             <Input
