@@ -13,9 +13,13 @@ import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import { FiDollarSign, FiCheckCircle } from 'react-icons/fi';
 import { useAffiliateDashboard } from '../../../hooks/useAffiliate';
+import { useSearchParams } from 'react-router-dom';
 
 const AffiliateDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
+  const setActiveTab = (tab: string) => setSearchParams({ tab });
+
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState('320.00');
   const [momoNetwork, setMomoNetwork] = useState('MTN');

@@ -8,6 +8,8 @@ import {
   updateAffiliateProfile,
   getReferralAnalytics,
   getSubAffiliates,
+  getAffiliateSalesAnalytics,
+  getAffiliateSales,
 } from '../services/affiliate.service';
 import type { WithdrawalRequest, UpdateAffiliateProfileDTO } from '../schemas/affiliate';
 
@@ -20,6 +22,8 @@ export const affiliateKeys = {
   profile: () => [...affiliateKeys.all, 'profile'] as const,
   referralAnalytics: () => [...affiliateKeys.all, 'referralAnalytics'] as const,
   subAffiliates: (params: Record<string, any>) => [...affiliateKeys.all, 'subAffiliates', params] as const,
+  salesAnalytics: (params: Record<string, any>) => [...affiliateKeys.all, 'salesAnalytics', params] as const,
+  sales: (params: Record<string, any>) => [...affiliateKeys.all, 'sales', params] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
@@ -57,6 +61,18 @@ export const useSubAffiliates = (params: { page?: number; limit?: number; search
   useQuery({
     queryKey: affiliateKeys.subAffiliates(params),
     queryFn: () => getSubAffiliates(params),
+  });
+
+export const useAffiliateSalesAnalytics = (params: Record<string, any>) =>
+  useQuery({
+    queryKey: affiliateKeys.salesAnalytics(params),
+    queryFn: () => getAffiliateSalesAnalytics(params),
+  });
+
+export const useAffiliateSales = (params: Record<string, any>) =>
+  useQuery({
+    queryKey: affiliateKeys.sales(params),
+    queryFn: () => getAffiliateSales(params),
   });
 
 // ─── Mutations ────────────────────────────────────────────────────────────────

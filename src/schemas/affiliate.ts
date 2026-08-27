@@ -224,6 +224,31 @@ export const subAffiliateSchema = z.object({
 
 export const subAffiliatesListResponseSchema = paginatedResponseSchema(subAffiliateSchema);
 
+// ─── Affiliate Sales ──────────────────────────────────────────────────────────
+export const affiliateSalesAnalyticsSchema = z.object({
+  totalSales: z.number().optional(),
+  salesValueGhs: z.number().optional(),
+  commissionEarnedGhs: z.number().optional(),
+  voucherBreakdown: z.any().optional(),
+  channelBreakdown: z.any().optional(),
+}).passthrough();
+
+export const affiliateSaleSchema = z.object({
+  id: z.string().optional(),
+  transactionRef: z.string().optional(),
+  date: z.string().optional(),
+  createdAt: z.string().optional(),
+  product: z.string().optional(),
+  voucherType: z.string().optional(),
+  customerPhone: z.string().optional(),
+  saleAmount: z.number().optional(),
+  totalAmount: z.number().optional(),
+  commission: z.number().optional(),
+  status: z.string().optional(),
+}).passthrough();
+
+export const affiliateSalesListResponseSchema = paginatedResponseSchema(affiliateSaleSchema);
+
 // ─── Exported Types ──────────────────────────────────────────────────────────
 export type Affiliate = z.infer<typeof affiliateSchema>;
 export type AffiliateStatus = z.infer<typeof affiliateStatusSchema>;
@@ -235,3 +260,6 @@ export type UpdateAffiliateProfileDTO = z.infer<typeof updateAffiliateProfileSch
 export type ReferralAnalyticsData = z.infer<typeof referralAnalyticsSchema>;
 export type SubAffiliate = z.infer<typeof subAffiliateSchema>;
 export type SubAffiliatesPaginatedResponse = z.infer<typeof subAffiliatesListResponseSchema>;
+export type AffiliateSalesAnalyticsData = z.infer<typeof affiliateSalesAnalyticsSchema>;
+export type AffiliateSale = z.infer<typeof affiliateSaleSchema>;
+export type AffiliateSalesPaginatedResponse = z.infer<typeof affiliateSalesListResponseSchema>;

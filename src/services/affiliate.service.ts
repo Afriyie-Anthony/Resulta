@@ -7,6 +7,8 @@ import type {
   UpdateAffiliateProfileDTO,
   ReferralAnalyticsData,
   SubAffiliatesPaginatedResponse,
+  AffiliateSalesAnalyticsData,
+  AffiliateSalesPaginatedResponse,
 } from '../schemas/affiliate';
 import type { Order } from '../schemas/order';
 
@@ -70,6 +72,24 @@ export const getSubAffiliates = async (params?: {
 
 export const exportSubAffiliatesCsv = async (): Promise<Blob> => {
   const { data } = await apiClient.get('/affiliate/referrals/export', {
+    responseType: 'blob',
+  });
+  return data;
+};
+
+export const getAffiliateSalesAnalytics = async (params?: any): Promise<AffiliateSalesAnalyticsData> => {
+  const { data } = await apiClient.get('/affiliate/sales/analytics', { params });
+  return data?.data || data;
+};
+
+export const getAffiliateSales = async (params?: any): Promise<AffiliateSalesPaginatedResponse> => {
+  const { data } = await apiClient.get('/affiliate/sales', { params });
+  return data?.data || data;
+};
+
+export const exportAffiliateSalesCsv = async (params?: any): Promise<Blob> => {
+  const { data } = await apiClient.get('/affiliate/sales/export', {
+    params,
     responseType: 'blob',
   });
   return data;

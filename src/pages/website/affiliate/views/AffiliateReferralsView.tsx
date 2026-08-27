@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
 import { formatCedi, formatDate } from '../../../../utils/formatters';
-import { FiSearch, FiDownload, FiUsers, FiCheckCircle, FiClock, FiDollarSign, FiShoppingCart, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
+import { FiSearch, FiDownload, FiUsers, FiCheckCircle, FiClock, FiDollarSign, FiShoppingCart, FiTrendingUp, FiActivity } from 'react-icons/fi';
 import { useReferralAnalytics, useSubAffiliates } from '../../../../hooks/useAffiliate';
 import { exportSubAffiliatesCsv } from '../../../../services/affiliate.service';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export const AffiliateReferralsView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,17 +51,6 @@ export const AffiliateReferralsView: React.FC = () => {
   const subAffiliates = listResponse?.items || [];
   const meta = listResponse?.meta;
 
-  const chartData = [
-    { name: 'Approved', value: analytics?.recruitmentAnalytics?.subAffiliatesBreakdown?.approved || 0, color: '#10b981' }, // Emerald
-    { name: 'Pending', value: analytics?.recruitmentAnalytics?.subAffiliatesBreakdown?.pending || 0, color: '#f59e0b' }, // Amber
-    { name: 'Rejected', value: analytics?.recruitmentAnalytics?.subAffiliatesBreakdown?.rejected || 0, color: '#ef4444' }, // Red
-  ].filter(item => item.value > 0); // Only show segments that have data
-
-  // Fallback data for the chart if all values are 0 (e.g. brand new user)
-  const displayChartData = chartData.length > 0 
-    ? chartData 
-    : [{ name: 'No Data Yet', value: 1, color: '#e2e8f0' }]; // Slate-200
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -79,10 +67,8 @@ export const AffiliateReferralsView: React.FC = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: KPI Cards (Spans 2 columns on large screens) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Recruitment Analytics Cards */}
+      <div className="space-y-6">
+        {/* Recruitment Analytics Cards */}
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Recruitment Metrics</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -162,50 +148,6 @@ export const AffiliateReferralsView: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Right Column: Chart */}
-        <div className="lg:col-span-1">
-          <h3 className="text-lg font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
-            <FiPieChart className="text-slate-400" /> Network Breakdown
-          </h3>
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[300px]">
-            {isLoadingAnalytics ? (
-              <div className="flex-1 flex items-center justify-center text-sm font-medium text-slate-400 animate-pulse">
-                Loading chart data...
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={displayChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {displayChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number, name: string) => [value, name]}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36} 
-                    iconType="circle"
-                    wrapperStyle={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Sub-Affiliate Leads Table */}
       <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm overflow-hidden mt-6">
