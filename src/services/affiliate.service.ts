@@ -3,6 +3,10 @@ import type {
   AffiliateDashboardData,
   Withdrawal,
   WithdrawalRequest,
+  AffiliateProfileData,
+  UpdateAffiliateProfileDTO,
+  ReferralAnalyticsData,
+  SubAffiliatesPaginatedResponse,
 } from '../schemas/affiliate';
 import type { Order } from '../schemas/order';
 
@@ -36,5 +40,37 @@ export const requestWithdrawal = async (
 
 export const getWithdrawalHistory = async (): Promise<Withdrawal[]> => {
   const { data } = await apiClient.get('/affiliate/withdrawals');
+  return data;
+};
+
+export const getAffiliateProfile = async (): Promise<AffiliateProfileData> => {
+  const { data } = await apiClient.get('/affiliate/profile');
+  return data;
+};
+
+export const updateAffiliateProfile = async (
+  payload: UpdateAffiliateProfileDTO
+): Promise<void> => {
+  await apiClient.patch('/affiliate/profile', payload);
+};
+
+export const getReferralAnalytics = async (): Promise<ReferralAnalyticsData> => {
+  const { data } = await apiClient.get('/affiliate/referrals/analytics');
+  return data;
+};
+
+export const getSubAffiliates = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}): Promise<SubAffiliatesPaginatedResponse> => {
+  const { data } = await apiClient.get('/affiliate/referrals', { params });
+  return data;
+};
+
+export const exportSubAffiliatesCsv = async (): Promise<Blob> => {
+  const { data } = await apiClient.get('/affiliate/referrals/export', {
+    responseType: 'blob',
+  });
   return data;
 };

@@ -4,8 +4,12 @@ import {
   getAffiliateOrders,
   requestWithdrawal,
   getWithdrawalHistory,
+  getAffiliateProfile,
+  updateAffiliateProfile,
+  getReferralAnalytics,
+  getSubAffiliates,
 } from '../services/affiliate.service';
-import type { WithdrawalRequest } from '../schemas/affiliate';
+import type { WithdrawalRequest, UpdateAffiliateProfileDTO } from '../schemas/affiliate';
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 export const affiliateKeys = {
@@ -13,6 +17,9 @@ export const affiliateKeys = {
   dashboard: () => [...affiliateKeys.all, 'dashboard'] as const,
   orders: () => [...affiliateKeys.all, 'orders'] as const,
   withdrawals: () => [...affiliateKeys.all, 'withdrawals'] as const,
+  profile: () => [...affiliateKeys.all, 'profile'] as const,
+  referralAnalytics: () => [...affiliateKeys.all, 'referralAnalytics'] as const,
+  subAffiliates: (params: Record<string, any>) => [...affiliateKeys.all, 'subAffiliates', params] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
@@ -34,6 +41,24 @@ export const useWithdrawalHistory = () =>
     queryFn: getWithdrawalHistory,
   });
 
+export const useAffiliateProfile = () =>
+  useQuery({
+    queryKey: affiliateKeys.profile(),
+    queryFn: getAffiliateProfile,
+  });
+
+export const useReferralAnalytics = () =>
+  useQuery({
+    queryKey: affiliateKeys.referralAnalytics(),
+    queryFn: getReferralAnalytics,
+  });
+
+export const useSubAffiliates = (params: { page?: number; limit?: number; search?: string }) =>
+  useQuery({
+    queryKey: affiliateKeys.subAffiliates(params),
+    queryFn: () => getSubAffiliates(params),
+  });
+
 // ─── Mutations ────────────────────────────────────────────────────────────────
 export const useRequestWithdrawal = () => {
   const qc = useQueryClient();
@@ -43,6 +68,17 @@ export const useRequestWithdrawal = () => {
       // Refresh dashboard and withdrawal history after a successful request
       qc.invalidateQueries({ queryKey: affiliateKeys.dashboard() });
       qc.invalidateQueries({ queryKey: affiliateKeys.withdrawals() });
+    },
+  });
+};
+
+export const useUpdateAffiliateProfile = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: UpdateAffiliateProfileDTO) => updateAffiliateProfile(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: affiliateKeys.profile() });
+      qc.invalidateQueries({ queryKey: affiliateKeys.dashboard() });
     },
   });
 };

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ghanaPhoneSchema } from './common';
+import { ghanaPhoneSchema, paginatedResponseSchema } from './common';
 
 /**
  * Affiliate portal schemas.
@@ -9,6 +9,7 @@ import { ghanaPhoneSchema } from './common';
 export const affiliateStatusSchema = z.enum([
   'ACTIVE',
   'PENDING',
+  'APPROVED',
   'SUSPENDED',
   'REJECTED',
 ]);
@@ -122,9 +123,115 @@ export const affiliateDashboardSchema = z.object({
   })
 });
 
+// ─── Affiliate Profile (Self-Service) ───────────────────────────────────────
+export const affiliateProfileSchema = z.object({
+  id: z.string(),
+  user: z.object({
+    id: z.string(),
+    email: z.string().email(),
+    name: z.string(),
+    role: z.string()
+  }).optional(),
+  businessName: z.string().nullable().optional(),
+  phoneNumber: ghanaPhoneSchema.optional().or(z.literal('')),
+  location: z.string().nullable().optional(),
+  paymentChannel: z.enum(['MOBILE_MONEY', 'BANK']).nullable().optional(),
+  network: z.string().nullable().optional(),
+  bankName: z.string().nullable().optional(),
+  bankCode: z.string().nullable().optional(),
+  accountNumber: z.string().nullable().optional(),
+  accountName: z.string().nullable().optional(),
+  affiliateCode: z.string(),
+  ussdCode: z.string().nullable().optional(),
+  status: affiliateStatusSchema,
+});
+
+export const updateAffiliateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+  oldPassword: z.string().optional(),
+  newPassword: z.string().optional(),
+  businessName: z.string().optional(),
+  phoneNumber: ghanaPhoneSchema.optional().or(z.literal('')),
+  location: z.string().optional(),
+  paymentChannel: z.enum(['MOBILE_MONEY', 'BANK']).optional(),
+  network: z.string().optional(),
+  bankName: z.string().optional(),
+  bankCode: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+}).refine(data => {
+  // If changing password, must provide both old and new
+  if (data.oldPassword || data.newPassword) {
+    return !!data.oldPassword && !!data.newPassword;
+  }
+  return true;
+}, {
+  message: "Both old and new passwords are required to change password",
+  path: ["newPassword"],
+}).refine(data => {
+  // Mobile money validation
+  if (data.paymentChannel === 'MOBILE_MONEY') {
+    return !!data.network && !!data.accountNumber && !!data.accountName;
+  }
+  return true;
+}, {
+  message: "Network, account number, and account name are required for Mobile Money",
+  path: ["paymentChannel"],
+}).refine(data => {
+  // Bank validation
+  if (data.paymentChannel === 'BANK') {
+    return !!data.bankName && !!data.bankCode && !!data.accountNumber && !!data.accountName;
+  }
+  return true;
+}, {
+  message: "Bank name, bank code, account number, and account name are required for Bank",
+  path: ["paymentChannel"],
+});
+
+// ─── Referrals (Sub-Affiliates) ───────────────────────────────────────────────
+export const referralAnalyticsSchema = z.object({
+  recruitmentAnalytics: z.object({
+    totalInvitedSubAffiliates: z.number(),
+    subAffiliatesBreakdown: z.object({
+      pending: z.number(),
+      approved: z.number(),
+      rejected: z.number(),
+    }),
+    financials: z.object({
+      oneTimeRecruitmentBonusGhs: z.number(),
+      totalRecruitmentEarningsGhs: z.number(),
+      pendingRecruitmentEarningsGhs: z.number(),
+    }),
+  }),
+  customerReferralAnalytics: z.object({
+    totalReferredOrders: z.number(),
+    successfulReferredOrders: z.number(),
+    conversionRatePercentage: z.number(),
+    totalSalesVolumeGhs: z.number(),
+    totalVoucherSaleCommissionsGhs: z.number(),
+    uniqueCustomerLeadsCount: z.number(),
+  }),
+});
+
+export const subAffiliateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email().optional(),
+  status: affiliateStatusSchema,
+  recruitmentBonusEarned: z.boolean(),
+  joinedAt: z.string().optional(),
+});
+
+export const subAffiliatesListResponseSchema = paginatedResponseSchema(subAffiliateSchema);
+
 // ─── Exported Types ──────────────────────────────────────────────────────────
 export type Affiliate = z.infer<typeof affiliateSchema>;
 export type AffiliateStatus = z.infer<typeof affiliateStatusSchema>;
 export type Withdrawal = z.infer<typeof withdrawalSchema>;
 export type WithdrawalRequest = z.infer<typeof withdrawalRequestSchema>;
 export type AffiliateDashboardData = z.infer<typeof affiliateDashboardSchema>;
+export type AffiliateProfileData = z.infer<typeof affiliateProfileSchema>;
+export type UpdateAffiliateProfileDTO = z.infer<typeof updateAffiliateProfileSchema>;
+export type ReferralAnalyticsData = z.infer<typeof referralAnalyticsSchema>;
+export type SubAffiliate = z.infer<typeof subAffiliateSchema>;
+export type SubAffiliatesPaginatedResponse = z.infer<typeof subAffiliatesListResponseSchema>;
