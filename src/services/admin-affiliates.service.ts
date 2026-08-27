@@ -52,9 +52,22 @@ export const adminAffiliateService = {
     const { data } = await apiClient.get('/admin/affiliates/analytics', { params: { period } });
     return data;
   },
-  exportCsv: (): string => {
-    // Generate the URL for the user to download
-    return `${apiClient.defaults.baseURL || ''}/admin/affiliates/analytics/export/csv`;
+  exportCsv: async (): Promise<void> => {
+    const response = await apiClient.get('/admin/affiliates/analytics/export/csv', {
+      responseType: 'blob'
+    });
+    
+    const blob = new Blob([response.data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `affiliates_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
   },
 
   // Affiliate Management (List & CRUD)

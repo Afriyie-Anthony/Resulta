@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { Pagination } from '../../../components/ui/Pagination';
@@ -14,7 +15,6 @@ import {
   useAdminAffiliatesList,
   useAdminAffiliateStats,
   useAdminAffiliateConfig,
-  useAdminAffiliateAnalytics,
   useUpdateAdminAffiliateConfig,
   useCreateAdminAffiliate,
   adminAffiliateKeys
@@ -39,6 +39,7 @@ import {
 export const AffiliatesPartnersView: React.FC = () => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   // State
   const [activeTab, setActiveTab] = useState<'PENDING' | 'ACTIVE' | 'ALL'>('ALL');
@@ -51,7 +52,6 @@ export const AffiliatesPartnersView: React.FC = () => {
   const [viewingAffiliateId, setViewingAffiliateId] = useState<string | null>(null);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
 
   // Queries
   const { data: statsData } = useAdminAffiliateStats();
@@ -93,8 +93,12 @@ export const AffiliatesPartnersView: React.FC = () => {
     });
   };
 
-  const handleExportCsv = () => {
-    window.location.href = adminAffiliateService.exportCsv();
+  const handleExportCsv = async () => {
+    try {
+      await adminAffiliateService.exportCsv();
+    } catch (error) {
+      addToast({ title: 'Export Failed', message: 'Could not download the file. Ensure you have permission.', type: 'error' });
+    }
   };
 
   if (viewingAffiliateId) {
@@ -140,7 +144,7 @@ export const AffiliatesPartnersView: React.FC = () => {
           <Button variant={isLight ? 'primary' : 'gradient'} size="md" onClick={() => setIsCreateOpen(true)} leftIcon={<FiPlus />} className="font-black text-xs h-10 px-4 rounded-xl shadow-md">
             Add Partner
           </Button>
-          <Button variant="outline" size="md" onClick={() => setIsAnalyticsOpen(true)} leftIcon={<FiBarChart2 />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">
+          <Button variant="outline" size="md" onClick={() => navigate('/admin/affiliates/analytics')} leftIcon={<FiBarChart2 />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">
             Analytics
           </Button>
           <Button variant="outline" size="md" onClick={() => setIsConfigOpen(true)} leftIcon={<FiSettings />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">
@@ -319,7 +323,6 @@ export const AffiliatesPartnersView: React.FC = () => {
       
       {isConfigOpen && <GlobalConfigModal onClose={() => setIsConfigOpen(false)} />}
       {isCreateOpen && <CreateAffiliateModal onClose={() => setIsCreateOpen(false)} />}
-      {isAnalyticsOpen && <AnalyticsModal onClose={() => setIsAnalyticsOpen(false)} />}
     </div>
   );
 };
@@ -461,67 +464,6 @@ const CreateAffiliateModal: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           <Button variant="primary" type="submit" isLoading={createMutation.isPending}>Create</Button>
         </div>
       </form>
-    </Modal>
-  );
-};
-
-const AnalyticsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [period, setPeriod] = useState('ALL');
-  const { data, isLoading } = useAdminAffiliateAnalytics(period);
-  const { isLight } = useAdminTheme();
-
-  return (
-    <Modal isOpen onClose={onClose} title="Affiliate Analytics & Leaderboards">
-      <div className="mb-4">
-        <select value={period} onChange={e => setPeriod(e.target.value)} className={`w-full p-2 text-sm border rounded-xl font-black ${isLight ? 'bg-white' : 'bg-slate-900'}`}>
-          <option value="ALL">All Time</option>
-          <option value="30D">Last 30 Days</option>
-          <option value="90D">Last 90 Days</option>
-        </select>
-      </div>
-
-      {isLoading ? <p className="p-4 text-center">Loading Analytics...</p> : data ? (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`p-4 rounded-2xl border ${isLight ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-slate-700'}`}>
-              <h4 className="text-xs font-black uppercase mb-3">Top 10 Earners</h4>
-              {data.topEarners?.length > 0 ? data.topEarners.map((e, idx) => (
-                <div key={e.affiliateId} className="flex justify-between text-sm py-1 font-bold border-b last:border-0 border-slate-200 dark:border-slate-800">
-                  <span>{idx + 1}. {e.name}</span>
-                  <span className="text-emerald-600 dark:text-emerald-400">{formatCedi(e.totalEarnings)}</span>
-                </div>
-              )) : <p className="text-xs opacity-50">No earners yet.</p>}
-            </div>
-            
-            <div className={`p-4 rounded-2xl border ${isLight ? 'bg-blue-50 border-blue-200' : 'bg-slate-900 border-slate-700'}`}>
-              <h4 className="text-xs font-black uppercase mb-3">Top 10 Recruiters</h4>
-              {data.topRecruiters?.length > 0 ? data.topRecruiters.map((e, idx) => (
-                <div key={e.affiliateId} className="flex justify-between text-sm py-1 font-bold border-b last:border-0 border-slate-200 dark:border-slate-800">
-                  <span>{idx + 1}. {e.name}</span>
-                  <span className="text-blue-600 dark:text-blue-400">{e.recruitsCount} recruits</span>
-                </div>
-              )) : <p className="text-xs opacity-50">No recruiters yet.</p>}
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-700'}`}>
-              <h4 className="text-xs font-black uppercase mb-2">Voucher Breakdown</h4>
-              <div className="flex justify-between text-sm font-bold"><span>BECE:</span> <span>{data.salesBreakdown?.bece || 0}</span></div>
-              <div className="flex justify-between text-sm font-bold"><span>WASSCE:</span> <span>{data.salesBreakdown?.wassce || 0}</span></div>
-            </div>
-            <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-700'}`}>
-              <h4 className="text-xs font-black uppercase mb-2">Commission Breakdown</h4>
-              <div className="flex justify-between text-sm font-bold"><span>Sales:</span> <span>{formatCedi(data.commissionTypes?.sales || 0)}</span></div>
-              <div className="flex justify-between text-sm font-bold"><span>Recruitment:</span> <span>{formatCedi(data.commissionTypes?.recruitment || 0)}</span></div>
-            </div>
-          </div>
-        </div>
-      ) : <p className="text-xs opacity-50">No data available.</p>}
-      
-      <div className="flex justify-end mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-        <Button variant="ghost" onClick={onClose}>Close</Button>
-      </div>
     </Modal>
   );
 };

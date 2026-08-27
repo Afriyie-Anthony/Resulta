@@ -28,30 +28,62 @@ export const adminAffiliateStatsSchema = z.object({
 
 // ─── Analytics ────────────────────────────────────────────────────────────
 export const adminAffiliateLeaderboardEntrySchema = z.object({
-  affiliateId: z.string(),
+  id: z.string(),
+  affiliateCode: z.string(),
+  ussdCode: z.string().nullable().optional(),
   name: z.string(),
-  referralCode: z.string(),
-  totalEarnings: z.number().nonnegative(),
-  salesCount: z.number().int().nonnegative(),
+  email: z.string().email().optional(),
+  businessName: z.string().optional(),
+  location: z.string().optional(),
+  status: affiliateStatusSchema.optional(),
+  salesVolumeGhs: z.number().nonnegative(),
+  successfulOrdersCount: z.number().int().nonnegative(),
+  totalEarningsGhs: z.number().nonnegative(),
+  invitedSubAffiliatesCount: z.number().int().nonnegative(),
 });
 
 export const adminAffiliateAnalyticsSchema = z.object({
-  topEarners: z.array(adminAffiliateLeaderboardEntrySchema),
-  topRecruiters: z.array(z.object({
-    affiliateId: z.string(),
-    name: z.string(),
-    recruitsCount: z.number().int().nonnegative(),
-    bonusEarned: z.number().nonnegative()
-  })),
-  salesBreakdown: z.object({
-    bece: z.number().int().nonnegative(),
-    wassce: z.number().int().nonnegative()
+  overview: z.object({
+    totalAffiliates: z.number().int().nonnegative(),
+    pendingApprovals: z.number().int().nonnegative(),
+    approvedAffiliates: z.number().int().nonnegative(),
+    rejectedAffiliates: z.number().int().nonnegative(),
+    totalCommissionsEarnedGhs: z.number().nonnegative(),
+    totalPendingBalanceGhs: z.number().nonnegative(),
+    totalPaidBalanceGhs: z.number().nonnegative(),
+    totalAttributedSalesVolumeGhs: z.number().nonnegative(),
+    totalAttributedOrdersCount: z.number().int().nonnegative(),
   }),
-  commissionTypes: z.object({
-    sales: z.number().nonnegative(),
-    recruitment: z.number().nonnegative()
+  leaderboards: z.object({
+    topEarnersBySalesVolume: z.array(adminAffiliateLeaderboardEntrySchema),
+    topRecruiters: z.array(adminAffiliateLeaderboardEntrySchema),
   }),
-  payoutChannels: z.record(z.string(), z.number().int().nonnegative())
+  voucherTypeBreakdown: z.object({
+    bece: z.object({
+      ordersCount: z.number().int().nonnegative(),
+      salesVolumeGhs: z.number().nonnegative(),
+      commissionsGhs: z.number().nonnegative(),
+    }),
+    wassce: z.object({
+      ordersCount: z.number().int().nonnegative(),
+      salesVolumeGhs: z.number().nonnegative(),
+      commissionsGhs: z.number().nonnegative(),
+    })
+  }),
+  commissionTypeBreakdown: z.object({
+    voucherSales: z.object({
+      count: z.number().int().nonnegative(),
+      totalGhs: z.number().nonnegative(),
+    }),
+    recruitmentBonuses: z.object({
+      count: z.number().int().nonnegative(),
+      totalGhs: z.number().nonnegative(),
+    })
+  }),
+  paymentChannelPreferences: z.object({
+    mobileMoneyCount: z.number().int().nonnegative(),
+    bankCount: z.number().int().nonnegative(),
+  })
 });
 
 // ─── DTOs for Creation and Update ─────────────────────────────────────────

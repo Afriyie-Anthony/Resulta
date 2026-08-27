@@ -5,6 +5,7 @@ import { DashboardOverviewView } from './views/DashboardOverviewView';
 import { VoucherInventoryView } from './views/VoucherInventoryView';
 import { OrdersFulfillmentView } from './views/OrdersFulfillmentView';
 import { AffiliatesPartnersView } from './views/AffiliatesPartnersView';
+import { AffiliatesAnalyticsView } from './views/AffiliatesAnalyticsView';
 import { WithdrawalsView } from './views/WithdrawalsView';
 import { ReportsAnalyticsView } from './views/ReportsAnalyticsView';
 import { AuditLogsView } from './views/AuditLogsView';
@@ -29,6 +30,7 @@ export const AdminRouter: React.FC = () => {
         <Route path="contacts" element={<ContactsView />} />
         <Route path="users" element={<UsersView />} />
         <Route path="affiliates" element={<AffiliatesPartnersView />} />
+        <Route path="affiliates/analytics" element={<AffiliatesAnalyticsView />} />
         <Route path="sms" element={<SMSModuleView />} />
         <Route path="reports" element={<ReportsAnalyticsView />} />
         <Route path="settings" element={<SystemSettingsView />} />
