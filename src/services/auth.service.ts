@@ -29,10 +29,10 @@ export const loginUser = async (credentials: LoginRequest): Promise<LoginRespons
 };
 
 // ─── Affiliate Registration ───────────────────────────────────────────────────
-export const registerAffiliate = async (
+export const registerPublicAffiliate = async (
   payload: AffiliateRegisterRequest,
-): Promise<LoginResponse> => {
-  const { data } = await apiClient.post<LoginResponse>('/auth/register', payload);
+): Promise<{ success: boolean; message: string; data: any }> => {
+  const { data } = await apiClient.post('/public/affiliates/register', payload);
   return data;
 };
 

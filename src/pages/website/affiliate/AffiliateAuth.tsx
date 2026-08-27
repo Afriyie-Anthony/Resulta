@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiBriefcase, FiPhone, FiMapPin, FiArrowLeft } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiBriefcase, FiPhone, FiMapPin, FiArrowLeft, FiCreditCard, FiHash, FiActivity } from 'react-icons/fi';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button } from '../../../components/ui/Button';
 import { ForgotPasswordModal } from '../../../components/auth/ForgotPasswordModal';
+import { registerPublicAffiliate } from '../../../services/auth.service';
 
 type AuthView = 'login' | 'register';
 type RegisterStep = 1 | 2;
@@ -23,7 +24,7 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
   const [success, setSuccess] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated: isAdminAuthenticated } = useAuth();
+  const { isAuthenticated: isAdminAuthenticated, affiliateLogin, isAuthenticated } = useAuth();
 
   const [loginForm, setLoginForm] = useState({ email: 'superadmin@rms.com', password: 'password123' });
   const [registerForm, setRegisterForm] = useState({
@@ -34,13 +35,20 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
     location: '',
     password: '',
     confirmPassword: '',
+    paymentChannel: 'MOBILE_MONEY' as 'MOBILE_MONEY' | 'BANK',
+    network: '',
+    bankName: '',
+    bankCode: '',
+    accountNumber: '',
+    accountName: '',
+    referralCode: '',
   });
 
   useEffect(() => {
-    if (isAdminAuthenticated) {
+    if (isAdminAuthenticated || isAuthenticated) {
       navigate('/admin/dashboard', { replace: true });
     }
-  }, [isAdminAuthenticated, navigate]);
+  }, [isAdminAuthenticated, isAuthenticated, navigate]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -57,18 +65,10 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
     setError('');
   };
 
-  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
     setError('');
   };
-
-  const { affiliateLogin, register, isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/affiliate/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,20 +109,52 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
       return;
     }
 
-    setIsLoading(true);
-    const result = await register({
-      name: registerForm.fullName,
-      email: registerForm.email,
-      password: registerForm.password,
-    });
-    setIsLoading(false);
-    if (result.success) {
-      setSuccess('Registration successful! Welcome to the Resulta affiliate program.');
-      setTimeout(() => {
-        navigate('/affiliate/dashboard', { replace: true });
-      }, 1500);
-    } else {
-      setError(result.error || 'Registration failed. Please try again.');
+    if (registerStep === 2) {
+      if (!registerForm.paymentChannel || !registerForm.accountNumber || !registerForm.accountName) {
+        setError('Please provide your payment account details.');
+        return;
+      }
+      if (registerForm.paymentChannel === 'MOBILE_MONEY' && !registerForm.network) {
+        setError('Please select your mobile money network.');
+        return;
+      }
+      if (registerForm.paymentChannel === 'BANK' && !registerForm.bankName) {
+        setError('Please provide your bank name.');
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const result = await registerPublicAffiliate({
+          name: registerForm.fullName,
+          phoneNumber: registerForm.phone,
+          businessName: registerForm.businessName || undefined,
+          email: registerForm.email,
+          location: registerForm.location,
+          paymentChannel: registerForm.paymentChannel,
+          network: registerForm.network || undefined,
+          bankName: registerForm.bankName || undefined,
+          bankCode: registerForm.bankCode || undefined,
+          accountNumber: registerForm.accountNumber,
+          accountName: registerForm.accountName,
+          password: registerForm.password,
+          confirmPassword: registerForm.confirmPassword,
+          referralCode: registerForm.referralCode || undefined,
+        });
+
+        setIsLoading(false);
+        if (result.success) {
+          setSuccess('Application submitted successfully. Awaiting admin approval.');
+          setTimeout(() => {
+            switchToLogin();
+          }, 3000);
+        } else {
+          setError(result.message || 'Registration failed. Please try again.');
+        }
+      } catch (err: any) {
+        setIsLoading(false);
+        setError(err.response?.data?.message || err.message || 'Registration failed.');
+      }
     }
   };
 
@@ -131,6 +163,11 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
     setRegisterStep(1);
     setError('');
     setSuccess('');
+    setRegisterForm({
+      ...registerForm,
+      password: '',
+      confirmPassword: '',
+    });
   };
 
   const switchToRegister = () => {
@@ -413,58 +450,80 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
                         </div>
 
                         <div>
-                          <label htmlFor="regPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                            Password *
+                          <label htmlFor="referralCode" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                            Referral Code (Optional)
                           </label>
                           <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                              <FiLock className="h-4 w-4 text-slate-400" />
+                              <FiHash className="h-4 w-4 text-slate-400" />
                             </div>
                             <input
-                              type={showPassword ? 'text' : 'password'}
-                              id="regPassword"
-                              name="password"
-                              value={registerForm.password}
+                              type="text"
+                              id="referralCode"
+                              name="referralCode"
+                              value={registerForm.referralCode}
                               onChange={handleRegisterChange}
-                              required
-                              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-10 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
-                              placeholder="Create a password"
+                              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                              placeholder="Were you referred?"
                             />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-300 transition-colors"
-                            >
-                              {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
-                            </button>
                           </div>
                         </div>
 
-                        <div>
-                          <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                            Confirm Password *
-                          </label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                              <FiLock className="h-4 w-4 text-slate-400" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="regPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                              Password *
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <FiLock className="h-4 w-4 text-slate-400" />
+                              </div>
+                              <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="regPassword"
+                                name="password"
+                                value={registerForm.password}
+                                onChange={handleRegisterChange}
+                                required
+                                className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-10 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                                placeholder="Create password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-300 transition-colors"
+                              >
+                                {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                              </button>
                             </div>
-                            <input
-                              type={showConfirmPassword ? 'text' : 'password'}
-                              id="confirmPassword"
-                              name="confirmPassword"
-                              value={registerForm.confirmPassword}
-                              onChange={handleRegisterChange}
-                              required
-                              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-10 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
-                              placeholder="Confirm your password"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-300 transition-colors"
-                            >
-                              {showConfirmPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
-                            </button>
+                          </div>
+
+                          <div>
+                            <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                              Confirm *
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <FiLock className="h-4 w-4 text-slate-400" />
+                              </div>
+                              <input
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={registerForm.confirmPassword}
+                                onChange={handleRegisterChange}
+                                required
+                                className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-10 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                                placeholder="Confirm password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-300 transition-colors"
+                              >
+                                {showConfirmPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                              </button>
+                            </div>
                           </div>
                         </div>
 
@@ -473,9 +532,8 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
                           variant="primary"
                           size="lg"
                           fullWidth
-                          isLoading={isLoading}
                         >
-                          {isLoading ? 'Submitting...' : 'Continue'}
+                          Continue
                         </Button>
                       </div>
                     )}
@@ -483,45 +541,118 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
                     {registerStep === 2 && (
                       <div className="space-y-5 animate-fade-in">
                         <div className="p-6 rounded-2xl bg-warm border border-border">
-                          <h3 className="text-base font-bold text-text-primary mb-4">Payment Details</h3>
+                          <h3 className="text-base font-bold text-text-primary mb-4 flex items-center gap-2">
+                            <FiCreditCard className="text-secondary" /> Payout Details
+                          </h3>
                           <p className="text-sm text-text-secondary mb-6">
-                            Provide your payment information to receive commissions.
+                            Where should we send your commissions? You can receive payments via Mobile Money or Bank Transfer.
                           </p>
 
                           <div className="space-y-4">
                             <div>
-                              <label htmlFor="paymentMethod" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                                Payment Method
+                              <label htmlFor="paymentChannel" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                Payment Method *
                               </label>
                               <select
-                                id="paymentMethod"
+                                id="paymentChannel"
+                                name="paymentChannel"
+                                value={registerForm.paymentChannel}
+                                onChange={handleRegisterChange}
+                                required
                                 className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
                               >
-                                <option value="">Select payment method</option>
-                                <option value="momo">Mobile Money</option>
-                                <option value="bank">Bank Transfer</option>
+                                <option value="MOBILE_MONEY">Mobile Money</option>
+                                <option value="BANK">Bank Transfer</option>
                               </select>
                             </div>
 
+                            {registerForm.paymentChannel === 'MOBILE_MONEY' && (
+                              <div>
+                                <label htmlFor="network" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                  Network *
+                                </label>
+                                <div className="relative">
+                                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                    <FiActivity className="h-4 w-4 text-slate-400" />
+                                  </div>
+                                  <select
+                                    id="network"
+                                    name="network"
+                                    value={registerForm.network}
+                                    onChange={handleRegisterChange}
+                                    required
+                                    className="w-full rounded-xl bg-slate-900/90 border border-slate-800 pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                                  >
+                                    <option value="">Select network</option>
+                                    <option value="MTN">MTN</option>
+                                    <option value="VODAFONE">Telecel (Vodafone)</option>
+                                    <option value="AIRTELTIGO">AT (AirtelTigo)</option>
+                                  </select>
+                                </div>
+                              </div>
+                            )}
+
+                            {registerForm.paymentChannel === 'BANK' && (
+                              <>
+                                <div>
+                                  <label htmlFor="bankName" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                    Bank Name *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="bankName"
+                                    name="bankName"
+                                    value={registerForm.bankName}
+                                    onChange={handleRegisterChange}
+                                    required
+                                    className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                                    placeholder="e.g. Ecobank Ghana"
+                                  />
+                                </div>
+                                <div>
+                                  <label htmlFor="bankCode" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                    Bank Code (Optional)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="bankCode"
+                                    name="bankCode"
+                                    value={registerForm.bankCode}
+                                    onChange={handleRegisterChange}
+                                    className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
+                                    placeholder="e.g. 040100"
+                                  />
+                                </div>
+                              </>
+                            )}
+
                             <div>
                               <label htmlFor="accountNumber" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                                Account Number / Phone
+                                Account Number / Phone *
                               </label>
                               <input
                                 type="text"
                                 id="accountNumber"
+                                name="accountNumber"
+                                value={registerForm.accountNumber}
+                                onChange={handleRegisterChange}
+                                required
                                 className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
-                                placeholder="e.g. 024 XXX XXX or bank account"
+                                placeholder={registerForm.paymentChannel === 'MOBILE_MONEY' ? 'e.g. 024 XXX XXX' : 'Account number'}
                               />
                             </div>
 
                             <div>
                               <label htmlFor="accountName" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                                Account Name
+                                Account Name *
                               </label>
                               <input
                                 type="text"
                                 id="accountName"
+                                name="accountName"
+                                value={registerForm.accountName}
+                                onChange={handleRegisterChange}
+                                required
                                 className="w-full rounded-xl bg-slate-900/90 border border-slate-800 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
                                 placeholder="Name on account"
                               />
@@ -530,10 +661,10 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
                         </div>
 
                         <div className="flex gap-3">
-                          <Button variant="outline" size="lg" fullWidth onClick={() => setRegisterStep(1)}>
+                          <Button type="button" variant="outline" size="lg" fullWidth onClick={() => setRegisterStep(1)}>
                             Back
                           </Button>
-                          <Button variant="accent" size="lg" fullWidth isLoading={isLoading}>
+                          <Button type="submit" variant="accent" size="lg" fullWidth isLoading={isLoading}>
                             {isLoading ? 'Submitting...' : 'Submit Application'}
                           </Button>
                         </div>

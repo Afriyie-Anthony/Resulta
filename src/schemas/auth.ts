@@ -34,11 +34,18 @@ export const loginResponseSchema = z.object({
 // ─── Affiliate Registration ───────────────────────────────────────────────────
 export const affiliateRegisterRequestSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
+  phoneNumber: z.string(),
+  businessName: z.string().optional(),
   email: z.string().email('Enter a valid email address'),
-  password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters'),
-  phone: z.string().optional(),
+  location: z.string(),
+  paymentChannel: z.enum(['MOBILE_MONEY', 'BANK']),
+  network: z.string().optional(),
+  bankName: z.string().optional(),
+  bankCode: z.string().optional(),
+  accountNumber: z.string(),
+  accountName: z.string(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Please confirm your password'),
   referralCode: z.string().optional(),
 });
 
