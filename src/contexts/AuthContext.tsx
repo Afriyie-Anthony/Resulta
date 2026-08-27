@@ -1,6 +1,6 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { loginUser, registerAffiliate, logoutUser } from '../services/auth.service';
+import { loginUser, logoutUser } from '../services/auth.service';
 import type { AuthUser } from '../schemas/auth';
 
 export interface LoginResult {
@@ -8,17 +8,13 @@ export interface LoginResult {
   error?: string;
 }
 
-export interface RegisterResult {
-  success: boolean;
-  error?: string;
-}
+
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   login: (email: string, password: string, type?: 'admin' | 'affiliate') => Promise<LoginResult>;
   affiliateLogin: (email: string, password: string) => Promise<LoginResult>;
-  register: (data: { name: string; email: string; password: string }) => Promise<RegisterResult>;
   logout: () => void;
 }
 
@@ -51,24 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return login(email, password, 'affiliate');
   };
 
-  // ─── Affiliate Registration ───────────────────────────────────────────────
-  const register = async (data: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<RegisterResult> => {
-    try {
-      const { user: authUser, accessToken, refreshToken } = await registerAffiliate(data);
-      setAuth(authUser, accessToken, refreshToken);
-      return { success: true };
-    } catch (err: any) {
-      const errorMsg =
-        err.response?.data?.message ||
-        err.message ||
-        'Registration failed. Please try again.';
-      return { success: false, error: errorMsg };
-    }
-  };
+
 
   // ─── Logout ───────────────────────────────────────────────────────────────
   const logout = () => {
@@ -77,7 +56,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, affiliateLogin, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, affiliateLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

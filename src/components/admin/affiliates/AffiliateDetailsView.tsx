@@ -17,7 +17,6 @@ import {
   FiArrowLeft,
   FiMail,
   FiSmartphone,
-  FiMapPin,
   FiCreditCard,
   FiCheckCircle,
   FiXCircle,

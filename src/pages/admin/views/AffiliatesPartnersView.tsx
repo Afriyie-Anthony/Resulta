@@ -8,6 +8,7 @@ import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { formatCedi } from '../../../utils/formatters';
 import { AffiliateDetailsView } from '../../../components/admin/affiliates';
 import { useDebounce } from '../../../hooks/useDebounce';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAffiliateService } from '../../../services/admin-affiliates.service';
 import {
   useAdminAffiliatesList,
@@ -16,8 +17,7 @@ import {
   useAdminAffiliateAnalytics,
   useUpdateAdminAffiliateConfig,
   useCreateAdminAffiliate,
-  useApproveAdminAffiliate,
-  useUpdateAdminAffiliate
+  adminAffiliateKeys
 } from '../../../hooks/useAdminAffiliates';
 import {
   FiCheck,
@@ -67,15 +67,22 @@ export const AffiliatesPartnersView: React.FC = () => {
   const totalPages = listData?.meta?.totalPages || 1;
 
   // Mutations for table quick-actions
-  const suspendMutation = useUpdateAdminAffiliate('');
+  const queryClient = useQueryClient();
+  const suspendMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: any }) => adminAffiliateService.updateAffiliate(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminAffiliateKeys.list({}) });
+      queryClient.invalidateQueries({ queryKey: adminAffiliateKeys.stats() });
+    }
+  });
   
-  const handleQuickApprove = (id: string, name: string) => {
+  const handleQuickApprove = (id: string, _name: string) => {
     // Open detail view for proper approval flow (which needs USSD code input)
     setViewingAffiliateId(id);
   };
 
   const handleQuickSuspend = (id: string, name: string) => {
-    suspendMutation.mutate({ status: 'SUSPENDED' }, {
+    suspendMutation.mutate({ id, status: 'SUSPENDED' }, {
       onSuccess: () => {
         addToast({
           title: 'Account Suspended',
