@@ -9,7 +9,7 @@ export const TelemetryMicroGrid: React.FC = () => {
 
   const totalCustomers = customerStats?.overview?.totalUniqueCustomers || 0;
   const returningCount = (customerStats?.segments?.RETURNING || 0) + (customerStats?.segments?.VIP || 0);
-  const firstTimeCount = customerStats?.segments?.FIRST_TIME || Math.max(0, totalCustomers - returningCount);
+  const firstTimeCount = customerStats?.segments?.NEW ?? Math.max(0, totalCustomers - returningCount);
 
   const firstTimePct = totalCustomers > 0 ? ((firstTimeCount / totalCustomers) * 100).toFixed(0) : '0';
   const returningPct = totalCustomers > 0 ? ((returningCount / totalCustomers) * 100).toFixed(0) : '0';

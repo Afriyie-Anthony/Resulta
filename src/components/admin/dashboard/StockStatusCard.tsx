@@ -22,14 +22,14 @@ export const StockStatusCard: React.FC = () => {
   const beceStats =
     statsObj?.bece || statsObj?.BECE || { available: 0, sold: 0, total: 0, threshold: 250 };
 
-  const beceTotal = beceStats.total || (beceStats.available + beceStats.sold) || 0;
+  const beceTotal = beceStats.total || ((beceStats.available ?? 0) + (beceStats.sold ?? 0)) || 0;
   const beceAvailable = beceStats.available || 0;
   const beceSold = beceStats.sold || Math.max(0, beceTotal - beceAvailable);
   const beceSoldPct = beceTotal > 0 ? ((beceSold / beceTotal) * 100).toFixed(1) : '0';
   const beceRemainPct = beceTotal > 0 ? ((beceAvailable / beceTotal) * 100).toFixed(1) : '0';
   const beceIsLow = beceAvailable <= (beceStats.threshold || 250);
 
-  const wassceTotal = wassceStats.total || (wassceStats.available + wassceStats.sold) || 0;
+  const wassceTotal = wassceStats.total || ((wassceStats.available ?? 0) + (wassceStats.sold ?? 0)) || 0;
   const wassceAvailable = wassceStats.available || 0;
   const wassceSold = wassceStats.sold || Math.max(0, wassceTotal - wassceAvailable);
   const wassceSoldPct = wassceTotal > 0 ? ((wassceSold / wassceTotal) * 100).toFixed(1) : '0';

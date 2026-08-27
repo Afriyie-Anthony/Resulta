@@ -329,6 +329,13 @@ export const AffiliatesPartnersView: React.FC = () => {
 
 // -- Mini Components for Modals --
 
+const calculateCommission = (sellingPrice: number, percentage: number): number => {
+  if (isNaN(sellingPrice) || isNaN(percentage) || sellingPrice < 0 || percentage < 0) {
+    return 0;
+  }
+  return Number(((sellingPrice * percentage) / 100).toFixed(2));
+};
+
 const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { data, isLoading } = useAdminAffiliateConfig();
   const updateMutation = useUpdateAdminAffiliateConfig();
@@ -348,6 +355,31 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (data) setFormData(data);
   }, [data]);
 
+  const handleCommissionPctChange = (percentage: number) => {
+    setFormData(prev => ({
+      ...prev,
+      commissionPercentage: percentage,
+      beceCommissionGhs: calculateCommission(prev.beceSellingPrice, percentage),
+      wassceCommissionGhs: calculateCommission(prev.wassceSellingPrice, percentage),
+    }));
+  };
+
+  const handleBecePriceChange = (price: number) => {
+    setFormData(prev => ({
+      ...prev,
+      beceSellingPrice: price,
+      beceCommissionGhs: calculateCommission(price, prev.commissionPercentage),
+    }));
+  };
+
+  const handleWasscePriceChange = (price: number) => {
+    setFormData(prev => ({
+      ...prev,
+      wassceSellingPrice: price,
+      wassceCommissionGhs: calculateCommission(price, prev.commissionPercentage),
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateMutation.mutate(formData, {
@@ -365,27 +397,76 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black uppercase mb-1">Commission %</label>
-              <input type="number" value={formData.commissionPercentage} onChange={e => setFormData({...formData, commissionPercentage: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <input
+                type="number"
+                step="any"
+                min="0"
+                max="100"
+                value={formData.commissionPercentage}
+                onChange={e => handleCommissionPctChange(Number(e.target.value))}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase mb-1">Recruit Bonus (GHS)</label>
-              <input type="number" value={formData.oneTimeRecruitmentBonusGhs} onChange={e => setFormData({...formData, oneTimeRecruitmentBonusGhs: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.oneTimeRecruitmentBonusGhs}
+                onChange={e => setFormData({ ...formData, oneTimeRecruitmentBonusGhs: Number(e.target.value) })}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase mb-1">BECE Selling Price</label>
-              <input type="number" value={formData.beceSellingPrice} onChange={e => setFormData({...formData, beceSellingPrice: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.beceSellingPrice}
+                onChange={e => handleBecePriceChange(Number(e.target.value))}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase mb-1">WASSCE Selling Price</label>
-              <input type="number" value={formData.wassceSellingPrice} onChange={e => setFormData({...formData, wassceSellingPrice: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.wassceSellingPrice}
+                onChange={e => handleWasscePriceChange(Number(e.target.value))}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
             <div>
-              <label className="block text-xs font-black uppercase mb-1">BECE Commission (GHS)</label>
-              <input type="number" value={formData.beceCommissionGhs} onChange={e => setFormData({...formData, beceCommissionGhs: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-black uppercase">BECE Commission (GHS)</label>
+                <span className="text-[10px] text-slate-400 font-medium">Auto-calculated</span>
+              </div>
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.beceCommissionGhs}
+                onChange={e => setFormData({ ...formData, beceCommissionGhs: Number(e.target.value) })}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
             <div>
-              <label className="block text-xs font-black uppercase mb-1">WASSCE Commission (GHS)</label>
-              <input type="number" value={formData.wassceCommissionGhs} onChange={e => setFormData({...formData, wassceCommissionGhs: Number(e.target.value)})} className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`} />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-black uppercase">WASSCE Commission (GHS)</label>
+                <span className="text-[10px] text-slate-400 font-medium">Auto-calculated</span>
+              </div>
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.wassceCommissionGhs}
+                onChange={e => setFormData({ ...formData, wassceCommissionGhs: Number(e.target.value) })}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-4">
