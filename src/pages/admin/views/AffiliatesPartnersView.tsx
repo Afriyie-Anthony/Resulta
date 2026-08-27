@@ -485,7 +485,7 @@ const AnalyticsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className={`p-4 rounded-2xl border ${isLight ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-slate-700'}`}>
               <h4 className="text-xs font-black uppercase mb-3">Top 10 Earners</h4>
-              {data.topEarners.length > 0 ? data.topEarners.map((e, idx) => (
+              {data.topEarners?.length > 0 ? data.topEarners.map((e, idx) => (
                 <div key={e.affiliateId} className="flex justify-between text-sm py-1 font-bold border-b last:border-0 border-slate-200 dark:border-slate-800">
                   <span>{idx + 1}. {e.name}</span>
                   <span className="text-emerald-600 dark:text-emerald-400">{formatCedi(e.totalEarnings)}</span>
@@ -495,7 +495,7 @@ const AnalyticsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             
             <div className={`p-4 rounded-2xl border ${isLight ? 'bg-blue-50 border-blue-200' : 'bg-slate-900 border-slate-700'}`}>
               <h4 className="text-xs font-black uppercase mb-3">Top 10 Recruiters</h4>
-              {data.topRecruiters.length > 0 ? data.topRecruiters.map((e, idx) => (
+              {data.topRecruiters?.length > 0 ? data.topRecruiters.map((e, idx) => (
                 <div key={e.affiliateId} className="flex justify-between text-sm py-1 font-bold border-b last:border-0 border-slate-200 dark:border-slate-800">
                   <span>{idx + 1}. {e.name}</span>
                   <span className="text-blue-600 dark:text-blue-400">{e.recruitsCount} recruits</span>
@@ -507,13 +507,13 @@ const AnalyticsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-700'}`}>
               <h4 className="text-xs font-black uppercase mb-2">Voucher Breakdown</h4>
-              <div className="flex justify-between text-sm font-bold"><span>BECE:</span> <span>{data.salesBreakdown.bece}</span></div>
-              <div className="flex justify-between text-sm font-bold"><span>WASSCE:</span> <span>{data.salesBreakdown.wassce}</span></div>
+              <div className="flex justify-between text-sm font-bold"><span>BECE:</span> <span>{data.salesBreakdown?.bece || 0}</span></div>
+              <div className="flex justify-between text-sm font-bold"><span>WASSCE:</span> <span>{data.salesBreakdown?.wassce || 0}</span></div>
             </div>
             <div className={`p-4 rounded-2xl border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-700'}`}>
               <h4 className="text-xs font-black uppercase mb-2">Commission Breakdown</h4>
-              <div className="flex justify-between text-sm font-bold"><span>Sales:</span> <span>{formatCedi(data.commissionTypes.sales)}</span></div>
-              <div className="flex justify-between text-sm font-bold"><span>Recruitment:</span> <span>{formatCedi(data.commissionTypes.recruitment)}</span></div>
+              <div className="flex justify-between text-sm font-bold"><span>Sales:</span> <span>{formatCedi(data.commissionTypes?.sales || 0)}</span></div>
+              <div className="flex justify-between text-sm font-bold"><span>Recruitment:</span> <span>{formatCedi(data.commissionTypes?.recruitment || 0)}</span></div>
             </div>
           </div>
         </div>
