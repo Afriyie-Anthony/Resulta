@@ -43,8 +43,12 @@ export const adminAffiliateService = {
 
   // Affiliate Management (List & CRUD)
   getAffiliates: async (params: { page?: number; limit?: number; status?: string; search?: string }): Promise<PaginatedAffiliates> => {
-    const { data } = await apiClient.get('/admin/affiliates/', { params });
-    return data;
+    // Axios interceptor returns { data: array, pagination: object } directly
+    const response: any = await apiClient.get('/admin/affiliates/', { params });
+    return {
+      data: response.data,
+      meta: response.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 }
+    };
   },
   createAffiliate: async (payload: CreateAffiliatePayload): Promise<Affiliate> => {
     const { data } = await apiClient.post('/admin/affiliates/', payload);

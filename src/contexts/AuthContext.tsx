@@ -1,6 +1,6 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { loginUser, logoutUser } from '../services/auth.service';
+import { loginUser, loginAffiliateUser, logoutUser } from '../services/auth.service';
 import type { AuthUser } from '../schemas/auth';
 
 export interface LoginResult {
@@ -44,7 +44,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // ─── Affiliate Login ──────────────────────────────────────────────────────
   const affiliateLogin = async (email: string, password: string): Promise<LoginResult> => {
-    return login(email, password, 'affiliate');
+    try {
+      const { user: authUser, accessToken, refreshToken } = await loginAffiliateUser({ email, password });
+      setAuth(authUser, accessToken, refreshToken);
+      return { success: true };
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Invalid credentials or unapproved account.';
+      return { success: false, error: errorMsg };
+    }
   };
 
 

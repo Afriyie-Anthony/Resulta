@@ -17,12 +17,13 @@ export const adminAffiliateConfigSchema = z.object({
 
 // ─── Stats ────────────────────────────────────────────────────────────────
 export const adminAffiliateStatsSchema = z.object({
-  totalPartners: z.number().int().nonnegative(),
-  activePartners: z.number().int().nonnegative(),
-  pendingPartners: z.number().int().nonnegative(),
-  rejectedPartners: z.number().int().nonnegative(),
-  totalSalesVolume: z.number().int().nonnegative(),
-  totalCommissionPaid: z.number().nonnegative(),
+  totalAffiliates: z.number().int().nonnegative(),
+  pendingApprovals: z.number().int().nonnegative(),
+  approvedAffiliates: z.number().int().nonnegative(),
+  rejectedAffiliates: z.number().int().nonnegative(),
+  totalCommissionsEarned: z.number().nonnegative(),
+  totalPendingBalance: z.number().nonnegative(),
+  totalPaidBalance: z.number().nonnegative(),
 });
 
 // ─── Analytics ────────────────────────────────────────────────────────────

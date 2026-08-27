@@ -117,7 +117,7 @@ const AffiliateRegister: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const result = await registerPublicAffiliate({
+      await registerPublicAffiliate({
         name: registerForm.fullName,
         phoneNumber: registerForm.phone,
         businessName: registerForm.businessName || undefined,
@@ -135,12 +135,8 @@ const AffiliateRegister: React.FC = () => {
       });
 
       setIsLoading(false);
-      if (result.success) {
-        setSubmitSuccess('Application submitted successfully! Awaiting admin approval.');
-        setTimeout(() => navigate('/affiliate/login', { replace: true }), 3000);
-      } else {
-        setSubmitError(result.message || 'Application failed. Please try again or contact support.');
-      }
+      setSubmitSuccess('Application submitted successfully! Awaiting admin approval.');
+      setTimeout(() => navigate('/affiliate/login', { replace: true }), 3000);
     } catch (err: any) {
       setIsLoading(false);
       setSubmitError(err.response?.data?.message || err.message || 'Application failed.');

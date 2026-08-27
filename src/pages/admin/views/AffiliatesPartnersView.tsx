@@ -135,7 +135,7 @@ export const AffiliatesPartnersView: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Badge variant="warning" className="text-xs py-1.5 px-3 font-black shadow-2xs">
-            {statsData?.pendingPartners || 0} Pending Approval
+            {statsData?.pendingApprovals || 0} Pending Approval
           </Badge>
           <Button variant={isLight ? 'primary' : 'gradient'} size="md" onClick={() => setIsCreateOpen(true)} leftIcon={<FiPlus />} className="font-black text-xs h-10 px-4 rounded-xl shadow-md">
             Add Partner
@@ -161,8 +161,8 @@ export const AffiliatesPartnersView: React.FC = () => {
               <FiUsers className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>{statsData?.totalPartners || 0} Partners</p>
-          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{statsData?.activePartners || 0} Active • {statsData?.pendingPartners || 0} Pending</p>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>{statsData?.totalAffiliates || 0} Partners</p>
+          <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>{statsData?.approvedAffiliates || 0} Active • {statsData?.pendingApprovals || 0} Pending</p>
         </div>
 
         <div onClick={() => setActiveTab('PENDING')} className={`p-3.5 rounded-2xl border border-t-4 transition-all cursor-pointer shadow-2xs hover:shadow-sm ${isLight ? 'bg-white border-slate-300 border-t-amber-500 hover:border-slate-400' : 'bg-slate-900/90 border-slate-800 border-t-amber-500'}`}>
@@ -172,7 +172,7 @@ export const AffiliatesPartnersView: React.FC = () => {
               <FiClock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>{statsData?.pendingPartners || 0} Applications</p>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-amber-950' : 'text-amber-400'}`}>{statsData?.pendingApprovals || 0} Applications</p>
           <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>Action required for activation</p>
         </div>
 
@@ -183,7 +183,7 @@ export const AffiliatesPartnersView: React.FC = () => {
               <FiShoppingBag className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>{statsData?.totalSalesVolume || 0} Units Sold</p>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>0 Units Sold</p>
           <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>Total vouchers via affiliate links</p>
         </div>
 
@@ -194,7 +194,7 @@ export const AffiliatesPartnersView: React.FC = () => {
               <FiDollarSign className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>{formatCedi(statsData?.totalCommissionPaid || 0)}</p>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>{formatCedi(statsData?.totalCommissionsEarned || 0)}</p>
           <p className={`text-[11px] font-semibold mt-1.5 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>Total partner payouts</p>
         </div>
       </div>
@@ -204,15 +204,15 @@ export const AffiliatesPartnersView: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" onClick={() => { setActiveTab('ALL'); setCurrentPage(1); }} className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${activeTab === 'ALL' ? isLight ? 'bg-slate-900 text-white border-slate-900 shadow-xs' : 'bg-slate-700 text-white border-slate-600 shadow-xs' : isLight ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs' : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'}`}>
             <span>All Records</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300">{statsData?.totalPartners || 0}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300">{statsData?.totalAffiliates || 0}</span>
           </button>
           <button type="button" onClick={() => { setActiveTab('PENDING'); setCurrentPage(1); }} className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${activeTab === 'PENDING' ? isLight ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-xs' : 'bg-amber-500 text-slate-950 border-amber-400 shadow-xs' : isLight ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs' : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'}`}>
             <span>Pending Review</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-black/15 text-slate-950 dark:bg-white/20 dark:text-white">{statsData?.pendingPartners || 0}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-black/15 text-slate-950 dark:bg-white/20 dark:text-white">{statsData?.pendingApprovals || 0}</span>
           </button>
           <button type="button" onClick={() => { setActiveTab('ACTIVE'); setCurrentPage(1); }} className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${activeTab === 'ACTIVE' ? isLight ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-xs' : 'bg-teal-500 text-slate-950 border-teal-400 shadow-xs' : isLight ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 font-extrabold shadow-2xs' : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'}`}>
             <span>Active Partners</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-white/20 text-white dark:bg-black/20 dark:text-slate-950">{statsData?.activePartners || 0}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-white/20 text-white dark:bg-black/20 dark:text-slate-950">{statsData?.approvedAffiliates || 0}</span>
           </button>
         </div>
         <div className="relative w-full sm:w-80">
