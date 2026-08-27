@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
-import { copyToClipboard } from '../../utils/formatters';
+import { copyToClipboard, formatGhanaPhone } from '../../utils/formatters';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAffiliateProfile } from '../../hooks/useAffiliate';
 import {
   FiGrid,
   FiCreditCard,
@@ -31,11 +32,26 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
   onRequestPayout = () => {},
 }) => {
   const { user, logout } = useAuth();
+  const { data: profile } = useAffiliateProfile();
   const [copied, setCopied] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const referralCode = 'REF-GH-8823';
+  const referralCode = profile?.affiliateCode || 'REF-GH-8823';
   const referralLink = `https://resulta.com.gh/?ref=${referralCode}`;
+
+  const displayName = profile?.user?.name || user?.name || profile?.accountName || 'Affiliate Partner';
+  const rawPhone = profile?.phoneNumber || profile?.accountNumber || '';
+  const formattedPhone = rawPhone ? formatGhanaPhone(rawPhone) : '';
+  const networkText = profile?.network ? ` (${profile.network})` : '';
+  const subtitle = formattedPhone ? `${formattedPhone}${networkText}` : (user?.email || 'Affiliate Account');
+
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join('')
+    .toUpperCase() || 'AN';
 
   const handleCopyLink = async () => {
     const success = await copyToClipboard(referralLink);
@@ -129,12 +145,12 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
         {/* Affiliate Profile Footer */}
         <div className="p-4 border-t shrink-0 transition-colors border-white/10 bg-primary/95 space-y-3">
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-black/20 border border-white/10 shadow-sm">
-            <div className="w-9 h-9 rounded-full bg-white/10 text-white font-semibold flex items-center justify-center text-sm border border-white/20">
-              {user?.name ? user.name.slice(0, 2).toUpperCase() : 'KM'}
+            <div className="w-9 h-9 rounded-full bg-white/10 text-white font-semibold flex items-center justify-center text-sm border border-white/20 shrink-0">
+              {initials}
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-semibold text-white truncate">{user?.name || 'Kofi Mensah'}</p>
-              <p className="text-[10px] text-white/60 font-medium truncate">024 123 4567 (MTN)</p>
+              <p className="text-xs font-semibold text-white truncate">{displayName}</p>
+              <p className="text-[10px] text-white/60 font-medium truncate">{subtitle}</p>
             </div>
           </div>
 

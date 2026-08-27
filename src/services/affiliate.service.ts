@@ -9,6 +9,13 @@ import type {
   SubAffiliatesPaginatedResponse,
   AffiliateSalesAnalyticsData,
   AffiliateSalesPaginatedResponse,
+  AffiliateEarningsAnalyticsData,
+  AffiliateEarningsPaginatedResponse,
+  AffiliateEarningsQueryParams,
+  AffiliateWithdrawalsSummaryData,
+  AffiliateWithdrawalsPaginatedResponse,
+  AffiliateWithdrawalsQueryParams,
+  AffiliateWithdrawalCreateRequest,
 } from '../schemas/affiliate';
 import type { Order } from '../schemas/order';
 
@@ -16,11 +23,16 @@ import type { Order } from '../schemas/order';
  * Affiliate portal service.
  * These endpoints require an AFFILIATE-role JWT.
  *
- * Endpoints (assumed):
- *   GET  /affiliate/dashboard       → aggregate dashboard data
- *   GET  /affiliate/orders          → affiliate's own orders/referrals
- *   POST /affiliate/withdraw        → request a withdrawal
- *   GET  /affiliate/withdrawals     → withdrawal history
+ * Endpoints:
+ *   GET  /affiliate/dashboard             → aggregate dashboard data
+ *   GET  /affiliate/orders                → affiliate's own orders/referrals
+ *   POST /affiliate/withdraw              → legacy request a withdrawal
+ *   GET  /affiliate/withdrawals/summary   → payout account & withdrawal balance summary
+ *   GET  /affiliate/withdrawals           → paginated withdrawal history
+ *   POST /affiliate/withdrawals/request   → request a withdrawal payout
+ *   GET  /affiliate/earnings/analytics    → summary cards & status breakdown
+ *   GET  /affiliate/earnings              → paginated commission log history
+ *   GET  /affiliate/earnings/export       → downloadable CSV file stream
  */
 
 export const getAffiliateDashboard = async (): Promise<AffiliateDashboardData> => {
@@ -77,20 +89,63 @@ export const exportSubAffiliatesCsv = async (): Promise<Blob> => {
   return data;
 };
 
-export const getAffiliateSalesAnalytics = async (params?: any): Promise<AffiliateSalesAnalyticsData> => {
+export const getAffiliateSalesAnalytics = async (params?: Record<string, unknown>): Promise<AffiliateSalesAnalyticsData> => {
   const { data } = await apiClient.get('/affiliate/sales/analytics', { params });
   return data?.data || data;
 };
 
-export const getAffiliateSales = async (params?: any): Promise<AffiliateSalesPaginatedResponse> => {
+export const getAffiliateSales = async (params?: Record<string, unknown>): Promise<AffiliateSalesPaginatedResponse> => {
   const { data } = await apiClient.get('/affiliate/sales', { params });
   return data?.data || data;
 };
 
-export const exportAffiliateSalesCsv = async (params?: any): Promise<Blob> => {
+export const exportAffiliateSalesCsv = async (params?: Record<string, unknown>): Promise<Blob> => {
   const { data } = await apiClient.get('/affiliate/sales/export', {
     params,
     responseType: 'blob',
   });
   return data;
 };
+
+export const getAffiliateEarningsAnalytics = async (): Promise<AffiliateEarningsAnalyticsData> => {
+  const { data } = await apiClient.get('/affiliate/earnings/analytics');
+  return data?.data || data;
+};
+
+export const getAffiliateEarnings = async (
+  params?: AffiliateEarningsQueryParams
+): Promise<AffiliateEarningsPaginatedResponse> => {
+  const { data } = await apiClient.get('/affiliate/earnings', { params });
+  return data?.data || data;
+};
+
+export const exportAffiliateEarningsCsv = async (
+  params?: AffiliateEarningsQueryParams
+): Promise<Blob> => {
+  const { data } = await apiClient.get('/affiliate/earnings/export', {
+    params,
+    responseType: 'blob',
+  });
+  return data;
+};
+
+export const getAffiliateWithdrawalsSummary = async (): Promise<AffiliateWithdrawalsSummaryData> => {
+  const { data } = await apiClient.get('/affiliate/withdrawals/summary');
+  return data?.data || data;
+};
+
+export const getAffiliateWithdrawals = async (
+  params?: AffiliateWithdrawalsQueryParams
+): Promise<AffiliateWithdrawalsPaginatedResponse> => {
+  const { data } = await apiClient.get('/affiliate/withdrawals', { params });
+  return data?.data || data;
+};
+
+export const requestAffiliateWithdrawal = async (
+  payload: AffiliateWithdrawalCreateRequest
+): Promise<void> => {
+  const { data } = await apiClient.post('/affiliate/withdrawals/request', payload);
+  return data;
+};
+
+

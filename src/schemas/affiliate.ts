@@ -249,6 +249,146 @@ export const affiliateSaleSchema = z.object({
 
 export const affiliateSalesListResponseSchema = paginatedResponseSchema(affiliateSaleSchema);
 
+// ─── Affiliate Earnings & Commission Log ─────────────────────────────────────
+export const commissionStatusSchema = z.enum([
+  'ALL',
+  'PENDING',
+  'EARNED',
+  'APPROVED',
+  'PAID',
+  'REJECTED',
+  'REVERSED',
+]);
+
+export const statusDetailSchema = z.union([
+  z.number(),
+  z.object({
+    count: z.number().optional().default(0),
+    totalGhs: z.number().optional().default(0),
+  }).passthrough(),
+]);
+
+export const affiliateEarningsStatusDistributionSchema = z.object({
+  pending: statusDetailSchema.optional(),
+  approved: statusDetailSchema.optional(),
+  paid: statusDetailSchema.optional(),
+  rejected: statusDetailSchema.optional(),
+  reversed: statusDetailSchema.optional(),
+}).passthrough();
+
+export const affiliateEarningsAnalyticsSchema = z.object({
+  rate: z.union([z.string(), z.number()]).optional(),
+  commissionRate: z.union([z.string(), z.number()]).optional(),
+  commissionRateText: z.string().optional(),
+  totalCommissionEarnedGhs: z.number().optional(),
+  totalCommissionEarned: z.number().optional(),
+  totalEarnedGhs: z.number().optional(),
+  pendingCommissionGhs: z.number().optional(),
+  pendingCommission: z.number().optional(),
+  approvedCommissionGhs: z.number().optional(),
+  approvedCommission: z.number().optional(),
+  withdrawnAmountGhs: z.number().optional(),
+  withdrawnAmount: z.number().optional(),
+  paidCommissionGhs: z.number().optional(),
+  withdrawableBalanceGhs: z.number().optional(),
+  withdrawableBalance: z.number().optional(),
+  availableCashoutGhs: z.number().optional(),
+  statusDistribution: affiliateEarningsStatusDistributionSchema.optional(),
+  statusBreakdown: affiliateEarningsStatusDistributionSchema.optional(),
+}).passthrough();
+
+export const affiliateCommissionLogItemSchema = z.object({
+  id: z.string().optional(),
+  transactionRef: z.string().optional(),
+  reference: z.string().optional(),
+  orderNumber: z.string().optional(),
+  date: z.string().optional(),
+  createdAt: z.string().optional(),
+  voucherType: z.string().optional(),
+  product: z.string().optional(),
+  type: z.string().optional(),
+  saleAmount: z.number().optional(),
+  totalAmount: z.number().optional(),
+  commission: z.number().optional(),
+  commissionAmount: z.number().optional(),
+  status: z.string().optional(),
+  customerPhone: z.string().optional(),
+}).passthrough();
+
+export const affiliateEarningsListResponseSchema = paginatedResponseSchema(affiliateCommissionLogItemSchema);
+
+export interface AffiliateEarningsQueryParams {
+  page?: number;
+  limit?: number;
+  type?: string;
+  status?: string;
+  period?: string;
+  search?: string;
+}
+
+// ─── Affiliate Withdrawals Summary & History ────────────────────────────────
+export const affiliatePayoutAccountSchema = z.object({
+  channel: z.string().optional(),
+  paymentChannel: z.string().optional(),
+  accountNumber: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  network: z.string().optional(),
+  bankName: z.string().optional(),
+  bankCode: z.string().optional(),
+  accountName: z.string().optional(),
+  accountHolder: z.string().optional(),
+  connected: z.boolean().optional(),
+  status: z.string().optional(),
+}).passthrough();
+
+export const affiliateWithdrawalsSummarySchema = z.object({
+  payoutAccount: affiliatePayoutAccountSchema.optional(),
+  account: affiliatePayoutAccountSchema.optional(),
+  availableBalanceGhs: z.number().optional(),
+  availableBalance: z.number().optional(),
+  inProgressGhs: z.number().optional(),
+  inProgress: z.number().optional(),
+  pendingGhs: z.number().optional(),
+  totalPaidOutGhs: z.number().optional(),
+  totalPaidOut: z.number().optional(),
+  totalPaidGhs: z.number().optional(),
+}).passthrough();
+
+export const affiliateWithdrawalItemSchema = z.object({
+  id: z.string().optional(),
+  reference: z.string().optional(),
+  transactionRef: z.string().optional(),
+  date: z.string().optional(),
+  createdAt: z.string().optional(),
+  requestedAt: z.string().optional(),
+  processedAt: z.string().nullable().optional(),
+  amount: z.number().optional(),
+  paymentMethod: z.string().optional(),
+  channel: z.string().optional(),
+  network: z.string().optional(),
+  momoNetwork: z.string().optional(),
+  momoPhone: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+  status: z.string().optional(),
+  note: z.string().optional(),
+  description: z.string().optional(),
+}).passthrough();
+
+export const affiliateWithdrawalsPaginatedResponseSchema = paginatedResponseSchema(affiliateWithdrawalItemSchema);
+
+export const affiliateWithdrawalCreateRequestSchema = z.object({
+  amount: z.number().positive('Amount must be greater than 0'),
+  description: z.string().optional(),
+});
+
+export interface AffiliateWithdrawalsQueryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}
+
 // ─── Exported Types ──────────────────────────────────────────────────────────
 export type Affiliate = z.infer<typeof affiliateSchema>;
 export type AffiliateStatus = z.infer<typeof affiliateStatusSchema>;
@@ -263,3 +403,13 @@ export type SubAffiliatesPaginatedResponse = z.infer<typeof subAffiliatesListRes
 export type AffiliateSalesAnalyticsData = z.infer<typeof affiliateSalesAnalyticsSchema>;
 export type AffiliateSale = z.infer<typeof affiliateSaleSchema>;
 export type AffiliateSalesPaginatedResponse = z.infer<typeof affiliateSalesListResponseSchema>;
+export type AffiliateEarningsAnalyticsData = z.infer<typeof affiliateEarningsAnalyticsSchema>;
+export type AffiliateCommissionLogItem = z.infer<typeof affiliateCommissionLogItemSchema>;
+export type AffiliateEarningsPaginatedResponse = z.infer<typeof affiliateEarningsListResponseSchema>;
+export type AffiliatePayoutAccount = z.infer<typeof affiliatePayoutAccountSchema>;
+export type AffiliateWithdrawalsSummaryData = z.infer<typeof affiliateWithdrawalsSummarySchema>;
+export type AffiliateWithdrawalItem = z.infer<typeof affiliateWithdrawalItemSchema>;
+export type AffiliateWithdrawalsPaginatedResponse = z.infer<typeof affiliateWithdrawalsPaginatedResponseSchema>;
+export type AffiliateWithdrawalCreateRequest = z.infer<typeof affiliateWithdrawalCreateRequestSchema>;
+
+

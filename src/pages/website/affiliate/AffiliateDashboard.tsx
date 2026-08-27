@@ -12,7 +12,11 @@ import { Input } from '../../../components/ui/Input';
 import { useToast } from '../../../components/ui/Toast';
 import { formatCedi } from '../../../utils/formatters';
 import { FiDollarSign, FiCheckCircle } from 'react-icons/fi';
-import { useAffiliateDashboard } from '../../../hooks/useAffiliate';
+import {
+  useAffiliateDashboard,
+  useAffiliateProfile,
+  useRequestAffiliateWithdrawal,
+} from '../../../hooks/useAffiliate';
 import { useSearchParams } from 'react-router-dom';
 
 const AffiliateDashboard: React.FC = () => {
@@ -21,22 +25,23 @@ const AffiliateDashboard: React.FC = () => {
   const setActiveTab = (tab: string) => setSearchParams({ tab });
 
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
-  const [payoutAmount, setPayoutAmount] = useState('320.00');
-  const [momoNetwork, setMomoNetwork] = useState('MTN');
-  const [momoPhone, setMomoPhone] = useState('0241234567');
-  const [accountName, setAccountName] = useState('');
+  const [payoutAmount, setPayoutAmount] = useState('');
+  const [momoNetwork, setMomoNetwork] = useState<string | null>(null);
+  const [momoPhone, setMomoPhone] = useState<string | null>(null);
+  const [accountName, setAccountName] = useState<string | null>(null);
 
   const { addToast } = useToast();
   
   const { data, isLoading } = useAffiliateDashboard();
-  const availableBalance = data?.kpiCards?.availableCashoutGhs || 0;
+  const { data: profile } = useAffiliateProfile();
+  const requestWithdrawalMutation = useRequestAffiliateWithdrawal();
 
-  // Set account name once data loads if empty
-  React.useEffect(() => {
-    if (data?.headerBanner?.greetingName && !accountName) {
-      setAccountName(data.headerBanner.greetingName);
-    }
-  }, [data, accountName]);
+  const availableBalance = data?.kpiCards?.availableCashoutGhs || 0;
+  const greetingName = data?.headerBanner?.greetingName || '';
+
+  const currentPhone = momoPhone ?? profile?.phoneNumber ?? profile?.accountNumber ?? '';
+  const currentNetwork = momoNetwork ?? profile?.network ?? 'MTN';
+  const currentAccountName = accountName ?? profile?.accountName ?? profile?.user?.name ?? greetingName ?? '';
 
   if (isLoading || !data) {
     return (
@@ -46,7 +51,7 @@ const AffiliateDashboard: React.FC = () => {
     );
   }
 
-  const handlePayoutSubmit = (e: React.FormEvent) => {
+  const handlePayoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amountNum = parseFloat(payoutAmount);
 
@@ -68,12 +73,29 @@ const AffiliateDashboard: React.FC = () => {
       return;
     }
 
-    setIsPayoutModalOpen(false);
-    addToast({
-      title: 'Withdrawal Request Submitted',
-      message: `Your request for ${formatCedi(amountNum)} to ${momoPhone} (${momoNetwork}) has been sent for admin review.`,
-      type: 'success',
-    });
+    try {
+      await requestWithdrawalMutation.mutateAsync({
+        amount: amountNum,
+        description: `Affiliate commission payout request to ${currentPhone} (${currentNetwork})`,
+      });
+
+      setIsPayoutModalOpen(false);
+      setPayoutAmount('');
+      addToast({
+        title: 'Withdrawal Request Submitted',
+        message: `Your request for ${formatCedi(amountNum)} to ${currentPhone} (${currentNetwork}) has been submitted for admin review.`,
+        type: 'success',
+      });
+    } catch (err: unknown) {
+      const errorMsg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Could not submit withdrawal request. Please try again.';
+      addToast({
+        title: 'Withdrawal Failed',
+        message: errorMsg,
+        type: 'error',
+      });
+    }
   };
 
   return (
@@ -92,9 +114,14 @@ const AffiliateDashboard: React.FC = () => {
         )}
         {activeTab === 'referrals' && <AffiliateReferralsView />}
         {activeTab === 'sales' && <AffiliateSalesView />}
-        {activeTab === 'earnings' && <AffiliateEarningsView />}
+        {activeTab === 'earnings' && (
+          <AffiliateEarningsView onRequestPayout={() => setIsPayoutModalOpen(true)} />
+        )}
         {activeTab === 'withdrawals' && (
-          <AffiliateWithdrawalsView onRequestPayout={() => setIsPayoutModalOpen(true)} />
+          <AffiliateWithdrawalsView
+            onRequestPayout={() => setIsPayoutModalOpen(true)}
+            onNavigateTab={setActiveTab}
+          />
         )}
         {activeTab === 'profile' && <AffiliateProfileView />}
       </AffiliateLayout>
@@ -138,7 +165,7 @@ const AffiliateDashboard: React.FC = () => {
                 MoMo Network
               </label>
               <select
-                value={momoNetwork}
+                value={currentNetwork}
                 onChange={(e) => setMomoNetwork(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all shadow-sm"
               >
@@ -153,7 +180,7 @@ const AffiliateDashboard: React.FC = () => {
                 Receiver Mobile Number
               </label>
               <Input
-                value={momoPhone}
+                value={currentPhone}
                 onChange={(e) => setMomoPhone(e.target.value)}
                 placeholder="024 XXX XXXX"
                 forceLight
@@ -166,7 +193,7 @@ const AffiliateDashboard: React.FC = () => {
               Account Holder Name
             </label>
             <Input
-              value={accountName}
+              value={currentAccountName}
               onChange={(e) => setAccountName(e.target.value)}
               placeholder="Verified MoMo Account Name"
               forceLight
@@ -181,8 +208,13 @@ const AffiliateDashboard: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button variant="gradient" type="submit" leftIcon={<FiCheckCircle />}>
-              Submit Cashout Request
+            <Button
+              variant="gradient"
+              type="submit"
+              leftIcon={<FiCheckCircle />}
+              disabled={requestWithdrawalMutation.isPending}
+            >
+              {requestWithdrawalMutation.isPending ? 'Submitting...' : 'Submit Cashout Request'}
             </Button>
           </div>
         </form>
