@@ -20,6 +20,7 @@ import {
   FiDollarSign,
   FiFilter,
   FiRefreshCw,
+  FiSend,
 } from 'react-icons/fi';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
@@ -150,9 +151,8 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
   } = useAffiliateEarnings(apiParams);
 
   // Extract pagination and items
-  const commissionLogs: AffiliateCommissionLogItem[] =
-    earningsResponse?.items || earningsResponse?.data || [];
-  const meta = earningsResponse?.meta || earningsResponse?.pagination;
+  const commissionLogs: AffiliateCommissionLogItem[] = earningsResponse?.items || [];
+  const meta = earningsResponse?.meta;
 
   // Extract Summary KPI metrics with robust fallback values
   const commissionRate =
@@ -250,7 +250,7 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[22px] font-black text-[#0A2540] tracking-tight font-serif">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Earnings & Commissions
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -283,104 +283,104 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
         {/* Commission Per Sale (Rate) */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
               Commission Rate
             </p>
             <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-sm">
               <FiPercent />
             </div>
           </div>
-          <p className="text-2xl font-black text-slate-900">
+          <p className="text-2xl font-bold text-slate-900">
             {isLoadingAnalytics ? '...' : renderRateString(commissionRate)}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Default tier rate applied on retail price</p>
+          <p className="text-xs text-slate-500 mt-1">Default tier rate applied on retail price</p>
         </div>
 
         {/* Total Commission Earned */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
               Total Commission Earned
             </p>
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
               <FiTrendingUp />
             </div>
           </div>
-          <p className="text-2xl font-black text-slate-900">
+          <p className="text-2xl font-bold text-slate-900">
             {isLoadingAnalytics ? '...' : formatCedi(totalCommissionEarned)}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Cumulative commission generated to date</p>
+          <p className="text-xs text-slate-500 mt-1">Cumulative commission generated to date</p>
         </div>
 
         {/* Pending Commission */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
               Pending Commission
             </p>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
               <FiClock />
             </div>
           </div>
-          <p className="text-2xl font-black text-amber-600">
+          <p className="text-2xl font-bold text-amber-600">
             {isLoadingAnalytics ? '...' : formatCedi(pendingCommission)}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Awaiting order settlement and verification</p>
+          <p className="text-xs text-slate-500 mt-1">Awaiting order settlement and verification</p>
         </div>
 
         {/* Approved Commission */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
               Approved Commission
             </p>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
               <FiCheckCircle />
             </div>
           </div>
-          <p className="text-2xl font-black text-emerald-600">
+          <p className="text-2xl font-bold text-emerald-600">
             {isLoadingAnalytics ? '...' : formatCedi(approvedCommission)}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Verified & confirmed commission revenue</p>
+          <p className="text-xs text-slate-500 mt-1">Verified & confirmed commission revenue</p>
         </div>
 
         {/* Withdrawn Amount */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
               Withdrawn Amount
             </p>
             <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
               <FiArrowUpRight />
             </div>
           </div>
-          <p className="text-2xl font-black text-blue-600">
+          <p className="text-2xl font-bold text-blue-600">
             {isLoadingAnalytics ? '...' : formatCedi(withdrawnAmount)}
           </p>
-          <p className="text-[10px] text-slate-400 mt-1">Total MoMo payouts successfully processed</p>
+          <p className="text-xs text-slate-500 mt-1">Total MoMo payouts successfully processed</p>
         </div>
 
         {/* Withdrawable Balance */}
         <div className="bg-white rounded-2xl border-2 border-emerald-500/30 p-5 shadow-sm hover:border-emerald-500/50 transition-all flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] text-emerald-700 font-bold uppercase tracking-wider">
+              <p className="text-xs text-emerald-700 font-medium uppercase tracking-wider">
                 Withdrawable Balance
               </p>
               <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
                 <FiDollarSign />
               </div>
             </div>
-            <p className="text-2xl font-black text-emerald-600">
+            <p className="text-2xl font-bold text-emerald-600">
               {isLoadingAnalytics ? '...' : formatCedi(withdrawableBalance)}
             </p>
           </div>
           {onRequestPayout && (
             <button
               onClick={onRequestPayout}
-              className="mt-3 w-full py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="mt-3 w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1 cursor-pointer"
             >
-              <FiDollarSign className="text-xs" /> Request Cashout
+              <FiSend className="text-xs" /> Cash Out Now
             </button>
           )}
         </div>

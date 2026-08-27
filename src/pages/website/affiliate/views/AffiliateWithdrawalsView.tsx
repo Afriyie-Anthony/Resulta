@@ -72,9 +72,8 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
   } = useAffiliateWithdrawals(apiParams);
 
   // Extract pagination and items
-  const withdrawals: AffiliateWithdrawalItem[] =
-    withdrawalsResponse?.items || withdrawalsResponse?.data || [];
-  const meta = withdrawalsResponse?.meta || withdrawalsResponse?.pagination;
+  const withdrawals: AffiliateWithdrawalItem[] = withdrawalsResponse?.items || [];
+  const meta = withdrawalsResponse?.meta;
 
   // Extract Summary KPI metrics
   const availableBalance = extractAmount(
@@ -116,7 +115,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[22px] font-black text-[#0A2540] tracking-tight font-serif">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Withdrawals & Payouts
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -133,7 +132,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
             Refresh
           </Button>
           <Button
-            className="bg-[#1a472a] hover:bg-[#143721] text-white rounded-xl px-4 py-2 font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
+            className="bg-[#1a472a] hover:bg-[#143721] text-white rounded-xl px-4 py-2 font-medium text-xs shadow-sm transition-all flex items-center gap-1.5"
             onClick={onRequestPayout}
           >
             <FiSend className="text-xs" /> Request Withdrawal
@@ -147,26 +146,26 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm col-span-1 flex flex-col justify-between hover:border-slate-300 transition-all">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] text-slate-900 font-bold flex items-center gap-2">
+              <p className="text-xs text-slate-700 font-medium flex items-center gap-1.5">
                 <FiSmartphone className="text-teal-600" /> Payout Account
               </p>
               <span
-                className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
                   isConnected
                     ? 'bg-[#dcfce7] text-[#166534]'
-                    : 'bg-amber-100 text-amber-800'
+                    : 'bg-amber-50 text-amber-800 border border-amber-200'
                 }`}
               >
                 {isConnected ? 'Connected' : 'Setup Required'}
               </span>
             </div>
 
-            <div className="mb-3">
-              <p className="text-xs text-slate-500 font-medium">{channel}</p>
-              <p className="text-lg font-bold text-slate-900 leading-tight font-mono">
+            <div className="mb-4">
+              <p className="text-xs text-slate-500 font-normal">{channel}</p>
+              <p className="text-lg font-semibold text-slate-900 leading-tight font-mono mt-0.5">
                 {isLoadingSummary ? '...' : accountNumber}
               </p>
-              <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 font-normal mt-1">
                 {networkOrBank} • {accountHolder}
               </p>
             </div>
@@ -175,32 +174,32 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
           <button
             type="button"
             onClick={() => onNavigateTab?.('profile')}
-            className="w-full text-center border border-[#1a472a] text-[#1a472a] hover:bg-[#1a472a]/5 font-bold text-[11px] py-1.5 rounded-xl transition-colors cursor-pointer"
+            className="w-full text-center border border-slate-300 hover:border-[#1a472a] text-slate-700 hover:text-[#1a472a] hover:bg-[#1a472a]/5 font-medium text-xs py-2 rounded-xl transition-colors cursor-pointer"
           >
             Update Account
           </button>
         </div>
 
         {/* Available Balance Card */}
-        <div className="bg-white rounded-2xl border-2 border-emerald-500/30 p-5 shadow-sm flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+        <div className="bg-white rounded-2xl border border-emerald-500/30 p-5 shadow-sm flex flex-col justify-between hover:border-emerald-500/50 transition-all">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] text-emerald-700 font-bold uppercase tracking-wider">
+              <p className="text-xs text-emerald-700 font-medium uppercase tracking-wider">
                 Available Balance
               </p>
               <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
                 <FiDollarSign />
               </div>
             </div>
-            <p className="text-2xl font-black text-emerald-600">
+            <p className="text-2xl font-bold text-emerald-600">
               {isLoadingSummary ? '...' : formatCedi(availableBalance)}
             </p>
-            <p className="text-[10px] text-slate-400 mt-1">Cleared & ready for cashout</p>
+            <p className="text-xs text-slate-500 mt-1">Cleared & ready for cashout</p>
           </div>
           <button
             type="button"
             onClick={onRequestPayout}
-            className="mt-3 w-full py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            className="mt-4 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <FiSend className="text-xs" /> Cash Out Now
           </button>
@@ -210,17 +209,17 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-all">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
                 In Progress
               </p>
               <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
                 <FiClock />
               </div>
             </div>
-            <p className="text-2xl font-black text-amber-600">
+            <p className="text-2xl font-bold text-amber-600">
               {isLoadingSummary ? '...' : formatCedi(inProgress)}
             </p>
-            <p className="text-[10px] text-slate-400 mt-1">Pending admin disbursement review</p>
+            <p className="text-xs text-slate-500 mt-1">Pending admin disbursement review</p>
           </div>
         </div>
 
@@ -228,17 +227,17 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-all">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
                 Total Paid Out
               </p>
               <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
                 <FiArrowUpRight />
               </div>
             </div>
-            <p className="text-2xl font-black text-blue-600">
+            <p className="text-2xl font-bold text-blue-600">
               {isLoadingSummary ? '...' : formatCedi(totalPaidOut)}
             </p>
-            <p className="text-[10px] text-slate-400 mt-1">Successfully transferred to your MoMo wallet</p>
+            <p className="text-xs text-slate-500 mt-1">Successfully transferred to your MoMo wallet</p>
           </div>
         </div>
       </div>
@@ -248,8 +247,8 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         {/* Table Header with Status Filter Pills */}
         <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Withdrawal History</h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h3 className="text-sm font-semibold text-slate-900">Withdrawal History</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
               Complete audit log of all commission cashout requests and statuses
             </p>
           </div>
@@ -264,7 +263,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
                   setStatusFilter(st);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all border cursor-pointer ${
                   statusFilter === st
                     ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
                     : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -279,7 +278,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs whitespace-nowrap">
-            <thead className="bg-slate-50/75 text-slate-500 uppercase font-bold text-[10px]">
+            <thead className="bg-slate-50/75 text-slate-500 uppercase font-semibold text-[11px]">
               <tr className="border-b border-slate-100">
                 <th className="px-6 py-4">DATE</th>
                 <th className="px-6 py-4">AMOUNT</th>
@@ -305,7 +304,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
                       <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">
                         <FiCreditCard />
                       </div>
-                      <p className="text-sm font-bold text-slate-700">No Withdrawal Requests Found</p>
+                      <p className="text-sm font-semibold text-slate-700">No Withdrawal Requests Found</p>
                       <p className="text-xs text-slate-400">
                         {statusFilter !== 'ALL'
                           ? `No ${statusFilter.toLowerCase()} withdrawal requests found.`
@@ -315,7 +314,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
                         <button
                           type="button"
                           onClick={onRequestPayout}
-                          className="mt-2 text-xs text-teal-600 font-bold hover:underline cursor-pointer"
+                          className="mt-2 text-xs text-teal-600 font-semibold hover:underline cursor-pointer"
                         >
                           Request Your First Withdrawal
                         </button>
@@ -353,9 +352,9 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
 
                   return (
                     <tr key={item.id || ref || index} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 text-slate-500 font-medium text-xs">{dateStr}</td>
-                      <td className="px-6 py-4 font-bold text-slate-900">{formatCedi(amt)}</td>
-                      <td className="px-6 py-4 text-slate-700 font-medium text-xs">
+                      <td className="px-6 py-4 text-slate-500 font-normal text-xs">{dateStr}</td>
+                      <td className="px-6 py-4 font-semibold text-slate-900">{formatCedi(amt)}</td>
+                      <td className="px-6 py-4 text-slate-700 font-normal text-xs">
                         <span className="flex items-center gap-1.5">
                           <FiSmartphone className="text-teal-600" />
                           {method}
@@ -363,7 +362,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
                       </td>
                       <td className="px-6 py-4 text-center">
                         <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider ${
                             status === 'PAID' || status === 'SUCCESSFUL' || status === 'COMPLETED'
                               ? 'bg-[#dbeafe] text-[#1e40af]'
                               : status === 'APPROVED'
@@ -388,7 +387,7 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
                         </span>
                       </td>
                       <td className="px-6 py-4 text-xs font-mono text-slate-500 max-w-xs truncate">
-                        <span className="font-bold text-[#F2C14E] mr-2">{ref}</span>
+                        <span className="font-semibold text-amber-600 mr-2">{ref}</span>
                         {note !== ref && <span className="text-slate-400">{note}</span>}
                       </td>
                     </tr>
@@ -402,9 +401,9 @@ export const AffiliateWithdrawalsView: React.FC<AffiliateWithdrawalsViewProps> =
         {/* Pagination Controls */}
         {meta && typeof meta.totalPages === 'number' && meta.totalPages > 1 && (
           <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-t border-slate-100 bg-white gap-3">
-            <span className="text-xs text-slate-500 font-medium">
-              Showing page <strong className="text-slate-800 font-bold">{meta.page}</strong> of{' '}
-              <strong className="text-slate-800 font-bold">{meta.totalPages}</strong>
+            <span className="text-xs text-slate-500 font-normal">
+              Showing page <strong className="text-slate-800 font-semibold">{meta.page}</strong> of{' '}
+              <strong className="text-slate-800 font-semibold">{meta.totalPages}</strong>
               {typeof meta.total === 'number' ? ` (${meta.total} total records)` : ''}
             </span>
             <div className="flex gap-2">

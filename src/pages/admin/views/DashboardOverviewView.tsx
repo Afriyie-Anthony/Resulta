@@ -29,7 +29,7 @@ export const DashboardOverviewView: React.FC = () => {
           <TrajectoryChart data={telemetry?.revenueTrajectory} isLoading={isLoading} />
         </div>
         <div className="lg:col-span-1">
-          <TargetVelocityCard />
+          <TargetVelocityCard overviewCards={telemetry?.overviewCards} isLoading={isLoading} />
         </div>
       </div>
 
@@ -45,8 +45,15 @@ export const DashboardOverviewView: React.FC = () => {
 
       {/* 5. Deep-Dive Analytics Row 2: Channel Split & Daily Volume */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <OrdersByChannelCard />
-        <DailyOrdersCard />
+        <OrdersByChannelCard
+          data={telemetry?.channelFulfillmentSplit}
+          ussdVsWebRatio={telemetry?.revenueTrajectory?.ussdVsWebRatio}
+          isLoading={isLoading}
+        />
+        <DailyOrdersCard
+          data={telemetry?.revenueTrajectory?.weeklyTrend}
+          isLoading={isLoading}
+        />
       </div>
 
       {/* 6. Live Transaction Dispatch Queue */}

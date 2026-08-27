@@ -36,8 +36,8 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
   const [copied, setCopied] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const referralCode = profile?.affiliateCode || 'REF-GH-8823';
-  const referralLink = `https://resulta.com.gh/?ref=${referralCode}`;
+  const referralCode = profile?.affiliateCode || '';
+  const referralLink = referralCode ? `https://resulta.com.gh/?ref=${referralCode}` : 'https://resulta.com.gh/';
 
   const displayName = profile?.user?.name || user?.name || profile?.accountName || 'Affiliate Partner';
   const rawPhone = profile?.phoneNumber || profile?.accountNumber || '';
