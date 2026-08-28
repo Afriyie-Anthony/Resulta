@@ -8,6 +8,17 @@ interface FetchNotificationsParams {
   type?: string;
 }
 
+export interface NotificationTypeSummary {
+  type: string;
+  totalCount: number;
+  unreadCount: number;
+}
+
+export interface NotificationTypeBreakdown {
+  totalUnreadCount: number;
+  byType: NotificationTypeSummary[];
+}
+
 export const fetchNotifications = async (
   params?: FetchNotificationsParams
 ): Promise<NotificationsResponse['data']> => {
@@ -15,38 +26,28 @@ export const fetchNotifications = async (
   return data?.data || data;
 };
 
+export const fetchNotificationTypes = async (): Promise<NotificationTypeBreakdown> => {
+  const { data } = await apiClient.get<any>('/notifications/types');
+  return data?.data || data;
+};
+
 export const markAllNotificationsRead = async (): Promise<void> => {
-  try {
-    await apiClient.patch('/notifications/read-all');
-  } catch (err: any) {
-    if (err.response?.status === 404) {
-      try {
-        await apiClient.patch('/admin/notifications/read-all');
-      } catch {
-        await apiClient.post('/notifications/read-all');
-      }
-    } else {
-      throw err;
-    }
-  }
+  await apiClient.patch('/notifications/read-all');
 };
 
 export const markNotificationRead = async (id: string): Promise<void> => {
-  try {
-    await apiClient.patch(`/notifications/${id}/read`);
-  } catch (err: any) {
-    if (err.response?.status === 404) {
-      try {
-        await apiClient.patch(`/admin/notifications/${id}/read`);
-      } catch {
-        try {
-          await apiClient.patch(`/notifications/${id}`, { read: true });
-        } catch {
-          await apiClient.post(`/notifications/${id}/read`);
-        }
-      }
-    } else {
-      throw err;
-    }
-  }
+  await apiClient.patch(`/notifications/${id}/read`);
+};
+
+export const subscribePushNotifications = async (subscription: PushSubscriptionJSON): Promise<void> => {
+  await apiClient.post('/notifications/push/subscribe', {
+    endpoint: subscription.endpoint,
+    keys: subscription.keys,
+  });
+};
+
+export const unsubscribePushNotifications = async (endpoint: string): Promise<void> => {
+  await apiClient.delete('/notifications/push/unsubscribe', {
+    data: { endpoint },
+  });
 };

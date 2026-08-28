@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { useNotifications, useMarkRead, useMarkAllRead } from '../../../hooks/useNotifications';
+import {
+  useNotifications,
+  useNotificationTypes,
+  useMarkRead,
+  useMarkAllRead,
+} from '../../../hooks/useNotifications';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 import { Button } from '../../../components/ui/Button';
+import { Pagination } from '../../../components/ui/Pagination';
 import { useToast } from '../../../components/ui/Toast';
 import {
   FiBell,
@@ -12,28 +18,63 @@ import {
   FiUsers,
   FiSearch,
   FiRefreshCw,
-  FiCheckSquare
+  FiCheckSquare,
+  FiLayers,
 } from 'react-icons/fi';
+
+type FilterType = 'ALL' | 'UNREAD' | 'SECURITY' | 'SYSTEM' | 'STOCK' | 'AFFILIATE';
+
+const ITEMS_PER_PAGE = 15;
 
 export const NotificationsView: React.FC = () => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
 
-  const [activeFilter, setActiveFilter] = useState<'ALL' | 'UNREAD' | 'SECURITY' | 'SYSTEM'>('ALL');
+  const [activeFilter, setActiveFilter] = useState<FilterType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [markingId, setMarkingId] = useState<string | null>(null);
 
-  // TanStack Query hooks
-  const { data: notificationsData, isLoading, isError, isFetching, refetch } = useNotifications({
-    type: activeFilter === 'ALL' || activeFilter === 'UNREAD' ? undefined : activeFilter,
+  // Derive query params from active filter
+  const queryParams = {
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    type:
+      activeFilter === 'ALL' || activeFilter === 'UNREAD' ? undefined : activeFilter,
     read: activeFilter === 'UNREAD' ? false : undefined,
-  });
+  };
+
+  // TanStack Query hooks
+  const { data: notificationsData, isLoading, isError, isFetching, refetch } =
+    useNotifications(queryParams);
+
+  const { data: typesData } = useNotificationTypes();
 
   const markReadMutation = useMarkRead();
   const markAllReadMutation = useMarkAllRead();
 
   const alerts = notificationsData?.notifications || [];
-  const unreadCount = notificationsData?.unreadCount ?? alerts.filter((a) => !a.read).length;
+  const totalItems = notificationsData?.pagination?.total ?? alerts.length;
+  const totalPages = notificationsData?.pagination?.totalPages ?? 1;
+  const unreadCount = notificationsData?.unreadCount ?? typesData?.totalUnreadCount ?? 0;
+
+  // Per-type unread counts from the types breakdown endpoint
+  const getTypeUnread = (type: string): number => {
+    if (!typesData?.byType) return 0;
+    return typesData.byType.find((t) => t.type === type)?.unreadCount ?? 0;
+  };
+
+  // Reset to page 1 when filter changes
+  const handleFilterChange = (filter: FilterType) => {
+    setActiveFilter(filter);
+    setCurrentPage(1);
+    setSearchQuery('');
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleMarkAllRead = () => {
     if (unreadCount === 0) return;
@@ -84,14 +125,15 @@ export const NotificationsView: React.FC = () => {
     });
   };
 
-  // Client-side search filter
+  // Client-side search filter (within current page)
   const filteredAlerts = alerts.filter((a) => {
-    const matchesSearch =
-      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.id.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesSearch;
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      a.title.toLowerCase().includes(q) ||
+      a.message.toLowerCase().includes(q) ||
+      a.id.toLowerCase().includes(q)
+    );
   });
 
   const getCategoryIcon = (category: string) => {
@@ -108,6 +150,60 @@ export const NotificationsView: React.FC = () => {
         return <FiBell className="w-5 h-5 text-slate-700 dark:text-slate-300" />;
     }
   };
+
+  // Filter tab config
+  const filterTabs: {
+    id: FilterType;
+    label: string;
+    activeClass: string;
+    badgeCount?: number;
+  }[] = [
+    {
+      id: 'ALL',
+      label: 'All Alerts',
+      activeClass: isLight
+        ? 'bg-slate-900 text-white border-slate-900'
+        : 'bg-slate-100 text-slate-950 border-white',
+    },
+    {
+      id: 'UNREAD',
+      label: 'Unread',
+      activeClass: isLight
+        ? 'bg-[#0F8B8D] text-white border-[#0F8B8D]'
+        : 'bg-teal-500 text-slate-950 border-teal-400',
+      badgeCount: unreadCount,
+    },
+    {
+      id: 'SECURITY',
+      label: 'Security',
+      activeClass: 'bg-rose-600 text-white border-rose-500',
+      badgeCount: getTypeUnread('SECURITY'),
+    },
+    {
+      id: 'SYSTEM',
+      label: 'System',
+      activeClass: 'bg-cyan-600 text-white border-cyan-500',
+      badgeCount: getTypeUnread('SYSTEM'),
+    },
+    {
+      id: 'STOCK',
+      label: 'Stock',
+      activeClass: 'bg-amber-500 text-slate-950 border-amber-400',
+      badgeCount: getTypeUnread('STOCK'),
+    },
+    {
+      id: 'AFFILIATE',
+      label: 'Affiliate',
+      activeClass: isLight
+        ? 'bg-[#0F8B8D] text-white border-[#0F8B8D]'
+        : 'bg-teal-600 text-white border-teal-500',
+      badgeCount: getTypeUnread('AFFILIATE'),
+    },
+  ];
+
+  const inactiveTabClass = isLight
+    ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 hover:text-slate-950 shadow-2xs'
+    : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white';
 
   return (
     <div className="space-y-6">
@@ -161,6 +257,80 @@ export const NotificationsView: React.FC = () => {
         </div>
       </div>
 
+      {/* KPI Type Breakdown Strip */}
+      {typesData?.byType && typesData.byType.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {/* Total Unread */}
+          <div
+            className={`p-3 rounded-2xl border text-center shadow-2xs ${
+              isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
+            }`}
+          >
+            <span
+              className={`text-[10px] font-black uppercase tracking-wider block ${
+                isLight ? 'text-slate-600' : 'text-slate-400'
+              }`}
+            >
+              Total Unread
+            </span>
+            <p
+              className={`text-2xl font-black mt-0.5 ${
+                unreadCount > 0 ? 'text-rose-600 dark:text-rose-400' : isLight ? 'text-slate-950' : 'text-white'
+              }`}
+            >
+              {typesData.totalUnreadCount}
+            </p>
+          </div>
+          {/* Per-type breakdown */}
+          {typesData.byType.map((t) => (
+            <button
+              key={t.type}
+              type="button"
+              onClick={() => handleFilterChange(t.type as FilterType)}
+              className={`p-3 rounded-2xl border text-center shadow-2xs transition-all hover:shadow-sm ${
+                activeFilter === t.type
+                  ? isLight
+                    ? 'bg-slate-900 border-slate-900 text-white'
+                    : 'bg-teal-500/20 border-teal-500/60 text-teal-300'
+                  : isLight
+                  ? 'bg-white border-slate-300 hover:border-slate-400'
+                  : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider block ${
+                  activeFilter === t.type
+                    ? isLight ? 'text-slate-300' : 'text-teal-400'
+                    : isLight ? 'text-slate-600' : 'text-slate-400'
+                }`}
+              >
+                {t.type}
+              </span>
+              <p
+                className={`text-xl font-black mt-0.5 ${
+                  t.unreadCount > 0
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : activeFilter === t.type
+                    ? isLight ? 'text-white' : 'text-teal-300'
+                    : isLight ? 'text-slate-950' : 'text-white'
+                }`}
+              >
+                {t.unreadCount > 0 ? t.unreadCount : t.totalCount}
+              </p>
+              <span
+                className={`text-[9px] font-bold ${
+                  t.unreadCount > 0
+                    ? 'text-rose-500 dark:text-rose-400'
+                    : isLight ? 'text-slate-500' : 'text-slate-500'
+                }`}
+              >
+                {t.unreadCount > 0 ? `${t.unreadCount} unread` : `${t.totalCount} total`}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Filter Tabs & Search Toolbar */}
       <div
         className={`p-4 rounded-3xl border transition-colors shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 ${
@@ -168,74 +338,37 @@ export const NotificationsView: React.FC = () => {
         }`}
       >
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveFilter('ALL')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
-              activeFilter === 'ALL'
-                ? isLight
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                  : 'bg-slate-100 text-slate-950 border-white shadow-xs'
-                : isLight
-                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 hover:text-slate-950 font-extrabold shadow-2xs'
-                : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white font-extrabold'
-            }`}
-          >
-            <span>All Alerts</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveFilter('UNREAD')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
-              activeFilter === 'UNREAD'
-                ? isLight
-                  ? 'bg-[#0F8B8D] text-white border-[#0F8B8D] shadow-xs'
-                  : 'bg-teal-500 text-slate-950 border-teal-400 shadow-xs'
-                : isLight
-                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 hover:text-slate-950 font-extrabold shadow-2xs'
-                : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white font-extrabold'
-            }`}
-          >
-            <span>Unread Alerts</span>
-            {unreadCount > 0 && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-rose-600 text-white shadow-2xs">
-                {unreadCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveFilter('SECURITY')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
-              activeFilter === 'SECURITY'
-                ? 'bg-rose-600 text-white border-rose-500 shadow-xs'
-                : isLight
-                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 hover:text-slate-950 font-extrabold shadow-2xs'
-                : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white font-extrabold'
-            }`}
-          >
-            <span>Security</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveFilter('SYSTEM')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all border ${
-              activeFilter === 'SYSTEM'
-                ? 'bg-cyan-600 text-white border-cyan-500 shadow-xs'
-                : isLight
-                ? 'bg-white text-slate-800 border-slate-300 hover:bg-slate-100 hover:text-slate-950 font-extrabold shadow-2xs'
-                : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white font-extrabold'
-            }`}
-          >
-            <span>System</span>
-          </button>
+          {filterTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => handleFilterChange(tab.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black transition-all border shadow-xs ${
+                activeFilter === tab.id ? tab.activeClass : inactiveTabClass
+              }`}
+            >
+              <span>{tab.label}</span>
+              {tab.badgeCount !== undefined && tab.badgeCount > 0 && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
+                    activeFilter === tab.id
+                      ? 'bg-white/25 text-white'
+                      : 'bg-rose-600 text-white'
+                  }`}
+                >
+                  {tab.badgeCount > 99 ? '99+' : tab.badgeCount}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
         <div className="relative w-full sm:w-72">
-          <FiSearch className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`} />
+          <FiSearch
+            className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${
+              isLight ? 'text-slate-500' : 'text-slate-400'
+            }`}
+          />
           <input
             type="text"
             value={searchQuery}
@@ -250,6 +383,35 @@ export const NotificationsView: React.FC = () => {
         </div>
       </div>
 
+      {/* Results Meta Bar */}
+      {!isLoading && !isError && (
+        <div
+          className={`flex items-center justify-between px-1 text-xs font-bold ${
+            isLight ? 'text-slate-600' : 'text-slate-400'
+          }`}
+        >
+          <span>
+            {searchQuery
+              ? `${filteredAlerts.length} result${filteredAlerts.length !== 1 ? 's' : ''} on this page`
+              : `${totalItems} notification${totalItems !== 1 ? 's' : ''} total`}{' '}
+            {activeFilter !== 'ALL' && (
+              <span
+                className={`ml-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                  isLight ? 'bg-slate-200 text-slate-900' : 'bg-slate-800 text-slate-200'
+                }`}
+              >
+                {activeFilter}
+              </span>
+            )}
+          </span>
+          {isFetching && !isLoading && (
+            <span className="flex items-center gap-1 text-teal-600 dark:text-teal-400">
+              <FiRefreshCw className="w-3 h-3 animate-spin" /> Refreshing...
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Notifications List */}
       <div className="space-y-3">
         {isLoading ? (
@@ -259,7 +421,13 @@ export const NotificationsView: React.FC = () => {
             }`}
           >
             <FiRefreshCw className="w-8 h-8 mx-auto mb-3 text-slate-400 animate-spin" />
-            <p className={`text-sm font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Loading notifications...</p>
+            <p
+              className={`text-sm font-bold ${
+                isLight ? 'text-slate-700' : 'text-slate-300'
+              }`}
+            >
+              Loading notifications...
+            </p>
           </div>
         ) : isError ? (
           <div
@@ -267,7 +435,10 @@ export const NotificationsView: React.FC = () => {
               isLight ? 'bg-white border-slate-300' : 'bg-slate-900 border-slate-800'
             }`}
           >
-            <p className="text-sm font-bold text-rose-600 dark:text-rose-400 mb-2">Failed to load notifications.</p>
+            <FiAlertTriangle className="w-10 h-10 mx-auto mb-3 text-rose-500" />
+            <p className="text-sm font-bold text-rose-600 dark:text-rose-400 mb-2">
+              Failed to load notifications.
+            </p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               Try Again
             </Button>
@@ -275,14 +446,33 @@ export const NotificationsView: React.FC = () => {
         ) : filteredAlerts.length === 0 ? (
           <div
             className={`p-12 text-center rounded-3xl border transition-colors ${
-              isLight ? 'bg-white border-slate-300 text-slate-700' : 'bg-slate-900 border-slate-800 text-slate-300'
+              isLight
+                ? 'bg-white border-slate-300 text-slate-700'
+                : 'bg-slate-900 border-slate-800 text-slate-300'
             }`}
           >
-            <FiCheckCircle className="w-10 h-10 mx-auto mb-3 text-emerald-500" />
-            <p className="text-base font-black text-slate-950 dark:text-white">All Caught Up!</p>
-            <p className="text-xs font-semibold mt-1 text-slate-700 dark:text-slate-300">
-              There are currently no active automated system warnings or unhandled notifications matching your filter.
+            <FiLayers className="w-10 h-10 mx-auto mb-3 text-slate-400" />
+            <p
+              className={`text-base font-black ${
+                isLight ? 'text-slate-950' : 'text-white'
+              }`}
+            >
+              {searchQuery ? 'No Results Found' : 'All Caught Up!'}
             </p>
+            <p className="text-xs font-semibold mt-1 text-slate-500 dark:text-slate-400">
+              {searchQuery
+                ? `No notifications match "${searchQuery}". Try adjusting your search.`
+                : 'There are currently no notifications matching the selected filter.'}
+            </p>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="mt-3 text-xs font-bold text-[#0F8B8D] dark:text-teal-400 hover:underline"
+              >
+                Clear Search
+              </button>
+            )}
           </div>
         ) : (
           filteredAlerts.map((a) => (
@@ -315,11 +505,18 @@ export const NotificationsView: React.FC = () => {
 
                 <div className="flex-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className={`text-sm sm:text-base font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
+                    <h4
+                      className={`text-sm sm:text-base font-black ${
+                        isLight ? 'text-slate-950' : 'text-white'
+                      }`}
+                    >
                       {a.title}
                     </h4>
                     {!a.read && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block shrink-0 shadow-2xs" title="Unread Alert" />
+                      <span
+                        className="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block shrink-0 shadow-2xs"
+                        title="Unread Alert"
+                      />
                     )}
                     <span
                       className={`text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-md border shrink-0 ${
@@ -380,8 +577,8 @@ export const NotificationsView: React.FC = () => {
                     title="Already Read"
                     className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-bold ${
                       isLight
-                        ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
-                        : 'text-emerald-300 bg-emerald-950/40 border-emerald-800/50'
+                        ? 'text-slate-600 bg-slate-100 border-slate-200'
+                        : 'text-slate-400 bg-slate-800/60 border-slate-700/50'
                     }`}
                   >
                     <FiCheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -393,6 +590,23 @@ export const NotificationsView: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {!isLoading && !isError && totalItems > ITEMS_PER_PAGE && (
+        <div
+          className={`px-6 py-4 rounded-3xl border transition-colors ${
+            isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
+          }`}
+        >
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
