@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 import { ForgotPasswordModal } from '../../components/auth/ForgotPasswordModal';
+import { AffiliatePendingModal } from '../../components/auth/AffiliatePendingModal';
 import { InputField, PasswordField, SubmitButton } from '../../components/auth/AuthFields';
 import {
   FiMail,
@@ -35,6 +36,8 @@ const AffiliateLogin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [isPendingApprovalOpen, setIsPendingApprovalOpen] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState('');
 
   const { affiliateLogin } = useAuth();
   const navigate = useNavigate();
@@ -61,7 +64,15 @@ const AffiliateLogin: React.FC = () => {
     if (result.success) {
       navigate(affiliateFrom, { replace: true });
     } else {
-      setSubmitError(result.error || 'Invalid email or password. Please try again.');
+      const errorMsg = result.error || 'Invalid email or password. Please try again.';
+      const isPending = /pending|approval|awaiting/i.test(errorMsg);
+      if (isPending) {
+        setPendingMessage(errorMsg);
+        setIsPendingApprovalOpen(true);
+        setSubmitError('');
+      } else {
+        setSubmitError(errorMsg);
+      }
     }
   };
 
@@ -200,6 +211,15 @@ const AffiliateLogin: React.FC = () => {
         onClose={() => setIsForgotPasswordOpen(false)}
         isLight={isLight}
         initialEmail={email}
+      />
+
+      {/* Affiliate Pending Approval Modal */}
+      <AffiliatePendingModal
+        isOpen={isPendingApprovalOpen}
+        onClose={() => setIsPendingApprovalOpen(false)}
+        isLight={isLight}
+        email={email}
+        message={pendingMessage}
       />
     </div>
   );

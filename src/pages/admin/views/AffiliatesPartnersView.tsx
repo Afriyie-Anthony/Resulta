@@ -52,6 +52,8 @@ export const AffiliatesPartnersView: React.FC = () => {
   const [viewingAffiliateId, setViewingAffiliateId] = useState<string | null>(null);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [approvingAffiliate, setApprovingAffiliate] = useState<{ id: string; name: string; email?: string; phone?: string } | null>(null);
+  const [quickUssdCode, setQuickUssdCode] = useState('');
 
   // Queries
   const { data: statsData } = useAdminAffiliateStats();
@@ -68,6 +70,30 @@ export const AffiliatesPartnersView: React.FC = () => {
 
   // Mutations for table quick-actions
   const queryClient = useQueryClient();
+
+  const approveMutation = useMutation({
+    mutationFn: ({ id, ussdCode }: { id: string; ussdCode: string }) =>
+      adminAffiliateService.approveAffiliate(id, { ussdCode }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminAffiliateKeys.list({}) });
+      queryClient.invalidateQueries({ queryKey: adminAffiliateKeys.stats() });
+      const approvedName = approvingAffiliate?.name;
+      setApprovingAffiliate(null);
+      addToast({
+        title: 'Partner Approved',
+        message: `${approvedName || 'Affiliate'} has been approved and activated successfully!`,
+        type: 'success',
+      });
+    },
+    onError: (err: any) => {
+      addToast({
+        title: 'Approval Failed',
+        message: err.response?.data?.message || 'Could not approve partner. Please verify that the USSD code is unique.',
+        type: 'error',
+      });
+    },
+  });
+
   const suspendMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: any }) => adminAffiliateService.updateAffiliate(id, { status }),
     onSuccess: () => {
@@ -76,9 +102,16 @@ export const AffiliatesPartnersView: React.FC = () => {
     }
   });
   
-  const handleQuickApprove = (id: string, _name: string) => {
-    // Open detail view for proper approval flow (which needs USSD code input)
-    setViewingAffiliateId(id);
+  const handleQuickApprove = (a: { id: string; name: string; email?: string; phone?: string }) => {
+    setApprovingAffiliate(a);
+    const numPart = a.id.replace(/[^0-9]/g, '') || '5912';
+    setQuickUssdCode(`*713*${numPart}*1#`);
+  };
+
+  const handleQuickApproveSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!approvingAffiliate || !quickUssdCode.trim()) return;
+    approveMutation.mutate({ id: approvingAffiliate.id, ussdCode: quickUssdCode.trim() });
   };
 
   const handleQuickSuspend = (id: string, name: string) => {
@@ -286,7 +319,7 @@ export const AffiliatesPartnersView: React.FC = () => {
                           <FiEye className="w-4 h-4 text-[#0F8B8D] dark:text-teal-400" />
                         </button>
                         {a.status === 'PENDING' && (
-                          <Button variant={isLight ? 'primary' : 'gradient'} size="sm" onClick={() => handleQuickApprove(a.id, a.name)} leftIcon={<FiCheck />} className="font-black text-xs h-8 px-3 rounded-xl shadow-2xs">
+                          <Button variant={isLight ? 'primary' : 'gradient'} size="sm" onClick={() => handleQuickApprove(a)} leftIcon={<FiCheck />} className="font-black text-xs h-8 px-3 rounded-xl shadow-2xs">
                             Approve
                           </Button>
                         )}
@@ -323,6 +356,77 @@ export const AffiliatesPartnersView: React.FC = () => {
       
       {isConfigOpen && <GlobalConfigModal onClose={() => setIsConfigOpen(false)} />}
       {isCreateOpen && <CreateAffiliateModal onClose={() => setIsCreateOpen(false)} />}
+
+      {/* Quick Approve Modal */}
+      {approvingAffiliate && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            if (!approveMutation.isPending) setApprovingAffiliate(null);
+          }}
+          title="Approve Affiliate Application"
+        >
+          <form onSubmit={handleQuickApproveSubmit} className="space-y-4">
+            <div className={`p-4 rounded-2xl border space-y-2 ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Applicant</span>
+                <span className={`text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>{approvingAffiliate.name}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span className="text-slate-500">Email</span>
+                <span className={isLight ? 'text-slate-800' : 'text-slate-300'}>{approvingAffiliate.email}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span className="text-slate-500">Phone</span>
+                <span className={isLight ? 'text-slate-800' : 'text-slate-300'}>{approvingAffiliate.phone}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className={`block text-xs font-black uppercase mb-1.5 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
+                Assign USSD Shortcode Extension *
+              </label>
+              <input
+                type="text"
+                required
+                value={quickUssdCode}
+                onChange={(e) => setQuickUssdCode(e.target.value)}
+                placeholder="*713*5912*1#"
+                className={`w-full rounded-2xl px-4 py-2.5 text-xs font-mono font-bold border focus:outline-none transition-colors ${
+                  isLight
+                    ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D] focus:bg-white'
+                    : 'bg-slate-950 border-slate-700 text-white focus:border-teal-500'
+                }`}
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                This extension code is assigned to the partner for offline voucher transactions.
+              </p>
+            </div>
+
+            <div className={`flex items-center justify-end gap-3 pt-3 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                onClick={() => setApprovingAffiliate(null)}
+                disabled={approveMutation.isPending}
+                className="font-bold text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant={isLight ? 'primary' : 'gradient'}
+                size="sm"
+                type="submit"
+                isLoading={approveMutation.isPending}
+                className="font-black text-xs px-5 rounded-xl shadow-md"
+              >
+                Approve Partner &rarr;
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };

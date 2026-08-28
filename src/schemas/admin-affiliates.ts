@@ -111,6 +111,8 @@ export const updateAffiliateSchema = z.object({
   accountName: z.string().optional(),
   ussdCode: z.string().optional(),
   status: affiliateStatusSchema.optional(),
+  commissionPercentage: z.number().optional(),
+  commissionRate: z.number().optional(),
 });
 
 export const approveAffiliateSchema = z.object({

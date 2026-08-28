@@ -192,21 +192,6 @@ const AffiliateRegister: React.FC = () => {
                   Join Ghana's fastest-growing digital voucher distribution network. Earn instant commissions on every WASSCE/NOVDEC and BECE voucher you sell.
                 </p>
               </div>
-              
-              <div className="space-y-4 pt-4 border-t border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <FiCheckCircle className="text-teal-300 w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-semibold text-white/90">Zero setup fees or hidden costs</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <FiZap className="text-amber-300 w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-semibold text-white/90">Instant daily MoMo payouts</span>
-                </div>
-              </div>
             </div>
 
             <div className="relative z-10 text-[10px] font-bold text-white/50 border-t border-white/10 pt-4">

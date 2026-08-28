@@ -37,6 +37,17 @@ export const affiliateSchema = z.object({
   totalOrders: z.number().int().nonnegative(),
   joinedAt: z.string(),
   lastActiveAt: z.string().optional(),
+  businessName: z.string().optional(),
+  location: z.string().optional(),
+  paymentChannel: z.string().optional(),
+  network: z.string().optional(),
+  bankName: z.string().optional(),
+  bankCode: z.string().optional(),
+  accountNumber: z.string().optional(),
+  accountName: z.string().optional(),
+  ussdCode: z.string().optional(),
+  commissionPercentage: z.number().optional(),
+  commissionRate: z.union([z.string(), z.number()]).optional(),
 });
 
 // ─── Withdrawal ───────────────────────────────────────────────────────────────

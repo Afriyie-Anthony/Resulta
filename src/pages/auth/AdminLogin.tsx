@@ -216,12 +216,6 @@ const AdminLogin: React.FC = () => {
 
                 <SubmitButton isLoading={isLoading} isLight={isLight} loadingText="Authenticating Session..." text="Sign In to Admin Portal →" />
               </form>
-              
-              <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
-                  <Link to="/affiliate/login" className={`text-xs font-black hover:underline ${isLight ? 'text-slate-500 hover:text-slate-950' : 'text-slate-400 hover:text-white'}`}>
-                    Switch to Affiliate Login
-                  </Link>
-              </div>
             </div>
 
             {/* Footer */}

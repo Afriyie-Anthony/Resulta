@@ -4,6 +4,7 @@ import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../ui/Toast';
+import { useNotifications } from '../../hooks/useNotifications';
 import { AdminThemeProvider, useAdminTheme } from '../../contexts/AdminThemeContext';
 import {
   FiGrid,
@@ -42,6 +43,8 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
   const { logout } = useAuth();
   const { addToast } = useToast();
   const { isLight, toggleTheme } = useAdminTheme();
+  const { data: notificationsData } = useNotifications();
+  const unreadCount = notificationsData?.unreadCount ?? 0;
 
   // Grouped Navigation Structure matching reference specification
   const navGroups = [
@@ -185,6 +188,11 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
                           <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-[#F2C14E]' : (isLight ? 'text-white/80' : 'text-slate-400')}`} />
                           <span className="text-left whitespace-nowrap truncate">{item.label}</span>
                         </div>
+                        {item.id === 'notifications' && unreadCount > 0 && (
+                          <span className="ml-2 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shrink-0 shadow-xs">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -287,7 +295,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
             <button
               type="button"
               onClick={() => navigate('/admin/notifications')}
-              title="View Notifications & System Alerts"
+              title={`View Notifications & System Alerts${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
               className={`relative p-2 rounded-xl transition-all shadow-2xs ${
                 isLight
                   ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-100 border border-slate-300'
@@ -295,9 +303,11 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
               }`}
             >
               <FiBell className="w-5 h-5 text-[#0F8B8D] dark:text-teal-400" />
-              <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-xs border-2 border-white dark:border-slate-900">
-                10
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-xs border-2 border-white dark:border-slate-900 flex items-center justify-center animate-in fade-in zoom-in-75">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </button>
           </div>
         </header>
