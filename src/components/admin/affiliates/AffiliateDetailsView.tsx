@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Button } from '../../ui/Button';
 import { Badge } from '../../ui/Badge';
 import { Modal } from '../../ui/Modal';
@@ -47,6 +48,8 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
   // Queries & Mutations
   const { data: detailData, isLoading } = useAdminAffiliateDetail(initialAffiliate.id);
@@ -66,6 +69,7 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
   
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Dedicated Individual Commission Override Modal State
   const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
@@ -189,14 +193,24 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
   };
 
   const handleDelete = () => {
-    if (confirm('Are you sure you want to completely delete this affiliate? This action cannot be undone.')) {
-      deleteMutation.mutate(affiliate.id, {
-        onSuccess: () => {
-          addToast({ title: 'Affiliate Deleted', message: 'Partner profile removed permanently.', type: 'success' });
-          onBack();
-        }
-      });
-    }
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteMutation.mutate(affiliate.id, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        addToast({ title: 'Affiliate Deleted', message: 'Partner profile removed permanently.', type: 'success' });
+        onBack();
+      },
+      onError: (err: any) => {
+        addToast({
+          title: 'Delete Failed',
+          message: err.response?.data?.message || 'Could not delete affiliate.',
+          type: 'error',
+        });
+      }
+    });
   };
 
   const isApproved = affiliate.status === 'ACTIVE';
@@ -294,17 +308,19 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
             <FiEdit className="inline mr-1 mb-0.5" /> Edit Profile
           </button>
 
-          <button
-            type="button"
-            onClick={handleDelete}
-            className={`px-4 py-2 rounded-xl text-xs font-black border transition-all ${
-              isLight
-                ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 hover:border-rose-400'
-                : 'bg-rose-950/40 border-rose-900/50 text-rose-400 hover:bg-rose-900/60'
-            }`}
-          >
-            <FiTrash2 className="inline mr-1 mb-0.5" /> Delete Profile
-          </button>
+          {isSuperAdmin && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className={`px-4 py-2 rounded-xl text-xs font-black border transition-all ${
+                isLight
+                  ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 hover:border-rose-400'
+                  : 'bg-rose-950/40 border-rose-900/50 text-rose-400 hover:bg-rose-900/60'
+              }`}
+            >
+              <FiTrash2 className="inline mr-1 mb-0.5" /> Delete Profile
+            </button>
+          )}
         </div>
       </div>
 
@@ -931,6 +947,60 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
             </div>
           </div>
         </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Affiliate Profile"
+        size="sm"
+      >
+        <div className="space-y-5">
+          <div className="flex items-start gap-4">
+            <div
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                isLight ? 'bg-rose-100 text-rose-600' : 'bg-rose-500/20 text-rose-400'
+              }`}
+            >
+              <FiTrash2 className="w-6 h-6 animate-pulse" />
+            </div>
+            <div className="space-y-1">
+              <h4 className={`text-sm font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                Confirm Permanent Deletion
+              </h4>
+              <p className={`text-xs font-semibold leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                Are you sure you want to completely delete this affiliate? This action cannot be undone.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className={`flex items-center justify-end gap-3 pt-4 border-t ${
+              isLight ? 'border-slate-200' : 'border-slate-800'
+            }`}
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="font-bold text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              isLoading={deleteMutation.isPending}
+              onClick={handleConfirmDelete}
+              className="font-black text-xs px-5 rounded-xl text-rose-600 border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+            >
+              Confirm Delete
+            </Button>
+          </div>
+        </div>
       </Modal>
 
     </div>

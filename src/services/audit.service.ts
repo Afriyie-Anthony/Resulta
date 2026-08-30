@@ -6,7 +6,7 @@ import type { AuditStats, PaginatedAuditLogsResponse, GetAuditLogsParams } from 
  */
 export const getAuditStats = async (): Promise<AuditStats> => {
   const { data } = await apiClient.get('/admin/logs/stats');
-  return data.data; // Server wraps data in `{ success, message, data }`
+  return data?.data || data;
 };
 
 /**
@@ -15,9 +15,14 @@ export const getAuditStats = async (): Promise<AuditStats> => {
 export const getAuditLogs = async (
   params: GetAuditLogsParams = {}
 ): Promise<PaginatedAuditLogsResponse> => {
-  const { data } = await apiClient.get('/admin/logs/', { params });
+  const response = await apiClient.get('/admin/logs/', { params });
+  const rawData = response.data;
+  const isUnwrapped = Array.isArray(rawData);
+
   return {
-    data: data.data,
-    pagination: data.pagination,
+    data: isUnwrapped ? rawData : (rawData?.data || []),
+    pagination: isUnwrapped
+      ? (response as any).pagination
+      : (rawData?.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 }),
   };
 };
