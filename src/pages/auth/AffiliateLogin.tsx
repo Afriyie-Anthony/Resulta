@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 import { ForgotPasswordModal } from '../../components/auth/ForgotPasswordModal';
 import { AffiliatePendingModal } from '../../components/auth/AffiliatePendingModal';
+import { AffiliateErrorModal } from '../../components/auth/AffiliateErrorModal';
 import { InputField, PasswordField, SubmitButton } from '../../components/auth/AuthFields';
 import {
   FiMail,
@@ -11,7 +12,6 @@ import {
   FiSun,
   FiMoon,
   FiArrowLeft,
-  FiAlertCircle,
 } from 'react-icons/fi';
 
 const AffiliateLogin: React.FC = () => {
@@ -34,7 +34,8 @@ const AffiliateLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [isPendingApprovalOpen, setIsPendingApprovalOpen] = useState(false);
   const [pendingMessage, setPendingMessage] = useState('');
@@ -50,10 +51,11 @@ const AffiliateLogin: React.FC = () => {
   // ── Affiliate Login submit ─────────────────────────────────────────────────
   const handleAffiliateLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError('');
+    setErrorMessage('');
 
     if (!email || !password) {
-      setSubmitError('Please fill in all fields.');
+      setErrorMessage('Please fill in all fields.');
+      setIsErrorModalOpen(true);
       return;
     }
 
@@ -69,9 +71,10 @@ const AffiliateLogin: React.FC = () => {
       if (isPending) {
         setPendingMessage(errorMsg);
         setIsPendingApprovalOpen(true);
-        setSubmitError('');
+        setErrorMessage('');
       } else {
-        setSubmitError(errorMsg);
+        setErrorMessage(errorMsg);
+        setIsErrorModalOpen(true);
       }
     }
   };
@@ -159,21 +162,13 @@ const AffiliateLogin: React.FC = () => {
                 </p>
               </div>
 
-              {/* ── Error Banner ── */}
-              {submitError && (
-                <div role="alert" className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-bold flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-2">
-                  <FiAlertCircle className="w-5 h-5 shrink-0 text-rose-500 mt-0.5" />
-                  <span>{submitError}</span>
-                </div>
-              )}
-
               {/* ════ AFFILIATE LOGIN FORM ════ */}
               <form onSubmit={handleAffiliateLogin} className="space-y-5" noValidate>
                 <InputField id="aff-email" label="Email Address" type="email" value={email} icon={<FiMail />} placeholder="partner@example.com" isLight={isLight}
-                  onChange={(v) => { setEmail(v); setSubmitError(''); }}
+                  onChange={(v) => { setEmail(v); setErrorMessage(''); }}
                 />
                 <PasswordField id="aff-password" label="Password" value={password} show={showPassword} icon={<FiLock />} placeholder="Enter your password..." isLight={isLight}
-                  onChange={(v) => { setPassword(v); setSubmitError(''); }}
+                  onChange={(v) => { setPassword(v); setErrorMessage(''); }}
                   onToggle={() => setShowPassword((v) => !v)}
                 />
 
@@ -220,6 +215,14 @@ const AffiliateLogin: React.FC = () => {
         isLight={isLight}
         email={email}
         message={pendingMessage}
+      />
+
+      {/* Affiliate Error Modal */}
+      <AffiliateErrorModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        isLight={isLight}
+        message={errorMessage}
       />
     </div>
   );

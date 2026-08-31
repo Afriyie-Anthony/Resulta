@@ -40,49 +40,58 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { addToast } = useToast();
   const { isLight, toggleTheme } = useAdminTheme();
   const { data: notificationsData } = useNotifications();
   const unreadCount = notificationsData?.unreadCount ?? 0;
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
-  // Grouped Navigation Structure matching reference specification
-  const navGroups = [
+  // Grouped Navigation Structure — items with superAdminOnly: true are filtered for ADMIN users
+  const allNavGroups = [
     {
       title: 'GENERAL',
       items: [
-        { id: 'overview', path: '/admin/overview', label: 'Dashboard', icon: FiGrid },
+        { id: 'overview', path: '/admin/overview', label: 'Dashboard', icon: FiGrid, superAdminOnly: false },
       ],
     },
     {
       title: 'MANAGEMENT',
       items: [
-        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Stock', icon: FiTag },
-        { id: 'orders', path: '/admin/orders', label: 'Orders', icon: FiShoppingBag },
-        { id: 'customers', path: '/admin/customers', label: 'Customers', icon: FiUsers },
-        { id: 'timetables', path: '/admin/timetables', label: 'Timetables', icon: FiCalendar },
-        { id: 'users', path: '/admin/users', label: 'Users', icon: FiUserCheck },
-        { id: 'contacts', path: '/admin/contacts', label: 'Support Inbox', icon: FiInbox },
-        { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates', icon: FiUserPlus },
+        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Stock', icon: FiTag, superAdminOnly: true },
+        { id: 'orders', path: '/admin/orders', label: 'Orders', icon: FiShoppingBag, superAdminOnly: false },
+        { id: 'customers', path: '/admin/customers', label: 'Customers', icon: FiUsers, superAdminOnly: false },
+        { id: 'timetables', path: '/admin/timetables', label: 'Timetables', icon: FiCalendar, superAdminOnly: false },
+        { id: 'users', path: '/admin/users', label: 'Users', icon: FiUserCheck, superAdminOnly: true },
+        { id: 'contacts', path: '/admin/contacts', label: 'Support Inbox', icon: FiInbox, superAdminOnly: false },
+        { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates', icon: FiUserPlus, superAdminOnly: false },
       ],
     },
     {
       title: 'FINANCE & PAYMENTS',
       items: [
-        { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawals', icon: FiDollarSign },
+        { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawals', icon: FiDollarSign, superAdminOnly: true },
       ],
     },
     {
       title: 'TOOLS & REPORTS',
       items: [
-        { id: 'sms', path: '/admin/sms', label: 'SMS Module', icon: FiMessageSquare },
-        { id: 'reports', path: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
-        { id: 'audit', path: '/admin/audit', label: 'Audit Logs', icon: FiShield },
-        { id: 'settings', path: '/admin/settings', label: 'Settings', icon: FiSettings },
-        { id: 'notifications', path: '/admin/notifications', label: 'Notifications', icon: FiBell },
+        { id: 'sms', path: '/admin/sms', label: 'SMS Module', icon: FiMessageSquare, superAdminOnly: true },
+        { id: 'reports', path: '/admin/reports', label: 'Reports', icon: FiBarChart2, superAdminOnly: false },
+        { id: 'audit', path: '/admin/audit', label: 'Audit Logs', icon: FiShield, superAdminOnly: false },
+        { id: 'settings', path: '/admin/settings', label: 'Settings', icon: FiSettings, superAdminOnly: false },
+        { id: 'notifications', path: '/admin/notifications', label: 'Notifications', icon: FiBell, superAdminOnly: false },
       ],
     },
   ];
+
+  // Filter restricted nav items for ADMIN users; remove empty groups
+  const navGroups = allNavGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => isSuperAdmin || !item.superAdminOnly),
+    }))
+    .filter((group) => group.items.length > 0);
 
   const handleLogout = () => {
     logout();

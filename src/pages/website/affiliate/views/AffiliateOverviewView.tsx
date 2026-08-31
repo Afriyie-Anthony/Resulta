@@ -164,7 +164,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
               {data?.headerBanner?.accountTier || 'Partner Account'}
             </span>
             <span className="text-xs flex items-center gap-1 font-medium text-emerald-700">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" /> {data?.headerBanner?.activeCommissionRateText || 'Active'}
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" /> {(data?.headerBanner?.activeCommissionRateText || '').replace(/\s*Tier\s*Rate\s*Active/gi, '').trim() || 'Active'}
             </span>
           </div>
           <h1 className="text-2xl font-medium tracking-tight mt-1 transition-colors text-primary">
@@ -280,62 +280,144 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
       </div>
 
       {/* Referral Link & Social Sharing Section */}
-      <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <div>
-            <h3 className="text-base font-medium text-slate-900 flex items-center gap-2">
-              <span>Your Unique Referral Link</span>
-              <Badge variant="primary">Active</Badge>
-            </h3>
-            <p className="text-xs text-slate-600 mt-0.5">
-              Share this link on WhatsApp, Facebook, or SMS to automatically earn 10% commission per voucher sold.
-            </p>
-          </div>
-          <div className="text-xs text-slate-600 font-medium">
-            Affiliate Code: <span className="font-mono font-medium text-teal-600 text-sm ml-1">{referralCode}</span>
-          </div>
-        </div>
+      {data?.referralTools?.ussdCode ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Referral Link Card */}
+          <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-base font-medium text-slate-900 flex items-center gap-2">
+                    <span>Your Unique Referral Link</span>
+                    <Badge variant="primary">Active</Badge>
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Share this link to automatically earn commission per voucher sold.
+                  </p>
+                </div>
+              </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              readOnly
-              value={referralLink}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-mono focus:outline-none focus:border-teal-500 shadow-inner"
-            />
-          </div>
-          <Button
-            variant="primary"
-            leftIcon={copied ? <FiCheck className="w-4 h-4 text-white" /> : <FiCopy className="w-4 h-4" />}
-            onClick={handleCopyLink}
-            className="sm:w-auto shadow-md"
-          >
-            {copied ? 'Copied Link!' : 'Copy Referral Link'}
-          </Button>
-        </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    readOnly
+                    value={referralLink}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-mono focus:outline-none focus:border-teal-500 shadow-inner"
+                  />
+                </div>
+                <Button
+                  variant="primary"
+                  leftIcon={copied ? <FiCheck className="w-4 h-4 text-white" /> : <FiCopy className="w-4 h-4" />}
+                  onClick={handleCopyLink}
+                  className="sm:w-auto shadow-md"
+                >
+                  {copied ? 'Copied!' : 'Copy Link'}
+                </Button>
+              </div>
+            </div>
 
-        {/* Quick Social Action Shortcuts */}
-        <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium mr-2 uppercase tracking-wider">Share directly:</span>
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(`Buy WASSCE/NOVDEC & BECE Result Vouchers instantly on Resulta! ${referralLink}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium hover:bg-emerald-100 transition-all shadow-sm"
-          >
-            WhatsApp
-          </a>
-          <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium hover:bg-blue-100 transition-all shadow-sm"
-          >
-            Facebook
-          </a>
+            {/* Quick Social Action Shortcuts */}
+            <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-slate-500 font-medium mr-2 uppercase tracking-wider">Share directly:</span>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Buy WASSCE/NOVDEC & BECE Result Vouchers instantly on Resulta! ${referralLink}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium hover:bg-emerald-100 transition-all shadow-sm"
+              >
+                WhatsApp
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium hover:bg-blue-100 transition-all shadow-sm"
+              >
+                Facebook
+              </a>
+            </div>
+          </div>
+
+          {/* USSD Shortcode Card */}
+          <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-medium text-slate-900 flex items-center gap-2">
+                  <span>Your USSD Shortcode</span>
+                  <Badge variant="success">Active</Badge>
+                </h3>
+              </div>
+              <p className="text-xs text-slate-600 mb-6">
+                Customers can dial this shortcode directly on their phone's dialer to purchase vouchers linked to your account.
+              </p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center flex flex-col items-center justify-center min-h-[90px] shadow-inner">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">DIAL SHORTCODE</span>
+              <span className="text-2xl font-black font-mono tracking-tight text-teal-600">
+                {data?.referralTools?.ussdCode}
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 className="text-base font-medium text-slate-900 flex items-center gap-2">
+                <span>Your Unique Referral Link</span>
+                <Badge variant="primary">Active</Badge>
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Share this link on WhatsApp, Facebook, or SMS to automatically earn 10% commission per voucher sold.
+              </p>
+            </div>
+            <div className="text-xs text-slate-600 font-medium">
+              Affiliate Code: <span className="font-mono font-medium text-teal-600 text-sm ml-1">{referralCode}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                readOnly
+                value={referralLink}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-mono focus:outline-none focus:border-teal-500 shadow-inner"
+              />
+            </div>
+            <Button
+              variant="primary"
+              leftIcon={copied ? <FiCheck className="w-4 h-4 text-white" /> : <FiCopy className="w-4 h-4" />}
+              onClick={handleCopyLink}
+              className="sm:w-auto shadow-md"
+            >
+              {copied ? 'Copied Link!' : 'Copy Referral Link'}
+            </Button>
+          </div>
+
+          {/* Quick Social Action Shortcuts */}
+          <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium mr-2 uppercase tracking-wider">Share directly:</span>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`Buy WASSCE/NOVDEC & BECE Result Vouchers instantly on Resulta! ${referralLink}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium hover:bg-emerald-100 transition-all shadow-sm"
+            >
+              WhatsApp
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium hover:bg-blue-100 transition-all shadow-sm"
+            >
+              Facebook
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Recent Sales Table */}
       <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm overflow-hidden">
@@ -368,25 +450,37 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {recentSales.map((sale) => (
-                <tr key={sale.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-4 py-3.5 font-mono font-medium text-teal-600">{sale.id}</td>
-                  <td className="px-4 py-3.5 text-slate-600 font-medium">{formatDate(sale.date)}</td>
-                  <td className="px-4 py-3.5 text-slate-900 font-medium">
-                    {sale.product} <span className="text-slate-500 font-medium text-[10px] ml-1">({sale.quantity}x)</span>
-                  </td>
-                  <td className="px-4 py-3.5 text-slate-600 font-mono font-medium">N/A</td>
-                  <td className="px-4 py-3.5 text-right text-slate-700 font-medium">{formatCedi(0)}</td>
-                  <td className="px-4 py-3.5 text-right font-medium text-emerald-600">{formatCedi(sale.commission)}</td>
-                  <td className="px-4 py-3.5 text-center">
-                    {sale.status === 'AVAILABLE' ? (
-                      <Badge variant="success">Available</Badge>
-                    ) : (
-                      <Badge variant="warning">Pending</Badge>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {recentSales.map((sale) => {
+                const saleAmt = sale.saleAmount ?? sale.totalAmount ?? sale.amount ?? 0;
+                const status = (sale.status || 'PENDING').toUpperCase();
+                return (
+                  <tr key={sale.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-4 py-3.5 font-mono font-medium text-teal-600">{sale.id}</td>
+                    <td className="px-4 py-3.5 text-slate-600 font-medium">{formatDate(sale.date || sale.createdAt)}</td>
+                    <td className="px-4 py-3.5 text-slate-900 font-medium">
+                      {sale.product || sale.voucherType} <span className="text-slate-500 font-medium text-[10px] ml-1">({sale.quantity || 1}x)</span>
+                    </td>
+                    <td className="px-4 py-3.5 text-slate-600 font-mono font-medium">{sale.customerPhone || 'N/A'}</td>
+                    <td className="px-4 py-3.5 text-right text-slate-700 font-medium">{formatCedi(saleAmt)}</td>
+                    <td className="px-4 py-3.5 text-right font-medium text-emerald-600">+{formatCedi(sale.commission || sale.commissionAmount || 0)}</td>
+                    <td className="px-4 py-3.5 text-center">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          status === 'APPROVED' || status === 'SUCCESSFUL' || status === 'AVAILABLE' || status === 'EARNED'
+                            ? 'bg-[#dcfce7] text-[#166534]'
+                            : status === 'PAID'
+                            ? 'bg-[#dbeafe] text-[#1e40af]'
+                            : status === 'PENDING'
+                            ? 'bg-[#fef3c7] text-[#92400e]'
+                            : 'bg-[#fee2e2] text-[#991b1b]'
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

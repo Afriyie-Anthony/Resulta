@@ -56,7 +56,16 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().clearAuth();
-      window.location.href = '/admin/login';
+      
+      const currentPath = window.location.pathname;
+      // Do not redirect if we are already on a login or auth-related page
+      if (!currentPath.includes('/login') && !currentPath.includes('/apply')) {
+        if (currentPath.startsWith('/affiliate')) {
+          window.location.href = '/affiliate/login';
+        } else {
+          window.location.href = '/admin/login';
+        }
+      }
     }
     return Promise.reject(error);
   },

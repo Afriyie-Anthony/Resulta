@@ -17,6 +17,7 @@ import { UsersView } from './views/UsersView';
 import { SMSModuleView } from './views/SMSModuleView';
 import { NotificationsView } from './views/NotificationsView';
 import { ContactsView } from './views/ContactsView';
+import SuperAdminRoute from '../../components/website/layout/SuperAdminRoute';
 
 export const AdminRouter: React.FC = () => {
   return (
@@ -24,23 +25,24 @@ export const AdminRouter: React.FC = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/admin/overview" replace />} />
         <Route path="overview" element={<DashboardOverviewView />} />
-        <Route path="inventory" element={<VoucherInventoryView />} />
+        {/* SUPER_ADMIN only routes */}
+        <Route path="inventory" element={<SuperAdminRoute><VoucherInventoryView /></SuperAdminRoute>} />
+        <Route path="users" element={<SuperAdminRoute><UsersView /></SuperAdminRoute>} />
+        <Route path="sms" element={<SuperAdminRoute><SMSModuleView /></SuperAdminRoute>} />
+        {/* Shared access routes */}
         <Route path="orders" element={<OrdersFulfillmentView />} />
         <Route path="customers" element={<CustomersView />} />
         <Route path="timetables" element={<TimetablesView />} />
         <Route path="contacts" element={<ContactsView />} />
-        <Route path="users" element={<UsersView />} />
         <Route path="affiliates" element={<AffiliatesPartnersView />} />
         <Route path="affiliates/:id/edit" element={<EditAffiliateView />} />
         <Route path="affiliates/analytics" element={<AffiliatesAnalyticsView />} />
-        <Route path="sms" element={<SMSModuleView />} />
         <Route path="reports" element={<ReportsAnalyticsView />} />
         <Route path="settings" element={<SystemSettingsView />} />
         <Route path="notifications" element={<NotificationsView />} />
-        
-        {/* Supporting historical/secondary administrative subviews */}
-        <Route path="withdrawals" element={<WithdrawalsView />} />
         <Route path="audit" element={<AuditLogsView />} />
+        {/* SUPER_ADMIN only: Financial */}
+        <Route path="withdrawals" element={<SuperAdminRoute><WithdrawalsView /></SuperAdminRoute>} />
         
         <Route path="*" element={<Navigate to="/admin/overview" replace />} />
       </Routes>

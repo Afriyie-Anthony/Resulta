@@ -175,12 +175,12 @@ export const AuditLogsView: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">Loading audit logs...</td>
                 </tr>
-              ) : logsData?.data.length === 0 ? (
+              ) : !logsData || !logsData.data || logsData.data.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">No logs found.</td>
                 </tr>
               ) : (
-                logsData?.data.map((log) => {
+                logsData.data.map((log) => {
                   const severity = determineSeverity(log.action);
                   return (
                     <tr key={log.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-900/60'}`}>

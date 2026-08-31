@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   useAffiliateEarnings,
   useAffiliateEarningsAnalytics,
+  useAffiliateDashboard,
 } from '../../../../hooks/useAffiliate';
 import { exportAffiliateEarningsCsv } from '../../../../services/affiliate.service';
 import type {
@@ -99,16 +100,20 @@ const extractAmount = (val: unknown): number => {
 
 // Safe helper to render commission rate string
 const renderRateString = (rateVal: unknown): string => {
-  if (typeof rateVal === 'number') return `${rateVal}%`;
-  if (typeof rateVal === 'string') return rateVal.includes('%') ? rateVal : `${rateVal}%`;
-  if (rateVal && typeof rateVal === 'object') {
+  let rateStr = '10%';
+  if (typeof rateVal === 'number') {
+    rateStr = `${rateVal}%`;
+  } else if (typeof rateVal === 'string') {
+    rateStr = rateVal.includes('%') ? rateVal : `${rateVal}%`;
+  } else if (rateVal && typeof rateVal === 'object') {
     const obj = rateVal as Record<string, unknown>;
-    if (typeof obj.text === 'string') return obj.text;
-    if (typeof obj.rate === 'number') return `${obj.rate}%`;
-    if (typeof obj.rate === 'string') return obj.rate;
-    if (typeof obj.value === 'number') return `${obj.value}%`;
+    if (typeof obj.text === 'string') rateStr = obj.text;
+    else if (typeof obj.rate === 'number') rateStr = `${obj.rate}%`;
+    else if (typeof obj.rate === 'string') rateStr = obj.rate;
+    else if (typeof obj.value === 'number') rateStr = `${obj.value}%`;
   }
-  return '10%';
+  
+  return rateStr.replace(/\s*Tier\s*Rate\s*Active/gi, '').trim();
 };
 
 export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
@@ -150,12 +155,15 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
     refetch: refetchList,
   } = useAffiliateEarnings(apiParams);
 
+  const { data: dashboardData } = useAffiliateDashboard();
+
   // Extract pagination and items
   const commissionLogs: AffiliateCommissionLogItem[] = earningsResponse?.items || [];
   const meta = earningsResponse?.meta;
 
   // Extract Summary KPI metrics with robust fallback values
   const commissionRate =
+    dashboardData?.headerBanner?.activeCommissionRateText ??
     analytics?.rate ??
     analytics?.commissionRate ??
     analytics?.commissionRateText ??
@@ -293,7 +301,6 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
           <p className="text-2xl font-bold text-slate-900">
             {isLoadingAnalytics ? '...' : renderRateString(commissionRate)}
           </p>
-          <p className="text-xs text-slate-500 mt-1">Default tier rate applied on retail price</p>
         </div>
 
         {/* Total Commission Earned */}
