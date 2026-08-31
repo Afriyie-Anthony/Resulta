@@ -7,6 +7,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Home from './pages/website/Home';
 import PurchasePage from './pages/website/purchase/PurchasePage';
 import PurchaseVerifyPage from './pages/website/purchase/PurchaseVerifyPage';
+import CheckoutSuccessPage from './pages/website/checkout/CheckoutSuccessPage';
+import CheckoutCancelPage from './pages/website/checkout/CheckoutCancelPage';
 import VouchersPricingPage from './pages/website/VouchersPricingPage';
 import RetrieveVoucherPage from './pages/website/my-vouchers/RetrieveVoucherPage';
 import FAQPage from './pages/website/help/FAQPage';
@@ -43,6 +45,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/pricing" element={<VouchersPricingPage />} />
       <Route path="/purchase" element={<PurchasePage />} />
       <Route path="/purchase/verify" element={<PurchaseVerifyPage />} />
+      <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+      <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
       <Route path="/retrieve-voucher" element={<RetrieveVoucherPage />} />
       <Route path="/help/faq" element={<FAQPage />} />
       <Route path="/help/contact" element={<ContactSupportPage />} />

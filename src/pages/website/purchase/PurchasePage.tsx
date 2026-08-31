@@ -123,6 +123,10 @@ const PurchasePage: React.FC = () => {
       },
       {
         onSuccess: (data) => {
+          // Cache orderNumber for resilient return resolution
+          if (data?.orderNumber) {
+            sessionStorage.setItem('resulta_last_order', data.orderNumber);
+          }
           // Redirect to Hubtel Checkout URL
           window.location.href = data.checkoutUrl;
         },
