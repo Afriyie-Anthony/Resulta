@@ -5,10 +5,10 @@ const steps = [
     id: 1,
     number: '01',
     title: 'DIAL',
-    description: '*447*123#',
+    description: '*713*2692#',
     phoneContent: {
       title: 'USSD',
-      lines: ['*447*123#', '', 'Connecting...'],
+      lines: ['*713*2692#', '', 'Connecting...'],
       accent: false,
     },
   },
@@ -30,7 +30,7 @@ const steps = [
     description: 'Confirm your payment',
     phoneContent: {
       title: 'RESULTA',
-      lines: ['WASSCE Voucher', '', 'Amount: GHS 20.00', '', '1. Confirm', '2. Cancel'],
+      lines: ['WASSCE Voucher', '', 'Amount: GHS 25.00', '', '1. Confirm', '2. Cancel'],
       accent: false,
     },
   },
@@ -115,7 +115,7 @@ const HowItWorksUSSD: React.FC = () => {
             How It Works
           </span>
           <h2 className="text-4xl sm:text-6xl lg:text-8xl font-extrabold text-white leading-tight">
-            *447*123#
+            *713*2692#
           </h2>
           <p className="mt-4 text-sm sm:text-base text-white/70 max-w-xl mx-auto">
             Get your Resulta voucher quickly and easily from your phone.
