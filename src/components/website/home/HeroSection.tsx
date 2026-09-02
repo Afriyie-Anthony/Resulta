@@ -106,7 +106,7 @@ const slides = [
             </h1>
 
             <p className="font-extrabold text-accent mt-6 text-base text-3xl sm:text-4xl lg:text-5xl leading-relaxed">
-              *713*2692#
+              *713*6222#
             </p>
 
               <div className="mt-8">
@@ -164,7 +164,7 @@ const slides = [
               </span>
 
               <h2 className="relative z-10 text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-none tracking-tight">
-                *713*2692#
+                *713*6222#
               </h2>
 
               <p className="relative z-10 mt-6 text-base lg:text-lg text-white/90 leading-relaxed">

@@ -5,10 +5,10 @@ const steps = [
     id: 1,
     number: '01',
     title: 'DIAL',
-    description: '*713*2692#',
+    description: '*713*6222#',
     phoneContent: {
       title: 'USSD',
-      lines: ['*713*2692#', '', 'Connecting...'],
+      lines: ['*713*6222#', '', 'Connecting...'],
       accent: false,
     },
   },
@@ -115,7 +115,7 @@ const HowItWorksUSSD: React.FC = () => {
             How It Works
           </span>
           <h2 className="text-4xl sm:text-6xl lg:text-8xl font-extrabold text-white leading-tight">
-            *713*2692#
+            *713*6222#
           </h2>
           <p className="mt-4 text-sm sm:text-base text-white/70 max-w-xl mx-auto">
             Get your Resulta voucher quickly and easily from your phone.
