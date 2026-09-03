@@ -63,10 +63,10 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
           <h3 className={`text-base font-black tracking-tight flex items-center gap-2 ${
             isLight ? 'text-slate-950' : 'text-white'
           }`}>
-            <FiCheckSquare className="text-emerald-600 dark:text-emerald-400" /> Sold & Dispatched Voucher Logs
+            <FiCheckSquare className="text-emerald-600 dark:text-emerald-400" /> Sold Vouchers
           </h3>
           <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            Immutable delivery audit trail connecting fulfilled checkout orders to assigned voucher serial numbers and PIN codes
+            Record of all purchased vouchers and the customers they were sent to
           </p>
         </div>
 
@@ -140,9 +140,9 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
               <th className="py-2.5 px-3.5 whitespace-nowrap">Order Ref</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Serial Number</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">PIN Code</th>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Exam Product</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Exam Type</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Phone</th>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Dispatch Time</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Purchase Date</th>
               <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Status</th>
             </tr>
           </thead>
@@ -210,7 +210,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             {!isLoading && vouchers.length === 0 && (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-slate-500 font-semibold">
-                  No dispatched vouchers match search query "{searchQuery}".
+                  No sold vouchers match search query "{searchQuery}".
                 </td>
               </tr>
             )}

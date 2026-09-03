@@ -154,7 +154,7 @@ export const InventorySetupConfig: React.FC = () => {
           isLight ? 'text-[#0F8B8D] hover:text-[#0a6668]' : 'text-teal-400 hover:text-teal-300'
         }`}
       >
-        <FiPlus /> Add Quantity Tier
+        <FiPlus /> Add Price Tier
       </button>
     </div>
   );
@@ -173,10 +173,10 @@ export const InventorySetupConfig: React.FC = () => {
           </div>
           <div>
             <h3 className={`text-base font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>
-              Voucher Pool Configuration & Threshold Setup
+              Voucher Pricing & Low-Stock Alerts
             </h3>
             <p className={`text-xs font-semibold ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-              Adjust automated alerting parameters and tiered retail pricing
+              Set minimum stock warning levels and voucher prices
             </p>
           </div>
         </div>
@@ -185,12 +185,12 @@ export const InventorySetupConfig: React.FC = () => {
           {/* Section 1: Alert Thresholds */}
           <div>
             <h4 className={`text-sm font-black flex items-center gap-2 mb-4 ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
-              <FiBell className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Low Stock Trigger Thresholds
+              <FiBell className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Low Stock Alert Levels
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                  WASSCE Pool Minimum Threshold
+                  WASSCE Minimum Stock Alert
                 </label>
                 <div className="relative">
                   <input
@@ -203,14 +203,14 @@ export const InventorySetupConfig: React.FC = () => {
                         : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500'
                     }`}
                   />
-                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>PIN Units</span>
+                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Vouchers</span>
                 </div>
-                <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Triggers emergency alerts when WASSCE count falls below this number.</p>
+                <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Sends an alert when available WASSCE stock falls below this number.</p>
               </div>
 
               <div>
                 <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                  BECE Pool Minimum Threshold
+                  BECE Minimum Stock Alert
                 </label>
                 <div className="relative">
                   <input
@@ -223,9 +223,9 @@ export const InventorySetupConfig: React.FC = () => {
                         : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500'
                     }`}
                   />
-                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>PIN Units</span>
+                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Vouchers</span>
                 </div>
-                <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Triggers emergency alerts when BECE count falls below this number.</p>
+                <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Sends an alert when available BECE stock falls below this number.</p>
               </div>
             </div>
           </div>
@@ -233,19 +233,19 @@ export const InventorySetupConfig: React.FC = () => {
           {/* Section 2: Retail Pricing */}
           <div>
             <h4 className={`text-sm font-black flex items-center gap-2 mb-4 ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
-              <FiDollarSign className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Tiered Retail Unit Prices (GH₵)
+              <FiDollarSign className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Voucher Pricing (GH₵)
             </h4>
             <div className="space-y-8">
               <div>
                 <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                  WASSCE 2026 Tiered Pricing
+                  WASSCE Pricing
                 </label>
                 {renderTierList('WASSCE_NOVDEC', wassceTiers)}
               </div>
 
               <div>
                 <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
-                  BECE 2026 Tiered Pricing
+                  BECE Pricing
                 </label>
                 {renderTierList('BECE', beceTiers)}
               </div>

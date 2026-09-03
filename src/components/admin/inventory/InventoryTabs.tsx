@@ -33,11 +33,11 @@ export const InventoryTabs: React.FC<InventoryTabsProps> = ({
 
   const tabs: TabItem[] = [
     { id: 'overview', label: 'Overview', icon: FiGrid },
-    { id: 'registry', label: 'Inventory Registry', icon: FiDatabase },
+    { id: 'registry', label: 'All Vouchers', icon: FiDatabase },
     { id: 'sold', label: 'Sold Vouchers', icon: FiCheckSquare },
     { id: 'history', label: 'Upload History', icon: FiList },
     { id: 'alerts', label: 'Stock Alerts', icon: FiBell, badge: alertCount },
-    { id: 'config', label: 'Setup Config', icon: FiSettings },
+    { id: 'config', label: 'Pricing & Settings', icon: FiSettings },
   ];
 
   return (

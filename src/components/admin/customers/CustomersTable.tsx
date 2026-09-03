@@ -57,12 +57,12 @@ export const CustomersTable: React.FC<CustomersTableProps> = ({
             <tr className={`border-b text-[11px] uppercase font-black ${
               isLight ? 'border-slate-300 bg-slate-100/90 text-slate-700' : 'border-slate-800 bg-slate-950/50 text-slate-400'
             }`}>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Account</th>
-              <th className="py-2.5 px-3.5 whitespace-nowrap">Account Segment</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Phone</th>
+              <th className="py-2.5 px-3.5 whitespace-nowrap">Customer Tier</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Total Orders</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Lifetime Value</th>
               <th className="py-2.5 px-3.5 whitespace-nowrap">Last Active</th>
-              <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Operations</th>
+              <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-semibold ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>

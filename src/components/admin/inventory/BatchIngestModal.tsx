@@ -120,8 +120,8 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Ingest & Encrypt Voucher Stock"
-      description="Upload raw CSV or Excel PIN lists to securely replenish active examination inventory pools."
+      title="Upload Voucher Stock"
+      description="Upload CSV or Excel files containing voucher PINs to add new stock."
       size="lg"
     >
       <form onSubmit={handleImportBatch} className="space-y-4">
@@ -146,7 +146,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           <label className={`block text-[11px] font-black uppercase tracking-wider mb-1.5 ${
             isLight ? 'text-slate-700' : 'text-slate-300'
           }`}>
-            1. Select Target Examination Pool
+            1. Select Exam Type
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button

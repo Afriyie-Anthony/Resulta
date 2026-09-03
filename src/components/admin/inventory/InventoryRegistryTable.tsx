@@ -73,10 +73,10 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
           <h3 className={`text-base font-black tracking-tight flex items-center gap-2 ${
             isLight ? 'text-primary' : 'text-white'
           }`}>
-            <FiDatabase className="text-[#0F8B8D] dark:text-teal-400" /> Active Inventory Serial Registry
+            <FiDatabase className="text-[#0F8B8D] dark:text-teal-400" /> Available Vouchers
           </h3>
           <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            Live audit table of unassigned voucher serial numbers and cryptographic storage signatures
+            List of unsold voucher serial numbers ready for customer purchase
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
                 }`}
               >
-                {filter === 'ALL' ? 'ALL POOLS' : `${filter.replace('_NOVDEC', '')} ONLY`}
+                {filter === 'ALL' ? 'ALL' : `${filter.replace('_NOVDEC', '')} ONLY`}
               </button>
             ))}
           </div>
@@ -125,10 +125,10 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
               isLight ? 'border-slate-300 text-slate-700' : 'border-slate-800 text-slate-400'
             }`}>
               <th className="py-3 px-3">Serial Number</th>
-              <th className="py-3 px-3">Exam Product</th>
-              <th className="py-3 px-3">Origin Batch</th>
-              <th className="py-3 px-3">Cryptographic Signature (At-Rest)</th>
-              <th className="py-3 px-3">Pool Status</th>
+              <th className="py-3 px-3">Exam Type</th>
+              <th className="py-3 px-3">Batch ID</th>
+              <th className="py-3 px-3">Encrypted PIN</th>
+              <th className="py-3 px-3">Status</th>
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>

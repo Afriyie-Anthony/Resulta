@@ -28,14 +28,14 @@ export const InventoryHeader: React.FC<InventoryHeaderProps> = ({ onOpenImport }
           <h1 className={`text-2xl sm:text-3xl font-black tracking-tight transition-colors ${
             isLight ? 'text-slate-900' : 'text-white'
           }`}>
-            Voucher Inventory & Batch Ingestion
+            Voucher Management
           </h1>
 
           {/* Description */}
           <p className={`text-xs sm:text-sm font-semibold leading-relaxed ${
             isLight ? 'text-slate-700' : 'text-slate-300'
           }`}>
-            Monitor examination result-checker PIN pools, manage cryptographic batch imports, track fulfillment cycles, and configure automated low-stock safety triggers.
+            Manage voucher stock, upload new PIN batches via CSV or Excel, monitor sales, and set low-stock alerts.
           </p>
         </div>
 

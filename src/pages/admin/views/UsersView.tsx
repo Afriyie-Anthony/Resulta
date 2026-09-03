@@ -18,33 +18,52 @@ import {
   FiEye,
   FiEyeOff,
   FiLock,
-  FiRefreshCw
+  FiRefreshCw,
+  FiUsers
 } from 'react-icons/fi';
 
 export const UsersView: React.FC = () => {
   const { isLight } = useAdminTheme();
   const { addToast } = useToast();
   
-  // Table state
+  // Two tabs: 'ADMINS' (Super Admin & Admin) vs 'AFFILIATES'
+  const [activeTab, setActiveTab] = useState<'ADMINS' | 'AFFILIATES'>('ADMINS');
+  const [adminSubRole, setAdminSubRole] = useState<'ALL' | 'SUPER_ADMIN' | 'ADMIN'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   
+  // Compute query role for API
+  const queryRole = activeTab === 'AFFILIATES' 
+    ? 'AFFILIATE' 
+    : (adminSubRole !== 'ALL' ? adminSubRole : undefined);
+
   // API Hooks
   const { data: usersData, isLoading, isError, refetch, isFetching } = useUsers({
     page: currentPage,
     limit: itemsPerPage,
     search: searchTerm || undefined,
-    role: roleFilter !== 'ALL' ? roleFilter : undefined,
+    role: queryRole,
   });
 
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
-  const users = usersData?.users || [];
-  const totalItems = usersData?.pagination?.total || 0;
+  const rawUsers = usersData?.users || [];
+  
+  // Filter for display: if ADMINS and ALL, only show SUPER_ADMIN and ADMIN
+  const users = rawUsers.filter((u) => {
+    if (activeTab === 'ADMINS') {
+      if (adminSubRole === 'SUPER_ADMIN') return u.role === 'SUPER_ADMIN';
+      if (adminSubRole === 'ADMIN') return u.role === 'ADMIN';
+      return u.role === 'ADMIN' || u.role === 'SUPER_ADMIN';
+    } else {
+      return u.role === 'AFFILIATE';
+    }
+  });
+
+  const totalItems = users.length;
   const totalPages = usersData?.pagination?.totalPages || 1;
 
   // Modal State for Add & Edit
@@ -66,7 +85,7 @@ export const UsersView: React.FC = () => {
     setFormName('');
     setFormEmail('');
     setFormPassword('');
-    setFormRole('SUPER_ADMIN');
+    setFormRole(activeTab === 'AFFILIATES' ? 'AFFILIATE' : 'SUPER_ADMIN');
     setShowPassword(false);
     setIsModalOpen(true);
   };
@@ -164,12 +183,12 @@ export const UsersView: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  System Administrators
+                  User Management
                 </h1>
                 {isFetching && <FiRefreshCw className="w-4 h-4 text-teal-500 animate-spin" />}
               </div>
               <p className={`text-xs sm:text-sm font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-                Manage user accounts, provision credentials, and oversee control center access.
+                Manage administrative staff, access credentials, and affiliate accounts.
               </p>
             </div>
           </div>
@@ -182,8 +201,56 @@ export const UsersView: React.FC = () => {
             leftIcon={<FiUserPlus />}
             className="font-black text-xs h-11 px-5 rounded-2xl shadow-md"
           >
-            Provision User
+            {activeTab === 'ADMINS' ? 'Add Administrator' : 'Add Affiliate User'}
           </Button>
+        </div>
+      </div>
+
+      {/* Role Tabs: Administrators vs Affiliates */}
+      <div className="flex items-center">
+        <div className={`inline-flex items-center p-1 rounded-2xl border ${
+          isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-900 border-slate-800'
+        }`}>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('ADMINS');
+              setAdminSubRole('ALL');
+              setCurrentPage(1);
+            }}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'ADMINS'
+                ? isLight
+                  ? 'bg-[#0F8B8D] text-white shadow-xs'
+                  : 'bg-teal-500 text-slate-950 font-black shadow-md'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <FiShield className="w-3.5 h-3.5" />
+            <span>Administrators</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('AFFILIATES');
+              setCurrentPage(1);
+            }}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'AFFILIATES'
+                ? isLight
+                  ? 'bg-[#0F8B8D] text-white shadow-xs'
+                  : 'bg-teal-500 text-slate-950 font-black shadow-md'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <FiUsers className="w-3.5 h-3.5" />
+            <span>Affiliates</span>
+          </button>
         </div>
       </div>
 
@@ -195,26 +262,27 @@ export const UsersView: React.FC = () => {
           <span className={`text-xs font-black uppercase px-3.5 py-1 rounded-full border ${
             isLight ? 'bg-rose-100 text-rose-950 border-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'
           }`}>
-            <FiCheckCircle className="inline mr-1 text-rose-600 dark:text-rose-400" /> {totalItems} Total Accounts
+            <FiCheckCircle className="inline mr-1 text-rose-600 dark:text-rose-400" />
+            {users.length} {activeTab === 'ADMINS' ? 'Administrators' : 'Affiliates'}
           </span>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <select
-            value={roleFilter}
-            onChange={(e) => { setRoleFilter(e.target.value); setCurrentPage(1); }}
-            className={`rounded-2xl px-4 py-2 text-xs font-black uppercase border focus:outline-none transition-colors cursor-pointer ${
-              isLight
-                ? 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100'
-                : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-900 focus:border-teal-500'
-            }`}
-          >
-            <option value="ALL">All Roles</option>
-            <option value="SUPER_ADMIN">Super Admin</option>
-            <option value="ADMIN">Admin</option>
-            <option value="AFFILIATE">Affiliate</option>
-            <option value="USER">User</option>
-          </select>
+          {activeTab === 'ADMINS' && (
+            <select
+              value={adminSubRole}
+              onChange={(e) => { setAdminSubRole(e.target.value as any); setCurrentPage(1); }}
+              className={`rounded-2xl px-4 py-2 text-xs font-black uppercase border focus:outline-none transition-colors cursor-pointer ${
+                isLight
+                  ? 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100'
+                  : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-900 focus:border-teal-500'
+              }`}
+            >
+              <option value="ALL">All Administrators</option>
+              <option value="SUPER_ADMIN">Super Admin Only</option>
+              <option value="ADMIN">Admin Only</option>
+            </select>
+          )}
 
           <div className="relative w-full sm:w-64">
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -222,7 +290,7 @@ export const UsersView: React.FC = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              placeholder="Search name or email..."
+              placeholder={activeTab === 'ADMINS' ? "Search admin name or email..." : "Search affiliate name or email..."}
               className={`w-full rounded-2xl pl-10 pr-4 py-2 text-xs font-semibold focus:outline-none transition-colors border ${
                 isLight
                   ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'
@@ -269,7 +337,12 @@ export const UsersView: React.FC = () => {
                   <tr key={u.id} className={`transition-colors ${isLight ? 'hover:bg-slate-100/70' : 'hover:bg-slate-950/40'}`}>
                     <td className="py-2.5 px-3.5 whitespace-nowrap">
                       <div className={`font-black text-sm flex items-center gap-2 ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                        <FiShield className="text-rose-500 shrink-0" /> {u.name}
+                        {u.role === 'AFFILIATE' ? (
+                          <FiUsers className="text-purple-500 shrink-0" />
+                        ) : (
+                          <FiShield className="text-rose-500 shrink-0" />
+                        )}
+                        {u.name}
                       </div>
                       <span className={`text-xs flex items-center gap-1 mt-0.5 font-bold ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                         <FiMail className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-teal-400" /> {u.email}
@@ -280,7 +353,9 @@ export const UsersView: React.FC = () => {
                       <span className={`inline-block px-3 py-0.5 rounded-xl text-[10px] font-black tracking-wide uppercase ${
                         u.role === 'SUPER_ADMIN' 
                           ? isLight ? 'bg-rose-100 text-rose-950 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                          : isLight ? 'bg-blue-100 text-blue-950 border border-blue-300' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                          : u.role === 'ADMIN'
+                          ? isLight ? 'bg-blue-100 text-blue-950 border border-blue-300' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                          : isLight ? 'bg-purple-100 text-purple-950 border border-purple-300' : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                       }`}>
                         {u.role.replace('_', ' ')}
                       </span>
@@ -330,7 +405,7 @@ export const UsersView: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-12 text-slate-500 font-semibold">
-                    No users found matching your criteria.
+                    No {activeTab === 'ADMINS' ? 'administrators' : 'affiliates'} found matching your criteria.
                   </td>
                 </tr>
               )}
@@ -355,11 +430,11 @@ export const UsersView: React.FC = () => {
         )}
       </div>
 
-      {/* Add / Edit Super Admin Modal */}
+      {/* Add / Edit User Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingUser ? 'Edit User Details' : 'Provision New User'}
+        title={editingUser ? 'Edit User Details' : activeTab === 'ADMINS' ? 'Add Administrator' : 'Add Affiliate User'}
       >
         <form onSubmit={handleSaveUser} className="space-y-4">
           <div>
@@ -406,10 +481,18 @@ export const UsersView: React.FC = () => {
                 isLight ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-700 text-white'
               }`}
             >
-              <option value="SUPER_ADMIN">SUPER ADMIN (Full Control)</option>
-              <option value="ADMIN">ADMIN (Standard Access)</option>
-              <option value="AFFILIATE">AFFILIATE (Partner)</option>
-              <option value="USER">USER (Read-only)</option>
+              {activeTab === 'ADMINS' ? (
+                <>
+                  <option value="SUPER_ADMIN">SUPER ADMIN (Full Control)</option>
+                  <option value="ADMIN">ADMIN (Standard Access)</option>
+                </>
+              ) : (
+                <>
+                  <option value="AFFILIATE">AFFILIATE (Partner)</option>
+                  <option value="SUPER_ADMIN">SUPER ADMIN (Full Control)</option>
+                  <option value="ADMIN">ADMIN (Standard Access)</option>
+                </>
+              )}
             </select>
           </div>
 

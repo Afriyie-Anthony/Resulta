@@ -41,7 +41,7 @@ export const SalesByTypeCard: React.FC = () => {
           </h3>
         </div>
         <p className={`text-xs mt-1 font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-          Distribution across major exams
+          Breakdown between WASSCE and BECE
         </p>
       </div>
 

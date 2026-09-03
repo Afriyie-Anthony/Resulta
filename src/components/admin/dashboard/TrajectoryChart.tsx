@@ -45,11 +45,11 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
             <div className="flex items-center gap-2">
               <FiBarChart2 className={`w-5 h-5 ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`} />
               <h2 className={`text-base sm:text-lg font-black tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                Voucher Volume & Revenue Trajectory
+                Sales & Revenue Trend
               </h2>
             </div>
             <p className={`text-xs mt-0.5 font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-              Aggregated real-time sales performance across Web & USSD (*713#) channels
+              Overview of voucher sales and revenue across Website & USSD (*713#)
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                     : isLight ? 'text-slate-700 hover:text-slate-950' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                {tf === '24h' ? 'Last 24 Hours' : tf === '7d' ? 'Past 7 Days' : '30 Days Range'}
+                {tf === '24h' ? 'Last 24 Hours' : tf === '7d' ? 'Last 7 Days' : 'Last 30 Days'}
               </button>
             ))}
           </div>
@@ -77,13 +77,13 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
           isLight ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-slate-950/60 border-slate-800 text-white'
         }`}>
           <div>
-            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Total Period Revenue</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Total Revenue</span>
             <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
               {formatCedi(totalRevenue)}
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Vouchers Dispensed</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">Vouchers Sold</span>
             <span className={`text-base sm:text-lg font-black block truncate ${isLight ? 'text-slate-950' : 'text-white'}`}>
               {totalOrders} <span className="text-xs font-bold text-slate-500">PINs</span>
             </span>
@@ -95,7 +95,7 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">USSD vs Web Ratio</span>
+            <span className="text-[10px] uppercase font-black text-slate-500 block truncate">USSD vs Web Sales</span>
             <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400 block truncate">
               {ussdPct}% / {webPct}%
             </span>
@@ -169,10 +169,10 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                 </div>
                 <div>
                   <h4 className={`text-xs sm:text-sm font-black ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                    Telemetry Spotlight: <span className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}>{activeData[selectedBarIndex].day}</span>
+                    Day Summary: <span className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}>{activeData[selectedBarIndex].day}</span>
                   </h4>
                   <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-                    {activeData[selectedBarIndex].ordersCount} successful transactions processed without manual intervention.
+                    {activeData[selectedBarIndex].ordersCount} successful orders completed.
                   </p>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ data }) => {
                 </div>
                 <div className="h-7 w-px bg-slate-300 dark:bg-slate-700" />
                 <div>
-                  <span className="text-[9px] uppercase font-black text-slate-500 block">Spotlight Revenue</span>
+                  <span className="text-[9px] uppercase font-black text-slate-500 block">Day Revenue</span>
                   <span className={`text-xs sm:text-sm font-black ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`}>
                     {formatCedi(activeData[selectedBarIndex].revenue)}
                   </span>

@@ -40,7 +40,7 @@ export const CustomersHeader: React.FC<CustomersHeaderProps> = ({
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Customer Directory &amp; Telemetry
+                Customer Management
               </h1>
               {totalCustomers !== undefined && (
                 <span className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full border ${
@@ -54,7 +54,7 @@ export const CustomersHeader: React.FC<CustomersHeaderProps> = ({
               )}
             </div>
             <p className={`text-xs sm:text-sm font-semibold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-              Audit verified customer accounts, inspect lifetime purchasing history, and export records.
+              View customer accounts, purchase history, and export records.
             </p>
           </div>
         </div>
@@ -69,7 +69,7 @@ export const CustomersHeader: React.FC<CustomersHeaderProps> = ({
           disabled={isExporting}
           className="font-black shadow-md px-5 h-11 rounded-2xl text-xs"
         >
-          {isExporting ? 'Exporting…' : 'Export Directory'}
+          {isExporting ? 'Exporting…' : 'Export Customers'}
         </Button>
       </div>
     </div>

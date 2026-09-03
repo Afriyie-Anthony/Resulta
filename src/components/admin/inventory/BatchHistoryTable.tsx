@@ -59,7 +59,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h3 className={`text-base font-black tracking-tight ${isLight ? 'text-primary' : 'text-white'}`}>
-              Cryptographic Batch Ingestion Logs
+              Batch Upload History
             </h3>
             <span className={`px-3 py-1 text-[11px] font-black rounded-lg border transition-colors ${
               isLight
@@ -70,7 +70,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
             </span>
           </div>
           <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            Permanent audit record of uploaded stock files and encryption verification
+            History of uploaded voucher files and available stock
           </p>
         </div>
 
@@ -142,13 +142,13 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
             <tr className={`border-b text-[11px] uppercase font-black ${
               isLight ? 'border-slate-300 text-slate-700' : 'border-slate-800 text-slate-400'
             }`}>
-              <th className="py-3 px-3">Batch Reference</th>
-              <th className="py-3 px-3">Examination Product</th>
-              <th className="py-3 px-3">Ingested Date</th>
-              <th className="py-3 px-3">Serial Number Span</th>
-              <th className="py-3 px-3">Total Units</th>
-              <th className="py-3 px-3">Remaining Stock</th>
-              <th className="py-3 px-3">Pool Status</th>
+              <th className="py-3 px-3">Batch ID</th>
+              <th className="py-3 px-3">Exam Type</th>
+              <th className="py-3 px-3">Upload Date</th>
+              <th className="py-3 px-3">Serial Number Range</th>
+              <th className="py-3 px-3">Total Vouchers</th>
+              <th className="py-3 px-3">Available Stock</th>
+              <th className="py-3 px-3">Status</th>
             </tr>
           </thead>
           <tbody className={`divide-y text-xs font-semibold ${

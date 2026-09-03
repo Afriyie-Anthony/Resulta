@@ -58,9 +58,9 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
     {
       title: 'MANAGEMENT',
       items: [
-        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Stock', icon: FiTag, superAdminOnly: true },
+        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Management', icon: FiTag, superAdminOnly: true },
         { id: 'orders', path: '/admin/orders', label: 'Orders', icon: FiShoppingBag, superAdminOnly: false },
-        { id: 'customers', path: '/admin/customers', label: 'Customers', icon: FiUsers, superAdminOnly: false },
+        { id: 'customers', path: '/admin/customers', label: 'Customer Management', icon: FiUsers, superAdminOnly: false },
         { id: 'timetables', path: '/admin/timetables', label: 'Timetables', icon: FiCalendar, superAdminOnly: false },
         { id: 'users', path: '/admin/users', label: 'Users', icon: FiUserCheck, superAdminOnly: true },
         { id: 'contacts', path: '/admin/contacts', label: 'Support Inbox', icon: FiInbox, superAdminOnly: false },

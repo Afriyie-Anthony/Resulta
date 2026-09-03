@@ -47,10 +47,10 @@ export const RevenueTrendVisualizer: React.FC<RevenueTrendVisualizerProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 border-slate-200 dark:border-slate-800">
         <div>
           <h2 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-slate-950' : 'text-white'}`}>
-            <FiBarChart2 className="text-[#0F8B8D] dark:text-teal-400" /> Revenue & Order Trend Visualizer
+            <FiBarChart2 className="text-[#0F8B8D] dark:text-teal-400" /> Revenue & Orders Trend
           </h2>
           <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-            Commercial trajectory across the active {period.toLowerCase()} reporting window.
+            Sales revenue and order volume for the selected {period.toLowerCase()} period.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export const RevenueTrendVisualizer: React.FC<RevenueTrendVisualizerProps> = ({
                 : isLight ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
-            Orders Count
+            Total Orders
           </button>
         </div>
       </div>
@@ -131,13 +131,13 @@ export const RevenueTrendVisualizer: React.FC<RevenueTrendVisualizerProps> = ({
       }`}>
         {peakRevenueDay ? (
           <span>
-            Peak Revenue Period: <strong>{peakRevenueDay.label} ({formatCedi(peakRevenueDay.revenue)})</strong>
+            Highest Revenue Day: <strong>{peakRevenueDay.label} ({formatCedi(peakRevenueDay.revenue)})</strong>
           </span>
         ) : (
           <span>Standard Distribution</span>
         )}
         <span>
-          Total Fulfilled Volume: <strong className="text-emerald-600 dark:text-emerald-400">{totalOrders.toLocaleString()} Orders</strong>
+          Total Orders: <strong className="text-emerald-600 dark:text-emerald-400">{totalOrders.toLocaleString()} Orders</strong>
         </span>
       </div>
     </div>

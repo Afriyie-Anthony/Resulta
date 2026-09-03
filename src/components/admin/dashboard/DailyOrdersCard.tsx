@@ -46,7 +46,7 @@ export const DailyOrdersCard: React.FC<DailyOrdersCardProps> = ({ data = [], isL
           </Badge>
         </div>
         <p className={`text-xs mt-1 font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-          Transaction counts over the current 7-day period
+          Order volume over the past 7 days
         </p>
       </div>
 

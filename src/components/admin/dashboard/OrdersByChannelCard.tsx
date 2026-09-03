@@ -36,7 +36,7 @@ export const OrdersByChannelCard: React.FC<OrdersByChannelCardProps> = ({ data, 
           </h3>
         </div>
         <p className={`text-xs mt-1 font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-          Transaction source platform breakdown
+          Sales breakdown between Website & USSD
         </p>
       </div>
 

@@ -33,7 +33,7 @@ export const TargetVelocityCard: React.FC<TargetVelocityCardProps> = ({ overview
           <div className="flex items-center gap-2">
             <FiActivity className={`w-5 h-5 ${isLight ? 'text-[#0F8B8D]' : 'text-teal-400'}`} />
             <h3 className={`text-lg font-bold tracking-tight ${isLight ? 'text-[#123B5D]' : 'text-white'}`}>
-              Target Velocity
+              Revenue Target Progress
             </h3>
           </div>
           <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center gap-1.5 shadow-2xs">
@@ -42,7 +42,7 @@ export const TargetVelocityCard: React.FC<TargetVelocityCardProps> = ({ overview
           </span>
         </div>
         <p className={`text-xs font-medium mb-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-          Real-time progression vs revenue milestone
+          Live progress toward your revenue target
         </p>
 
         {/* Arch Speedometer Gauge */}
@@ -78,7 +78,7 @@ export const TargetVelocityCard: React.FC<TargetVelocityCardProps> = ({ overview
 
           {/* Center Metrics underneath Arch */}
           <div className="text-center -mt-11 z-10">
-            <span className="text-[10px] font-semibold uppercase text-slate-400 tracking-wider block">GOAL ATTAINMENT</span>
+            <span className="text-[10px] font-semibold uppercase text-slate-400 tracking-wider block">GOAL REACHED</span>
             <div className="flex items-baseline justify-center gap-1 mt-0.5">
               <span className={`text-3xl font-bold ${isLight ? 'text-primary' : 'text-white'}`}>
                 {isLoading ? '...' : `${attainmentPct.toFixed(1)}%`}
@@ -95,7 +95,7 @@ export const TargetVelocityCard: React.FC<TargetVelocityCardProps> = ({ overview
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-500 font-medium flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#0F8B8D]" />
-              Payment Conversion Velocity
+              Payment Success Rate
             </span>
             <span className={`font-semibold ${isLight ? 'text-primary' : 'text-white'}`}>
               {conversionRate}% Instant
@@ -114,7 +114,7 @@ export const TargetVelocityCard: React.FC<TargetVelocityCardProps> = ({ overview
       </div>
 
       <div className={`mt-6 pt-4 border-t text-xs flex justify-between items-center ${isLight ? 'border-slate-100 text-slate-500' : 'border-slate-800 text-slate-400'}`}>
-        <span className="font-medium">Calculated dynamically from real-time telemetry</span>
+        <span className="font-medium">Updated in real time from live orders</span>
         <span className="font-semibold text-teal-600 dark:text-teal-400">Live Active ●</span>
       </div>
     </div>
