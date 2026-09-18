@@ -298,7 +298,7 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
           {/* Dedicated Edit Profile Page Button */}
           <button
             type="button"
-            onClick={() => navigate(`/admin/affiliates/${affiliate.id}/edit`)}
+            onClick={() => navigate(`/portal-hq/affiliates/${affiliate.id}/edit`)}
             className={`px-4 py-2 rounded-xl text-xs font-black border transition-all ${
               isLight
                 ? 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-2xs'
@@ -576,7 +576,7 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
             </h3>
             <button
               type="button"
-              onClick={() => navigate(`/admin/affiliates/${affiliate.id}/edit`)}
+              onClick={() => navigate(`/portal-hq/affiliates/${affiliate.id}/edit`)}
               className={`text-xs font-bold flex items-center gap-1 ${
                 isLight ? 'text-[#0F8B8D] hover:text-[#0B2545]' : 'text-teal-400 hover:text-teal-300'
               }`}
@@ -682,7 +682,7 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
             </h3>
             <button
               type="button"
-              onClick={() => navigate(`/admin/affiliates/${affiliate.id}/edit`)}
+              onClick={() => navigate(`/portal-hq/affiliates/${affiliate.id}/edit`)}
               className={`text-xs font-bold flex items-center gap-1 ${
                 isLight ? 'text-[#0F8B8D] hover:text-[#0B2545]' : 'text-teal-400 hover:text-teal-300'
               }`}

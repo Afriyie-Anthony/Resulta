@@ -52,35 +52,35 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
     {
       title: 'GENERAL',
       items: [
-        { id: 'overview', path: '/admin/overview', label: 'Dashboard', icon: FiGrid, superAdminOnly: false },
+        { id: 'overview', path: '/portal-hq/overview', label: 'Dashboard', icon: FiGrid, superAdminOnly: false },
       ],
     },
     {
       title: 'MANAGEMENT',
       items: [
-        { id: 'inventory', path: '/admin/inventory', label: 'Voucher Management', icon: FiTag, superAdminOnly: true },
-        { id: 'orders', path: '/admin/orders', label: 'Orders', icon: FiShoppingBag, superAdminOnly: false },
-        { id: 'customers', path: '/admin/customers', label: 'Customer Management', icon: FiUsers, superAdminOnly: false },
-        { id: 'timetables', path: '/admin/timetables', label: 'Timetables', icon: FiCalendar, superAdminOnly: false },
-        { id: 'users', path: '/admin/users', label: 'Users', icon: FiUserCheck, superAdminOnly: true },
-        { id: 'contacts', path: '/admin/contacts', label: 'Support Inbox', icon: FiInbox, superAdminOnly: false },
-        { id: 'affiliates', path: '/admin/affiliates', label: 'Affiliates', icon: FiUserPlus, superAdminOnly: false },
+        { id: 'inventory', path: '/portal-hq/inventory', label: 'Voucher Management', icon: FiTag, superAdminOnly: true },
+        { id: 'orders', path: '/portal-hq/orders', label: 'Orders', icon: FiShoppingBag, superAdminOnly: false },
+        { id: 'customers', path: '/portal-hq/customers', label: 'Customer Management', icon: FiUsers, superAdminOnly: false },
+        { id: 'timetables', path: '/portal-hq/timetables', label: 'Timetables', icon: FiCalendar, superAdminOnly: false },
+        { id: 'users', path: '/portal-hq/users', label: 'Users', icon: FiUserCheck, superAdminOnly: true },
+        { id: 'contacts', path: '/portal-hq/contacts', label: 'Support Inbox', icon: FiInbox, superAdminOnly: false },
+        { id: 'affiliates', path: '/portal-hq/affiliates', label: 'Affiliates', icon: FiUserPlus, superAdminOnly: false },
       ],
     },
     {
       title: 'FINANCE & PAYMENTS',
       items: [
-        { id: 'withdrawals', path: '/admin/withdrawals', label: 'Withdrawals', icon: FiDollarSign, superAdminOnly: true },
+        { id: 'withdrawals', path: '/portal-hq/withdrawals', label: 'Withdrawals', icon: FiDollarSign, superAdminOnly: true },
       ],
     },
     {
       title: 'TOOLS & REPORTS',
       items: [
-        { id: 'sms', path: '/admin/sms', label: 'SMS Module', icon: FiMessageSquare, superAdminOnly: true },
-        { id: 'reports', path: '/admin/reports', label: 'Reports', icon: FiBarChart2, superAdminOnly: false },
-        { id: 'audit', path: '/admin/audit', label: 'Audit Logs', icon: FiShield, superAdminOnly: false },
-        { id: 'settings', path: '/admin/settings', label: 'Settings', icon: FiSettings, superAdminOnly: false },
-        { id: 'notifications', path: '/admin/notifications', label: 'Notifications', icon: FiBell, superAdminOnly: false },
+        { id: 'sms', path: '/portal-hq/sms', label: 'SMS Module', icon: FiMessageSquare, superAdminOnly: true },
+        { id: 'reports', path: '/portal-hq/reports', label: 'Reports', icon: FiBarChart2, superAdminOnly: false },
+        { id: 'audit', path: '/portal-hq/audit', label: 'Audit Logs', icon: FiShield, superAdminOnly: false },
+        { id: 'settings', path: '/portal-hq/settings', label: 'Settings', icon: FiSettings, superAdminOnly: false },
+        { id: 'notifications', path: '/portal-hq/notifications', label: 'Notifications', icon: FiBell, superAdminOnly: false },
       ],
     },
   ];
@@ -100,7 +100,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
       message: 'You have securely logged out of the Control Center.',
       type: 'info',
     });
-    navigate('/admin/login');
+    navigate('/portal-hq/login');
   };
 
   return (
@@ -176,7 +176,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
                     const Icon = item.icon;
                     const isActive =
                       location.pathname === item.path ||
-                      (item.id === 'overview' && (location.pathname === '/admin' || location.pathname === '/admin/'));
+                      (item.id === 'overview' && (location.pathname === '/portal-hq' || location.pathname === '/portal-hq/'));
                     
                     return (
                       <button
@@ -303,7 +303,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({
 
             <button
               type="button"
-              onClick={() => navigate('/admin/notifications')}
+              onClick={() => navigate('/portal-hq/notifications')}
               title={`View Notifications & System Alerts${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
               className={`relative p-2 rounded-xl transition-all shadow-2xs ${
                 isLight

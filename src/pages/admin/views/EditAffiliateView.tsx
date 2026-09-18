@@ -88,7 +88,7 @@ export const EditAffiliateView: React.FC = () => {
             message: 'Affiliate profile and payout credentials updated successfully.',
             type: 'success',
           });
-          navigate('/admin/affiliates');
+          navigate('/portal-hq/affiliates');
         },
         onError: (err: any) => {
           addToast({
@@ -126,7 +126,7 @@ export const EditAffiliateView: React.FC = () => {
         <p className="text-base font-bold text-rose-600 dark:text-rose-400 mb-3">
           Failed to load affiliate details or affiliate not found.
         </p>
-        <Button variant="outline" size="sm" onClick={() => navigate('/admin/affiliates')}>
+        <Button variant="outline" size="sm" onClick={() => navigate('/portal-hq/affiliates')}>
           &larr; Back to Affiliates
         </Button>
       </div>
@@ -139,7 +139,7 @@ export const EditAffiliateView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <button
           type="button"
-          onClick={() => navigate('/admin/affiliates')}
+          onClick={() => navigate('/portal-hq/affiliates')}
           className={`inline-flex items-center gap-2 text-xs font-black transition-colors ${
             isLight ? 'text-slate-700 hover:text-slate-950' : 'text-slate-300 hover:text-white'
           }`}
@@ -586,7 +586,7 @@ export const EditAffiliateView: React.FC = () => {
         >
           <button
             type="button"
-            onClick={() => navigate('/admin/affiliates')}
+            onClick={() => navigate('/portal-hq/affiliates')}
             className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border ${
               isLight
                 ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'

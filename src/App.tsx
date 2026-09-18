@@ -1,9 +1,10 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ToastProvider } from './components/ui/Toast';
 import ProtectedRoute from './components/website/layout/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/website/Home';
 import PurchasePage from './pages/website/purchase/PurchasePage';
 import PurchaseVerifyPage from './pages/website/purchase/PurchaseVerifyPage';
@@ -30,12 +31,12 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* Separate Admin and Affiliate auth components */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/portal-hq/login" element={<AdminLogin />} />
       <Route path="/affiliate/login" element={<AffiliateLogin />} />
       <Route path="/affiliate/apply" element={<AffiliateRegister />} />
       <Route path="/login" element={<AffiliateLogin />} />
       <Route
-        path="/admin/*"
+        path="/portal-hq/*"
         element={
           <ProtectedRoute>
             <AdminRouter />
@@ -43,7 +44,8 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route path="/pricing" element={<VouchersPricingPage />} />
-      <Route path="/purchase" element={<PurchasePage />} />
+      <Route path="/purchase" element={<Navigate to="/purchase/bece" />} />
+      <Route path="/purchase/:type" element={<PurchasePage />} />
       <Route path="/purchase/verify" element={<PurchaseVerifyPage />} />
       <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
       <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
@@ -73,6 +75,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <ToastProvider>
             <AppRoutes />

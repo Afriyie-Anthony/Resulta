@@ -46,7 +46,7 @@ const AffiliateAuth: React.FC<AffiliateAuthProps> = ({ defaultView = 'login' }) 
 
   useEffect(() => {
     if (isAdminAuthenticated || isAuthenticated) {
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/portal-hq/dashboard', { replace: true });
     }
   }, [isAdminAuthenticated, isAuthenticated, navigate]);
 

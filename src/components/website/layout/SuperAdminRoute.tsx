@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../ui/Toast';
@@ -18,7 +18,7 @@ const SuperAdminRoute: React.FC<SuperAdminRouteProps> = ({ children }) => {
   const { addToast } = useToast();
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/portal-hq/login" state={{ from: location }} replace />;
   }
 
   if (user?.role !== 'SUPER_ADMIN') {
@@ -27,7 +27,7 @@ const SuperAdminRoute: React.FC<SuperAdminRouteProps> = ({ children }) => {
       message: 'This section requires Super Admin privileges. Contact your system administrator.',
       type: 'error',
     });
-    return <Navigate to="/admin/overview" replace />;
+    return <Navigate to="/portal-hq/overview" replace />;
   }
 
   return <>{children}</>;

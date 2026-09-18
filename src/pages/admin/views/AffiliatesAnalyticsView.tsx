@@ -48,7 +48,7 @@ export const AffiliatesAnalyticsView: React.FC = () => {
       <div className="p-8 text-center border rounded-3xl border-red-200 bg-red-50 text-red-600">
         <h3 className="font-black text-xl mb-2">Error Loading Analytics</h3>
         <p className="text-sm font-semibold">Failed to fetch the executive analytics payload.</p>
-        <Button variant="outline" className="mt-4" onClick={() => navigate('/admin/affiliates')}>Go Back</Button>
+        <Button variant="outline" className="mt-4" onClick={() => navigate('/portal-hq/affiliates')}>Go Back</Button>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export const AffiliatesAnalyticsView: React.FC = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => navigate('/admin/affiliates')}
+            onClick={() => navigate('/portal-hq/affiliates')}
             className={`w-10 h-10 p-0 rounded-xl ${isLight ? 'bg-white shadow-sm border border-slate-200' : 'bg-slate-900 border border-slate-800'}`}
           >
             <FiArrowLeft className="w-5 h-5" />

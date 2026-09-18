@@ -17,15 +17,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Not logged in → redirect to login, preserving intended destination
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/portal-hq/login" state={{ from: location }} replace />;
   }
 
   // Logged in but wrong role (e.g. an affiliate hitting the admin panel)
   // Both SUPER_ADMIN and ADMIN are allowed into the admin panel if requiredRole is ADMIN
   if (requiredRole === 'ADMIN' && user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/portal-hq/login" state={{ from: location }} replace />;
   } else if (requiredRole !== 'ADMIN' && user?.role !== requiredRole) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/portal-hq/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

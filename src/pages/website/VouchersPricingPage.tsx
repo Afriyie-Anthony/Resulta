@@ -103,7 +103,7 @@ const VouchersPricingPage: React.FC = () => {
                 
                 <div className="mt-8 pt-6 border-t border-border relative z-10">
                   <button
-                    onClick={() => navigate('/purchase?type=wassce')}
+                    onClick={() => navigate('/purchase/wassce')}
                     className="w-full inline-flex justify-center items-center gap-2 bg-primary text-white font-semibold px-6 py-4 rounded-xl text-base hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <FiShoppingCart className="w-5 h-5" />
@@ -134,7 +134,7 @@ const VouchersPricingPage: React.FC = () => {
                 
                 <div className="mt-8 pt-6 border-t border-border relative z-10">
                   <button
-                    onClick={() => navigate('/purchase?type=bece')}
+                    onClick={() => navigate('/purchase/bece')}
                     className="w-full inline-flex justify-center items-center gap-2 bg-secondary text-white font-semibold px-6 py-4 rounded-xl text-base hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <FiShoppingCart className="w-5 h-5" />

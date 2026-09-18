@@ -66,7 +66,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiDollarSign,
       iconBgLight: 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30',
       iconBgDark: 'bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/30',
-      onClickPath: '/admin/orders',
+      onClickPath: '/portal-hq/orders',
     },
     {
       title: 'TOTAL ORDERS',
@@ -80,7 +80,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiShoppingBag,
       iconBgLight: 'bg-slate-800 text-white shadow-md shadow-slate-800/30',
       iconBgDark: 'bg-slate-700 text-white shadow-md',
-      onClickPath: '/admin/orders',
+      onClickPath: '/portal-hq/orders',
     },
     {
       title: 'WASSCE STOCK',
@@ -94,7 +94,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiCheckCircle,
       iconBgLight: 'bg-[#0F8B8D] text-white shadow-md shadow-[#0F8B8D]/30',
       iconBgDark: 'bg-teal-400 text-slate-950 font-black shadow-md shadow-teal-400/30',
-      onClickPath: '/admin/inventory',
+      onClickPath: '/portal-hq/inventory',
     },
     {
       title: 'BECE STOCK',
@@ -108,7 +108,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiAlertTriangle,
       iconBgLight: 'bg-amber-600 text-white shadow-md shadow-amber-600/30',
       iconBgDark: 'bg-amber-400 text-slate-950 font-black shadow-md shadow-amber-400/30',
-      onClickPath: '/admin/inventory',
+      onClickPath: '/portal-hq/inventory',
     },
     {
       title: 'PENDING WITHDRAWALS',
@@ -122,7 +122,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiBox,
       iconBgLight: 'bg-rose-600 text-white shadow-md shadow-rose-600/30',
       iconBgDark: 'bg-rose-500 text-white shadow-md shadow-rose-500/30',
-      onClickPath: '/admin/withdrawals',
+      onClickPath: '/portal-hq/withdrawals',
     },
     {
       title: 'ACTIVE AFFILIATES',
@@ -136,7 +136,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiUsers,
       iconBgLight: 'bg-blue-600 text-white shadow-md shadow-blue-600/30',
       iconBgDark: 'bg-blue-500 text-white shadow-md shadow-blue-500/30',
-      onClickPath: '/admin/affiliates',
+      onClickPath: '/portal-hq/affiliates',
     },
     {
       title: 'CONVERSION RATE',
@@ -150,7 +150,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiMessageSquare,
       iconBgLight: 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30',
       iconBgDark: 'bg-cyan-400 text-slate-950 font-black shadow-md shadow-cyan-400/30',
-      onClickPath: '/admin/reports',
+      onClickPath: '/portal-hq/reports',
     },
     {
       title: 'TODAY\'S ORDERS',
@@ -164,7 +164,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       icon: FiFileText,
       iconBgLight: 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30',
       iconBgDark: 'bg-indigo-400 text-slate-950 font-black shadow-md shadow-indigo-400/30',
-      onClickPath: '/admin/reports',
+      onClickPath: '/portal-hq/reports',
     },
   ];
 

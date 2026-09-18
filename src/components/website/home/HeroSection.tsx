@@ -111,7 +111,7 @@ const slides = [
 
               <div className="mt-8">
                 <Link
-                  to="/purchase?type=bece"
+                  to="/purchase/bece"
                   className="inline-flex items-center gap-2 bg-secondary text-white font-semibold px-8 py-4 rounded-md text-base hover:bg-secondary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                 >
                   Buy Voucher Now

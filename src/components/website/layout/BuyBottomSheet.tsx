@@ -14,12 +14,12 @@ const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({ isOpen, onClose }) => {
 
   const handleBECE = () => {
     onClose();
-    navigate('/purchase?type=bece');
+    navigate('/purchase/bece');
   };
 
   const handleWASSCE = () => {
     onClose();
-    navigate('/purchase?type=wassce');
+    navigate('/purchase/wassce');
   };
 
   return (

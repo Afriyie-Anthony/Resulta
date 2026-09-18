@@ -177,7 +177,7 @@ export const AffiliatesPartnersView: React.FC = () => {
           <Button variant={isLight ? 'primary' : 'gradient'} size="md" onClick={() => setIsCreateOpen(true)} leftIcon={<FiPlus />} className="font-black text-xs h-10 px-4 rounded-xl shadow-md">
             Add Partner
           </Button>
-          <Button variant="outline" size="md" onClick={() => navigate('/admin/affiliates/analytics')} leftIcon={<FiBarChart2 />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">
+          <Button variant="outline" size="md" onClick={() => navigate('/portal-hq/affiliates/analytics')} leftIcon={<FiBarChart2 />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">
             Analytics
           </Button>
           <Button variant="outline" size="md" onClick={() => setIsConfigOpen(true)} leftIcon={<FiSettings />} className="font-black text-xs h-10 px-4 rounded-xl shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700">

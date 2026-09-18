@@ -155,7 +155,7 @@ export const LiveTransactionQueue: React.FC<LiveTransactionQueueProps> = ({ data
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => navigate('/admin/orders')}
+                        onClick={() => navigate('/portal-hq/orders')}
                         className="text-xs font-bold h-7 px-2.5"
                       >
                         <FiArrowUpRight className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export const LiveTransactionQueue: React.FC<LiveTransactionQueueProps> = ({ data
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate('/admin/orders')}
+          onClick={() => navigate('/portal-hq/orders')}
           rightIcon={<FiArrowUpRight />}
           className="text-xs font-bold self-end sm:self-auto"
         >

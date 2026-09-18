@@ -48,7 +48,7 @@ export const StockStatusCard: React.FC = () => {
               Voucher Stock Status
             </h3>
           </div>
-          <Button variant="outline" size="sm" onClick={() => navigate('/admin/inventory')} rightIcon={<FiArrowUpRight />}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/portal-hq/inventory')} rightIcon={<FiArrowUpRight />}>
             Manage Stock
           </Button>
         </div>

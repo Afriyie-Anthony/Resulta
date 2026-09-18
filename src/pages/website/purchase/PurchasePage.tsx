@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
@@ -25,9 +25,9 @@ const voucherConfigData = {
 };
 
 const PurchasePage: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
-  const voucherType = searchParams.get('type') || 'bece';
+  const voucherType = type || 'bece';
   const configInfo = voucherConfigData[voucherType as keyof typeof voucherConfigData];
   
   const [mode, setMode] = useState<'single' | 'bulk'>('single');
@@ -140,8 +140,10 @@ const PurchasePage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-surface">
       <Helmet>
-        <title>Buy {configInfo.title} Voucher - Resulta</title>
-        <meta name="description" content={`Purchase your ${configInfo.title} result checking voucher instantly. Secure payment, instant delivery.`} />
+        <title>Buy {configInfo.title} Result Checker Voucher - Resulta GH</title>
+        <meta name="description" content={`Purchase your ${configInfo.title} result checking voucher instantly. Fast, secure payment and instant delivery via SMS and On-Screen PIN in Ghana.`} />
+        <meta name="keywords" content={`buy ${configInfo.title} voucher, ${configInfo.title} result checker, results, resulta, resultagh, result ghana, check ${configInfo.title} results`} />
+        <link rel="canonical" href={`https://resultagh.com/purchase/${voucherType}`} />
       </Helmet>
       <WebsiteNavbar />
 
@@ -165,7 +167,7 @@ const PurchasePage: React.FC = () => {
                   <div className="bg-warm rounded-2xl border border-border p-1.5 inline-flex gap-1.5">
                     <button
                       type="button"
-                      onClick={() => navigate('/purchase?type=bece')}
+                      onClick={() => navigate('/purchase/bece')}
                       className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                         voucherType === 'bece'
                           ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
@@ -176,7 +178,7 @@ const PurchasePage: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => navigate('/purchase?type=wassce')}
+                      onClick={() => navigate('/purchase/wassce')}
                       className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                         voucherType === 'wassce'
                           ? 'bg-primary text-white shadow-lg shadow-primary/20'

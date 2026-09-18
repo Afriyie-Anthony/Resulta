@@ -23,7 +23,7 @@ export const AdminRouter: React.FC = () => {
   return (
     <AdminLayout>
       <Routes>
-        <Route path="/" element={<Navigate to="/admin/overview" replace />} />
+        <Route path="/" element={<Navigate to="/portal-hq/overview" replace />} />
         <Route path="overview" element={<DashboardOverviewView />} />
         {/* SUPER_ADMIN only routes */}
         <Route path="inventory" element={<SuperAdminRoute><VoucherInventoryView /></SuperAdminRoute>} />
@@ -44,7 +44,7 @@ export const AdminRouter: React.FC = () => {
         {/* SUPER_ADMIN only: Financial */}
         <Route path="withdrawals" element={<SuperAdminRoute><WithdrawalsView /></SuperAdminRoute>} />
         
-        <Route path="*" element={<Navigate to="/admin/overview" replace />} />
+        <Route path="*" element={<Navigate to="/portal-hq/overview" replace />} />
       </Routes>
     </AdminLayout>
   );

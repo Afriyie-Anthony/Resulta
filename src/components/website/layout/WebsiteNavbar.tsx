@@ -10,8 +10,8 @@ const navLinks = [
 ];
 
 const purchaseOptions = [
-  { label: 'WASSCE / NOVDEC', href: '/purchase?type=wassce' },
-  { label: 'BECE', href: '/purchase?type=bece' },
+  { label: 'WASSCE / NOVDEC', href: '/purchase/wassce' },
+  { label: 'BECE', href: '/purchase/bece' },
 ];
 
 const WebsiteNavbar: React.FC = () => {

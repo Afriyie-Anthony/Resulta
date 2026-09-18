@@ -29,7 +29,7 @@ export const DashboardHeader: React.FC = () => {
         <Button variant="outline" size="sm" leftIcon={<FiRefreshCw className="w-3.5 h-3.5" />} onClick={() => window.location.reload()}>
           Refresh Telemetry
         </Button>
-        <Button variant={isLight ? 'primary' : 'gradient'} size="sm" leftIcon={<FiBox className="w-3.5 h-3.5" />} onClick={() => navigate('/admin/inventory')}>
+        <Button variant={isLight ? 'primary' : 'gradient'} size="sm" leftIcon={<FiBox className="w-3.5 h-3.5" />} onClick={() => navigate('/portal-hq/inventory')}>
           Inventory Settings
         </Button>
       </div>
