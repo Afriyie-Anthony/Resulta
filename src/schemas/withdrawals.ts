@@ -44,15 +44,20 @@ export const withdrawalRecordSchema = z.object({
 });
 
 export const initiateWithdrawalRequestSchema = z.object({
-  channel: z.enum(['MOBILE_MONEY', 'BANK']),
+  channel: z.enum(['MOBILE_MONEY', 'BANK']).optional(),
   amount: z.number().min(1, 'Amount must be greater than 0'),
   network: z.string().optional(),
   phoneNumber: z.string().optional(),
   bankCode: z.string().optional(),
   bankName: z.string().optional(),
   accountNumber: z.string().optional(),
-  accountName: z.string().min(1, 'Account name is required'),
+  accountName: z.string().optional(),
   description: z.string().optional(),
+  walletId: z.string().optional(),
+  otp: z.string().min(6).max(6).optional(),
+}).refine(data => data.walletId || (data.channel && data.accountName), {
+  message: "Either walletId or manual account details must be provided",
+  path: ["walletId"]
 });
 
 export const withdrawalQueryFiltersSchema = z.object({
