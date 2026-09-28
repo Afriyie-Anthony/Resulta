@@ -258,6 +258,7 @@ export const InitiateWithdrawalModal: React.FC<InitiateWithdrawalModalProps> = (
                           handleInputChange('bankCode', selectedCode);
                           if (selectedBank) handleInputChange('bankName', selectedBank.name);
                         }}
+                        disabled={isLoadingBanks}
                         className={`w-full text-sm p-2.5 rounded-lg border focus:outline-none focus:ring-2 ${isLight ? 'bg-white border-slate-300' : 'bg-slate-950 border-slate-700'}`}
                       >
                         <option value="">Select a Bank...</option>

@@ -1,7 +1,6 @@
 import apiClient from '../lib/axios';
 import type { 
   FinancialAction, 
-  RequestOtpPayload, 
   WalletRecord, 
   CreateWalletPayload, 
   UpdateWalletPayload 
