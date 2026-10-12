@@ -141,7 +141,7 @@ const PurchasePage: React.FC = () => {
           window.location.href = data.checkoutUrl;
         },
         onError: () => {
-          alert('Failed to initiate order. Please try again.');
+          alert('Unable to place your order. Sorry, the CTVET_NABPTEX vouchers are currently out of stock. Please try again later.');
         }
       }
     );
