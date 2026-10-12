@@ -9,7 +9,6 @@ interface SuperAdminRouteProps {
 
 /**
  * Route guard for SUPER_ADMIN-only pages.
- * ADMIN users are redirected to /admin/overview with a toast notification.
  * Unauthenticated users are redirected to /admin/login.
  */
 const SuperAdminRoute: React.FC<SuperAdminRouteProps> = ({ children }) => {

@@ -49,7 +49,7 @@ const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as { from?: Location })?.from?.pathname || '/admin/overview';
+  const from = (location.state as { from?: Location })?.from?.pathname;
 
   // ── Submit handler ─────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
