@@ -47,7 +47,7 @@ const AdminLogin: React.FC = () => {
   const location = useLocation();
 
   const from = (location.state as { from?: Location })?.from?.pathname;
-  const adminFrom = from;
+  const adminFrom = from || '/portal-hq/overview';
 
   const isLight = theme === 'light';
   const rememberedEmail = localStorage.getItem('resulta_admin_email') ?? '';
