@@ -563,13 +563,13 @@ const CheckoutSuccessPage: React.FC = () => {
               {/* Direct Link to Results Portal */}
               <div className={`bg-gradient-to-br rounded-3xl p-6 sm:p-8 text-white shadow-xl ${
                 isCtvet
-                  ? 'from-violet-700 via-violet-600 to-indigo-600'
+                  ? 'from-ctvet via-[#3B3349] to-primary'
                   : 'from-primary via-primary/95 to-secondary'
               }`}>
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div className="space-y-2 max-w-xl">
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest bg-white/20 text-white px-3 py-1 rounded-full">
-                      <FiExternalLink className="w-3 h-3" /> Official WAEC Direct Portal
+                      <FiExternalLink className="w-3 h-3" /> {isCtvet ? 'Official CTVET Results Portal' : 'Official WAEC Direct Portal'}
                     </span>
                     <h3 className="text-2xl font-black text-white">
                       Ready to Check Your Results?

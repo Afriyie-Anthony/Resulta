@@ -145,30 +145,30 @@ const VouchersPricingPage: React.FC = () => {
 
               {/* CTVET / NABPTEX Card */}
               <div className="bg-warm rounded-3xl border border-border p-6 sm:p-8 shadow-xl shadow-slate-200/50 flex flex-col relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-ctvet/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
                 
                 <div className="relative z-10 flex-1">
-                  <span className="inline-block px-3 py-1 bg-violet-600 text-white text-xs font-bold rounded-full mb-4">CTVET 2026</span>
+                  <span className="inline-block px-3 py-1 bg-ctvet text-white text-xs font-bold rounded-full mb-4">CTVET 2026</span>
                   <h3 className="text-2xl font-black text-text-primary mb-2">CTVET / NABPTEX</h3>
                   <p className="text-sm text-text-secondary leading-relaxed mb-6">
                     Valid for all Technical &amp; Vocational Education Training examinations including NABPTEX candidates.
                   </p>
                   
                   <ul className="space-y-3 text-sm text-text-secondary mb-8">
-                    <li className="flex items-center gap-3"><FiCheckCircle className="text-violet-500 shrink-0" /> Instant SMS Delivery</li>
-                    <li className="flex items-center gap-3"><FiCheckCircle className="text-violet-500 shrink-0" /> 12-Digit Numeric PIN</li>
-                    <li className="flex items-center gap-3"><FiCheckCircle className="text-violet-500 shrink-0" /> 100% Genuine CTVET Checker</li>
+                    <li className="flex items-center gap-3"><FiCheckCircle className="text-ctvet shrink-0" /> Instant SMS Delivery</li>
+                    <li className="flex items-center gap-3"><FiCheckCircle className="text-ctvet shrink-0" /> 12-Digit Numeric PIN</li>
+                    <li className="flex items-center gap-3"><FiCheckCircle className="text-ctvet shrink-0" /> 100% Genuine CTVET Checker</li>
                   </ul>
 
                   {renderPricingTable('CTVET_NABPTEX')}
 
-                  <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-violet-50 border border-violet-100">
-                    <FiExternalLink className="w-3.5 h-3.5 text-violet-600 shrink-0" />
+                  <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-ctvet-light border border-ctvet-border">
+                    <FiExternalLink className="w-3.5 h-3.5 text-ctvet shrink-0" />
                     <a
                       href="https://examination.ctvet.gov.gh/login"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-violet-700 font-semibold hover:underline"
+                      className="text-xs text-ctvet font-semibold hover:underline"
                     >
                       examination.ctvet.gov.gh/login
                     </a>
@@ -178,7 +178,7 @@ const VouchersPricingPage: React.FC = () => {
                 <div className="mt-8 pt-6 border-t border-border relative z-10">
                   <button
                     onClick={() => navigate('/purchase/ctvet')}
-                    className="w-full inline-flex justify-center items-center gap-2 bg-violet-600 text-white font-semibold px-6 py-4 rounded-xl text-base hover:bg-violet-700 transition-all shadow-lg shadow-violet-600/20 hover:shadow-xl hover:-translate-y-0.5"
+                    className="w-full inline-flex justify-center items-center gap-2 bg-ctvet text-white font-semibold px-6 py-4 rounded-xl text-base hover:bg-ctvet-hover transition-all shadow-lg shadow-ctvet/20 hover:shadow-xl hover:-translate-y-0.5"
                   >
                     <FiShoppingCart className="w-5 h-5" />
                     Buy CTVET Checker

@@ -29,7 +29,7 @@ const voucherConfigData = {
     subtitle: 'Technical & Vocational Results',
     badge: 'CTVET 2026',
     apiType: 'CTVET_NABPTEX' as const,
-    color: 'violet',
+    color: 'ctvet',
     portalUrl: 'https://examination.ctvet.gov.gh/login',
   },
 };
@@ -160,7 +160,7 @@ const PurchasePage: React.FC = () => {
       <main className="flex-1 pb-20 md:pb-0">
         <section className={`${
             voucherType === 'wassce' ? 'bg-primary' :
-            voucherType === 'ctvet' ? 'bg-violet-600' : 'bg-secondary'
+            voucherType === 'ctvet' ? 'bg-ctvet' : 'bg-secondary'
           } py-16 lg:py-20`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
@@ -205,7 +205,7 @@ const PurchasePage: React.FC = () => {
                       onClick={() => navigate('/purchase/ctvet')}
                       className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all ${
                         voucherType === 'ctvet'
-                          ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/20'
+                          ? 'bg-ctvet text-white shadow-lg shadow-ctvet/20'
                           : 'text-text-secondary hover:text-text-primary'
                       }`}
                     >
@@ -370,15 +370,15 @@ const PurchasePage: React.FC = () => {
               </div>
 
               {voucherType === 'ctvet' && (
-                <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 flex items-start gap-3">
-                  <FiExternalLink className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+                <div className="rounded-xl border border-ctvet-border bg-ctvet-light p-4 flex items-start gap-3">
+                  <FiExternalLink className="w-4 h-4 text-ctvet shrink-0 mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-semibold text-violet-800">Check your results at the official CTVET Portal</p>
+                    <p className="font-semibold text-ctvet">Check your results at the official CTVET Portal</p>
                     <a
                       href="https://examination.ctvet.gov.gh/login"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-violet-600 underline text-xs mt-0.5 inline-block"
+                      className="text-ctvet hover:underline text-xs mt-0.5 inline-block"
                     >
                       examination.ctvet.gov.gh/login
                     </a>

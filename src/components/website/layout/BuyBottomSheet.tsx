@@ -72,9 +72,9 @@ const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={handleCTVET}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl border border-border bg-warm hover:border-violet-500/40 hover:shadow-md transition-all text-left"
+              className="w-full flex items-center gap-4 p-4 rounded-2xl border border-border bg-warm hover:border-ctvet/40 hover:shadow-md transition-all text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-violet-600/10 text-violet-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-ctvet/10 text-ctvet flex items-center justify-center flex-shrink-0">
                 <FiAward className="w-6 h-6" />
               </div>
               <div className="flex-1">
