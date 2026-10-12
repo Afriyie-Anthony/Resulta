@@ -18,9 +18,9 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>Resulta - Fast & Secure WASSCE, NOVDEC & BECE Result Checkers</title>
-        <meta name="description" content="Buy your WASSCE, NOVDEC, or BECE result-checking voucher quickly and securely on Resulta GH. Instant SMS & On-Screen PIN delivery." />
-        <meta name="keywords" content="results, resulta, resultagh, result ghana, result checker, BECE, WASSCE, NOVDEC, Ghana exams, buy results checker" />
+        <title>Resulta - Fast & Secure WASSCE, BECE & CTVET Result Checkers</title>
+        <meta name="description" content="Buy your WASSCE, NOVDEC, BECE, or CTVET / NABPTEX result-checking voucher quickly and securely on Resulta GH. Instant SMS & On-Screen PIN delivery." />
+        <meta name="keywords" content="results, resulta, resultagh, result ghana, result checker, BECE, WASSCE, NOVDEC, CTVET, NABPTEX, Ghana exams, buy results checker" />
         <link rel="canonical" href="https://resultagh.com/" />
       </Helmet>
       <WebsiteNavbar />

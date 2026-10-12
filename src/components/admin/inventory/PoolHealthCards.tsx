@@ -9,6 +9,7 @@ interface PoolHealthCardsProps {
   stats: {
     wassceNovdec: { available: number; sold: number; total: number; threshold?: number };
     bece: { available: number; sold: number; total: number; threshold?: number };
+    ctvetNabptex?: { available: number; sold: number; total: number; threshold?: number };
   };
   onReplenish: (product: VoucherType) => void;
   onNavigateTab?: (tabId: any, filter?: string) => void;
@@ -18,8 +19,11 @@ export const PoolHealthCards: React.FC<PoolHealthCardsProps> = ({ stats, onReple
   const { addToast } = useToast();
   const { isLight } = useAdminTheme();
 
+  const ctvet = stats.ctvetNabptex || { available: 0, sold: 0, total: 0, threshold: 200 };
+  const isCtvetLow = ctvet.available <= (ctvet.threshold ?? 0);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* WASSCE Pool Card */}
       <div className={`p-6.5 rounded-3xl border flex flex-col justify-between transition-all shadow-sm ${
         isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
@@ -284,6 +288,161 @@ export const PoolHealthCards: React.FC<PoolHealthCardsProps> = ({ stats, onReple
                       onNavigateTab('config');
                     } else {
                       addToast({ title: 'Threshold Saved', message: 'BECE alert threshold updated.', type: 'success' });
+                    }
+                  }}
+                >
+                  <FiSettings className="w-3.5 h-3.5" /> Configure Threshold
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* CTVET Pool Card */}
+      <div className={`p-6.5 rounded-3xl border flex flex-col justify-between transition-all shadow-sm relative overflow-hidden ${
+        isCtvetLow
+          ? isLight ? 'bg-amber-50/90 border-amber-300' : 'bg-slate-900/90 border-amber-500/40 text-white'
+          : isLight ? 'bg-white border-slate-300' : 'bg-slate-900/90 border-slate-800'
+      }`}>
+        <div>
+          <div className="flex justify-between items-start mb-5 gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                  isCtvetLow ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300'
+                }`}>
+                  CTVET 2026 POOL
+                </span>
+                {isCtvetLow ? (
+                  <span className={`text-xs font-black flex items-center gap-1 animate-pulse ${
+                    isLight ? 'text-amber-900' : 'text-amber-400'
+                  }`}>
+                    <FiAlertTriangle /> Low Stock Alert
+                  </span>
+                ) : (
+                  <span className={`text-xs font-black flex items-center gap-1 ${
+                    isLight ? 'text-violet-700' : 'text-violet-400'
+                  }`}>
+                    <FiCheckCircle /> Healthy Reserve Level
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onNavigateTab ? onNavigateTab('registry', 'CTVET_NABPTEX') : null}
+                className="text-left group mt-3.5 focus:outline-none transition-transform active:scale-[0.99]"
+                title="Click to view live CTVET PIN registry"
+              >
+                <p className={`text-4xl sm:text-5xl font-black tracking-tight group-hover:underline ${
+                  isCtvetLow
+                    ? isLight ? 'text-amber-950' : 'text-amber-400'
+                    : isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  {ctvet.available.toLocaleString()} <span className={`text-sm font-extrabold ${
+                    isCtvetLow
+                      ? 'text-amber-900/80 dark:text-amber-300/60'
+                      : isLight ? 'text-slate-600' : 'text-slate-400'
+                  }`}>available PINs</span>
+                </p>
+              </button>
+
+              <p className={`text-xs mt-1.5 font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                {isCtvetLow
+                  ? `Active reserve dropped below minimum threshold (${ctvet.threshold ?? 0} units)!`
+                  : 'Technical & Vocational results vouchers ready for checkout'}
+              </p>
+            </div>
+
+            <div className={`w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-xs ${
+              isCtvetLow
+                ? isLight ? 'bg-amber-500/25 border border-amber-500/50 text-amber-950' : 'bg-amber-500/20 border border-amber-500/40 text-amber-400'
+                : isLight ? 'bg-violet-100 text-violet-700 border border-violet-300' : 'bg-violet-500/15 border border-violet-500/30 text-violet-400'
+            }`}>
+              <FiBox />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className={`space-y-2.5 pt-4 border-t ${
+            isCtvetLow
+              ? isLight ? 'border-amber-300/80' : 'border-amber-500/20'
+              : isLight ? 'border-slate-200' : 'border-slate-800/80'
+          }`}>
+            <div className="flex justify-between text-xs font-extrabold">
+              <span className={isLight ? 'text-slate-800' : 'text-slate-300'}>
+                Pool Utilisation ({Math.round((ctvet.sold / (ctvet.total || 1)) * 100)}% consumed)
+              </span>
+              <button
+                type="button"
+                onClick={() => onNavigateTab ? onNavigateTab('sold', 'CTVET_NABPTEX') : null}
+                className={`hover:underline flex items-center gap-1 font-black ${isLight ? 'text-violet-700' : 'text-violet-400'}`}
+                title="Click to audit sold CTVET vouchers"
+              >
+                {ctvet.sold.toLocaleString()} Sold <FiArrowRight className="w-3 h-3" />
+              </button>
+            </div>
+            
+            <div className={`w-full h-3 rounded-full overflow-hidden border flex ${
+              isCtvetLow
+                ? isLight ? 'bg-amber-100/90 border-amber-300' : 'bg-slate-950 border-amber-500/30'
+                : isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-950 border-slate-800'
+            }`}>
+              <div
+                className={`h-full transition-all duration-700 ${
+                  isCtvetLow
+                    ? 'bg-amber-600 dark:bg-amber-400'
+                    : 'bg-gradient-to-r from-violet-600 to-indigo-500'
+                }`}
+                style={{ width: `${(ctvet.sold / (ctvet.total || 1)) * 100}%` }}
+                title={`${ctvet.sold} vouchers sold`}
+              />
+            </div>
+            <div className={`flex justify-between text-[10px] font-black ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+              <span>0% (Empty)</span>
+              <span>Total Ingested: {ctvet.total.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div className={`mt-4 pt-3.5 border-t flex items-center justify-between text-xs ${
+            isCtvetLow
+              ? isLight ? 'border-amber-300/80 text-amber-950' : 'border-amber-500/20 text-amber-300'
+              : isLight ? 'border-slate-200 text-slate-700' : 'border-slate-800/60 text-slate-400'
+          }`}>
+            {isCtvetLow ? (
+              <>
+                <span className="font-black flex items-center gap-1 text-amber-950">
+                  Action Required: Replenish immediately
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onReplenish('CTVET_NABPTEX')}
+                  className={`px-4 py-2 rounded-xl font-black text-xs transition-all shadow-md flex items-center gap-1.5 ${
+                    isLight
+                      ? 'bg-violet-700 hover:bg-violet-800 text-white shadow-violet-950/20 active:scale-95'
+                      : 'bg-violet-500 hover:bg-violet-400 text-slate-950 active:scale-95'
+                  }`}
+                >
+                  <FiBox className="w-3.5 h-3.5" /> Replenish Pool Now
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="font-semibold">
+                  Low Stock Alert Trigger: <strong className={isLight ? 'text-slate-950 font-black' : 'text-slate-100 font-black'}>{ctvet.threshold ?? 0} units</strong>
+                </span>
+                <button
+                  type="button"
+                  className={`font-black flex items-center gap-1 hover:underline text-xs ${
+                    isLight ? 'text-violet-700' : 'text-violet-400'
+                  }`}
+                  onClick={() => {
+                    if (onNavigateTab) {
+                      onNavigateTab('config');
+                    } else {
+                      addToast({ title: 'Threshold Saved', message: 'CTVET alert threshold updated.', type: 'success' });
                     }
                   }}
                 >

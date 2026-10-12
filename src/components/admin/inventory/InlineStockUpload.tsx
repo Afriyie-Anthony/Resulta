@@ -10,6 +10,7 @@ interface InlineStockUploadProps {
   currentStats: {
     wassce: { available: number; sold: number; total: number; threshold: number };
     bece: { available: number; sold: number; total: number; threshold: number };
+    ctvet?: { available: number; sold: number; total: number; threshold: number };
   };
   onNavigateToHistory?: () => void;
 }
@@ -127,7 +128,7 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
             Cryptographic Voucher Ingestion Center
           </h2>
           <p className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-            Upload raw CSV or Excel voucher lists to securely replenish WASSCE and BECE result-checker pools.
+            Upload raw CSV or Excel voucher lists to securely replenish WASSCE, BECE and CTVET result-checker pools.
           </p>
         </div>
       </div>
@@ -151,7 +152,7 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
           <label className={`block text-xs font-black uppercase mb-2 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
             1. Select Examination Product
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
               type="button"
               onClick={() => { setSelectedProduct('WASSCE_NOVDEC'); setValidationResult(null); }}
@@ -194,6 +195,28 @@ export const InlineStockUpload: React.FC<InlineStockUploadProps> = ({
                 <p className="text-xs font-semibold mt-0.5 opacity-80">Retail Price: GH₵ 20.00</p>
               </div>
               {selectedProduct === 'BECE' && <FiCheckCircle className="w-5 h-5 shrink-0" />}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setSelectedProduct('CTVET_NABPTEX'); setValidationResult(null); }}
+              className={`p-4 rounded-2xl font-bold text-left border transition-all flex items-center justify-between ${
+                selectedProduct === 'CTVET_NABPTEX'
+                  ? isLight
+                    ? 'bg-violet-50 border-violet-500 text-violet-900 ring-2 ring-violet-500/20 shadow-sm'
+                    : 'bg-violet-500/20 border-violet-500 text-violet-300 shadow-sm shadow-violet-950/50'
+                  : isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100/70'
+                  : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:bg-slate-800'
+              }`}
+            >
+              <div>
+                <p className={`text-sm font-black ${selectedProduct === 'CTVET_NABPTEX' && isLight ? 'text-violet-950' : ''}`}>
+                  CTVET 2026 POOL
+                </p>
+                <p className="text-xs font-semibold mt-0.5 opacity-80">Retail Price: GH₵ 25.00</p>
+              </div>
+              {selectedProduct === 'CTVET_NABPTEX' && <FiCheckCircle className="w-5 h-5 shrink-0 text-violet-600 dark:text-violet-400" />}
             </button>
           </div>
         </div>

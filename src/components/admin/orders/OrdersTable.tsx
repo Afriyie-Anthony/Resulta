@@ -73,7 +73,15 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                   </td>
 
                   <td className={`py-2.5 px-3.5 whitespace-nowrap font-bold ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
-                    {o.voucherType?.replace('_', ' ')}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-black ${
+                      o.voucherType === 'CTVET_NABPTEX'
+                        ? 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300'
+                        : o.voucherType === 'BECE'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                    }`}>
+                      {o.voucherType === 'CTVET_NABPTEX' ? 'CTVET / NABPTEX' : o.voucherType?.replace('_', ' ')}
+                    </span>
                   </td>
 
                   <td className={`py-2.5 px-3.5 whitespace-nowrap font-black text-sm ${isLight ? 'text-slate-950' : 'text-white'}`}>

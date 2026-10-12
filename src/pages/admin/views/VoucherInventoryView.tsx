@@ -37,7 +37,7 @@ export const VoucherInventoryView: React.FC = () => {
 
   // Calculate active alert count
   const alertCount = alertsData 
-    ? (alertsData.beceIsLowStock ? 1 : 0) + (alertsData.wassceNovdecIsLowStock ? 1 : 0)
+    ? (alertsData.beceIsLowStock ? 1 : 0) + (alertsData.wassceNovdecIsLowStock ? 1 : 0) + (alertsData.ctvetNabptexIsLowStock ? 1 : 0)
     : 0;
 
   // Fallback stats for UI during loading if undefined or mismatched keys
@@ -45,10 +45,13 @@ export const VoucherInventoryView: React.FC = () => {
   const wStats = inventoryStats?.wassce_novdec || inventoryStats?.wassceNovdec || inventoryStats?.WASSCE_NOVDEC || inventoryStats?.wassce || { available: 0, sold: 0, total: 0, threshold: 0 };
   // @ts-ignore
   const bStats = inventoryStats?.bece || inventoryStats?.BECE || { available: 0, sold: 0, total: 0, threshold: 0 };
+  // @ts-ignore
+  const cStats = inventoryStats?.ctvet_nabptex || inventoryStats?.ctvetNabptex || inventoryStats?.CTVET_NABPTEX || inventoryStats?.ctvet || { available: 0, sold: 0, total: 0, threshold: 0 };
 
   const safeStats = {
     wassceNovdec: wStats,
-    bece: bStats
+    bece: bStats,
+    ctvetNabptex: cStats
   };
 
   return (

@@ -18,8 +18,8 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedPin, setCopiedPin] = useState<string | null>(null);
   const [productFilter, setProductFilter] = useState<FilterType>(
-    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
-      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : 'BECE'
+    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE') || initialFilter.includes('CTVET'))
+      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : initialFilter.includes('CTVET') ? 'CTVET_NABPTEX' : 'BECE'
       : 'ALL'
   );
 
@@ -98,7 +98,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
             <div className={`inline-flex p-1 rounded-xl border ${
               isLight ? 'bg-white border-slate-300 shadow-2xs' : 'bg-slate-900 border-slate-800'
             }`}>
-              {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterType[]).map((filter) => (
+              {(['ALL', 'WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX'] as FilterType[]).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => handleProductFilterChange(filter)}
@@ -112,7 +112,7 @@ export const SoldVouchersTable: React.FC<SoldVouchersTableProps> = ({ initialFil
                       : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
                 >
-                  {filter === 'ALL' ? 'All' : filter.replace('_NOVDEC', '')}
+                  {filter === 'ALL' ? 'All' : filter === 'CTVET_NABPTEX' ? 'CTVET' : filter.replace('_NOVDEC', '')}
                 </button>
               ))}
             </div>

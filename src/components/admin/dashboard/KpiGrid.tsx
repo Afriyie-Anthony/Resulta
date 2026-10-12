@@ -47,6 +47,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
     totalOrders: data?.totalOrders || { count: 0, todayCount: 0 },
     wassceStock: data?.wassceStock || { availableCount: 0, status: 'LOW_STOCK_ALERT' },
     beceStock: data?.beceStock || { availableCount: 0, status: 'LOW_STOCK_ALERT' },
+    ctvetStock: data?.ctvetStock || { availableCount: 0, status: 'LOW_STOCK_ALERT' },
     pendingWithdrawals: data?.pendingWithdrawals || { totalAmount: 0, count: 0 },
     activeAffiliates: data?.activeAffiliates || { count: 0 },
     conversionRate: data?.conversionRate || { rate: 0, label: 'Payment -> fulfillment' },
@@ -111,6 +112,20 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
       onClickPath: '/portal-hq/inventory',
     },
     {
+      title: 'CTVET STOCK',
+      value: (kpis.ctvetStock?.availableCount ?? 0).toLocaleString(),
+      badgeText: (kpis.ctvetStock?.availableCount ?? 0) < 200 ? '⚠ Low stock' : 'Healthy stock',
+      badgeType: (kpis.ctvetStock?.availableCount ?? 0) < 200 ? 'warning' : 'success',
+      bgLight: 'bg-violet-100 border border-violet-300 hover:bg-violet-200/70 shadow-xs',
+      bgDark: 'bg-violet-950/40 border border-violet-500/40 hover:border-violet-500/60 text-white',
+      titleLight: 'text-violet-950 font-extrabold',
+      valLight: 'text-violet-950',
+      icon: FiBox,
+      iconBgLight: 'bg-violet-600 text-white shadow-md shadow-violet-600/30',
+      iconBgDark: 'bg-violet-500 text-white shadow-md shadow-violet-500/30',
+      onClickPath: '/portal-hq/inventory',
+    },
+    {
       title: 'PENDING WITHDRAWALS',
       value: formatCedi(kpis.pendingWithdrawals.totalAmount),
       badgeText: `${kpis.pendingWithdrawals.count} payouts pending`,
@@ -171,8 +186,8 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
   // ── Loading skeleton ────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 9 }).map((_, i) => (
           <SkeletonKpiCard key={i} isLight={isLight} />
         ))}
       </div>
@@ -181,7 +196,7 @@ export const KpiGrid: React.FC<KpiGridProps> = ({ data, isLoading }) => {
 
   // ── Render Cards ────────────────────────────────────────────────────────
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {kpiCards.map((card) => {
         const Icon = card.icon;
         return (

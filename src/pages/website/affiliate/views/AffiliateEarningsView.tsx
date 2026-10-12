@@ -564,6 +564,7 @@ export const AffiliateEarningsView: React.FC<AffiliateEarningsViewProps> = ({
             <option value="VOUCHER_SALE">Voucher Sale</option>
             <option value="WASSCE">WASSCE Checker</option>
             <option value="BECE">BECE Checker</option>
+            <option value="CTVET">CTVET / NABPTEX Checker</option>
             <option value="RECRUITMENT_BONUS">Recruitment Bonus</option>
           </select>
         </div>

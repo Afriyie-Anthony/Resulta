@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiX, FiBookOpen, FiFileText } from 'react-icons/fi';
+import { FiX, FiBookOpen, FiFileText, FiAward } from 'react-icons/fi';
 
 interface BuyBottomSheetProps {
   isOpen: boolean;
@@ -20,6 +20,11 @@ const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({ isOpen, onClose }) => {
   const handleWASSCE = () => {
     onClose();
     navigate('/purchase/wassce');
+  };
+
+  const handleCTVET = () => {
+    onClose();
+    navigate('/purchase/ctvet');
   };
 
   return (
@@ -60,6 +65,21 @@ const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({ isOpen, onClose }) => {
               <div className="flex-1">
                 <p className="text-sm font-bold text-text-primary">WASSCE / NOVDEC</p>
                 <p className="text-xs text-text-secondary">WASSCE / NOVDEC Voucher</p>
+              </div>
+              <FiX className="w-5 h-5 text-text-secondary rotate-45" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCTVET}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl border border-border bg-warm hover:border-violet-500/40 hover:shadow-md transition-all text-left"
+            >
+              <div className="w-12 h-12 rounded-xl bg-violet-600/10 text-violet-600 flex items-center justify-center flex-shrink-0">
+                <FiAward className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-text-primary">CTVET / NABPTEX</p>
+                <p className="text-xs text-text-secondary">Technical & Vocational Results Voucher</p>
               </div>
               <FiX className="w-5 h-5 text-text-secondary rotate-45" />
             </button>

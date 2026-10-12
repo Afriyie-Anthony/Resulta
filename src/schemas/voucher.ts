@@ -5,7 +5,7 @@ import { paginatedResponseSchema } from './common';
  * Voucher inventory schemas.
  */
 
-export const voucherTypeSchema = z.enum(['BECE', 'WASSCE_NOVDEC']);
+export const voucherTypeSchema = z.enum(['BECE', 'WASSCE_NOVDEC', 'CTVET_NABPTEX']);
 
 // ─── Voucher Config & Pricing ────────────────────────────────────────────────
 export const priceTierSchema = z.object({
@@ -18,6 +18,7 @@ export const priceTierSchema = z.object({
 export const voucherConfigSchema = z.object({
   beceLowStockThreshold: z.number().int().nonnegative(),
   wassceLowStockThreshold: z.number().int().nonnegative(),
+  ctvetLowStockThreshold: z.number().int().nonnegative().optional(),
   priceTiers: z.array(priceTierSchema),
 });
 
@@ -54,13 +55,16 @@ export const poolStatsSchema = z.object({
 export const inventoryStatsSchema = z.object({
   wassceNovdec: poolStatsSchema,
   bece: poolStatsSchema,
+  ctvetNabptex: poolStatsSchema.optional(),
 });
 
 export const voucherAlertsSchema = z.object({
   wassceNovdecIsLowStock: z.boolean(),
   beceIsLowStock: z.boolean(),
+  ctvetNabptexIsLowStock: z.boolean().optional(),
   beceAvailable: z.number().int().nonnegative(),
   wassceNovdecAvailable: z.number().int().nonnegative(),
+  ctvetNabptexAvailable: z.number().int().nonnegative().optional(),
 });
 
 // ─── Individual Voucher ──────────────────────────────────────────────────────

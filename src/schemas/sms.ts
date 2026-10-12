@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Admin SMS Blast & Communications Schemas
  */
 
-export const smsCategorySchema = z.enum(['GLOBAL', 'WASSCE_NOVDEC', 'BECE']);
+export const smsCategorySchema = z.enum(['GLOBAL', 'WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX']);
 export const smsStatusFilterSchema = z.enum(['ALL', 'SUCCESSFUL', 'FAILED']);
 export const smsTypeSchema = z.enum(['SINGLE', 'BULK']);
 

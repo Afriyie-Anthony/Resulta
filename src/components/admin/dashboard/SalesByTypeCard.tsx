@@ -19,15 +19,28 @@ export const SalesByTypeCard: React.FC = () => {
   const beceStats =
     statsObj?.bece || statsObj?.BECE || { sold: 0, total: 0 };
 
+  const ctvetStats =
+    statsObj?.ctvet_nabptex || statsObj?.ctvetNabptex || statsObj?.CTVET_NABPTEX || statsObj?.ctvet || { sold: 0, total: 0 };
+
   const wassceSold = wassceStats.sold || 0;
   const beceSold = beceStats.sold || 0;
-  const totalSold = wassceSold + beceSold;
+  const ctvetSold = ctvetStats.sold || 0;
+  const totalSold = wassceSold + beceSold + ctvetSold;
 
-  const becePct = totalSold > 0 ? (beceSold / totalSold) * 100 : 50;
+  const becePct = totalSold > 0 ? (beceSold / totalSold) * 100 : 33.3;
+  const wasscePct = totalSold > 0 ? (wassceSold / totalSold) * 100 : 33.3;
+  const ctvetPct = totalSold > 0 ? (ctvetSold / totalSold) * 100 : 33.4;
 
-  // Circumference for r=58 is 2 * PI * 58 = ~364.42
+  // SVG donut — three segments on r=58 (circumference ~364.42)
   const circumference = 364.42;
-  const beceOffset = circumference * (1 - becePct / 100);
+  // Segment lengths
+  const wassceLen = (wasscePct / 100) * circumference;
+  const beceLen = (becePct / 100) * circumference;
+  const ctvetLen = (ctvetPct / 100) * circumference;
+  // Dash offsets: each segment starts after the previous
+  const wassceOffset = 0;
+  const beceOffset = circumference - wassceLen;
+  const ctvetOffset = circumference - wassceLen - beceLen;
 
   return (
     <div className={`p-6 rounded-3xl border flex flex-col justify-between h-full transition-colors ${
@@ -41,33 +54,38 @@ export const SalesByTypeCard: React.FC = () => {
           </h3>
         </div>
         <p className={`text-xs mt-1 font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-          Breakdown between WASSCE and BECE
+          Breakdown between WASSCE, BECE, and CTVET
         </p>
       </div>
 
       {/* Donut Chart Visual */}
       <div className="py-6 flex items-center justify-center relative">
         <svg className="w-52 h-52 transform -rotate-90 drop-shadow-sm" viewBox="0 0 160 160">
+          {/* WASSCE segment — purple */}
           <circle
-            cx="80"
-            cy="80"
-            r="58"
-            stroke="currentColor"
-            strokeWidth="16"
-            fill="transparent"
+            cx="80" cy="80" r="58"
+            stroke="currentColor" strokeWidth="16" fill="transparent"
+            strokeDasharray={`${wassceLen} ${circumference - wassceLen}`}
+            strokeDashoffset={-wassceOffset}
             className="text-purple-500 dark:text-purple-400"
           />
+          {/* BECE segment — amber */}
           <circle
-            cx="80"
-            cy="80"
-            r="58"
-            stroke="currentColor"
-            strokeWidth="16"
-            fill="transparent"
-            strokeDasharray={circumference}
-            strokeDashoffset={beceOffset}
+            cx="80" cy="80" r="58"
+            stroke="currentColor" strokeWidth="16" fill="transparent"
+            strokeDasharray={`${beceLen} ${circumference - beceLen}`}
+            strokeDashoffset={-beceOffset}
             strokeLinecap="round"
             className="text-[#F5B014] transition-all duration-1000"
+          />
+          {/* CTVET segment — violet */}
+          <circle
+            cx="80" cy="80" r="58"
+            stroke="currentColor" strokeWidth="16" fill="transparent"
+            strokeDasharray={`${ctvetLen} ${circumference - ctvetLen}`}
+            strokeDashoffset={-ctvetOffset}
+            strokeLinecap="round"
+            className="text-violet-600 transition-all duration-1000"
           />
         </svg>
         {/* Centered Total Indicator */}
@@ -80,11 +98,11 @@ export const SalesByTypeCard: React.FC = () => {
       </div>
 
       {/* Legend Below */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-center">
+      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-center">
         <div>
           <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-500 uppercase">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0" />
-            WASSCE / NOVDEC
+            WASSCE
           </div>
           <span className={`text-base font-bold mt-1 block ${isLight ? 'text-primary' : 'text-white'}`}>
             {isLoading ? '...' : wassceSold.toLocaleString()}
@@ -97,6 +115,15 @@ export const SalesByTypeCard: React.FC = () => {
           </div>
           <span className={`text-base font-bold mt-1 block ${isLight ? 'text-primary' : 'text-white'}`}>
             {isLoading ? '...' : beceSold.toLocaleString()}
+          </span>
+        </div>
+        <div>
+          <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-500 uppercase">
+            <span className="w-2.5 h-2.5 rounded-full bg-violet-600 shrink-0" />
+            CTVET
+          </div>
+          <span className={`text-base font-bold mt-1 block ${isLight ? 'text-primary' : 'text-white'}`}>
+            {isLoading ? '...' : ctvetSold.toLocaleString()}
           </span>
         </div>
       </div>

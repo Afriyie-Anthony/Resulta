@@ -18,7 +18,8 @@ import {
   FiSend,
   FiShield,
   FiCopy,
-  FiCheckCircle
+  FiCheckCircle,
+  FiExternalLink
 } from 'react-icons/fi';
 
 interface OrderDetailsViewProps {
@@ -83,6 +84,16 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
+          {fullOrder.voucherType === 'CTVET_NABPTEX' && (
+            <a
+              href="https://examination.ctvet.gov.gh/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 h-11 px-4 rounded-2xl text-xs font-black bg-violet-600 text-white hover:bg-violet-700 transition-colors shadow-md"
+            >
+              <FiExternalLink /> Check on CTVET Portal
+            </a>
+          )}
           {fullOrder.status === 'SUCCESSFUL' && (
             <Button
               variant={isLight ? 'primary' : 'gradient'}
@@ -116,10 +127,10 @@ export const OrderDetailsView: React.FC<OrderDetailsViewProps> = ({
             Voucher Product
           </span>
           <p className={`text-lg font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            {fullOrder.voucherType?.replace('_', ' ')}
+            {fullOrder.voucherType === 'CTVET_NABPTEX' ? 'CTVET / NABPTEX' : fullOrder.voucherType?.replace('_', ' ')}
           </p>
           <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-1 block">
-            WAEC Ghana Official Serial
+            {fullOrder.voucherType === 'CTVET_NABPTEX' ? 'CTVET Official Candidate Portal' : 'WAEC Ghana Official Serial'}
           </span>
         </Card>
 

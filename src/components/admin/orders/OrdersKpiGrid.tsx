@@ -23,6 +23,7 @@ export const OrdersKpiGrid: React.FC<OrdersKpiGridProps> = ({ stats, onSelectFil
 
   const wassceSales = stats?.salesBreakdown.byVoucherType['WASSCE_NOVDEC'] || 0;
   const beceSales = stats?.salesBreakdown.byVoucherType['BECE'] || 0;
+  const ctvetSales = (stats?.salesBreakdown.byVoucherType as any)?.['CTVET_NABPTEX'] || (stats?.salesBreakdown.byVoucherType as any)?.['CTVET'] || 0;
   const webSales = stats?.salesBreakdown.byChannel['WEB'] || 0;
   const ussdSales = stats?.salesBreakdown.byChannel['USSD'] || 0;
 
@@ -172,6 +173,13 @@ export const OrdersKpiGrid: React.FC<OrdersKpiGridProps> = ({ stats, onSelectFil
             <span className={`text-[10px] font-bold block ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>USSD</span>
             <span className="font-black text-amber-700 dark:text-amber-400">
               {ussdSales.toLocaleString()}
+            </span>
+          </div>
+
+          <div className="col-span-2 pt-1 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <span className={`text-[10px] font-bold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>CTVET / NABPTEX</span>
+            <span className="font-black text-violet-700 dark:text-violet-400 font-mono">
+              {ctvetSales.toLocaleString()}
             </span>
           </div>
         </div>

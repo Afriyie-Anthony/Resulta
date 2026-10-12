@@ -450,13 +450,26 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     commissionPercentage: 0,
     beceSellingPrice: 0,
     wassceSellingPrice: 0,
+    ctvetSellingPrice: 0,
     beceCommissionGhs: 0,
     wassceCommissionGhs: 0,
+    ctvetCommissionGhs: 0,
     oneTimeRecruitmentBonusGhs: 0,
   });
 
   React.useEffect(() => {
-    if (data) setFormData(data);
+    if (data) {
+      setFormData({
+        commissionPercentage: data.commissionPercentage,
+        beceSellingPrice: data.beceSellingPrice,
+        wassceSellingPrice: data.wassceSellingPrice,
+        ctvetSellingPrice: data.ctvetSellingPrice ?? 25.0,
+        beceCommissionGhs: data.beceCommissionGhs,
+        wassceCommissionGhs: data.wassceCommissionGhs,
+        ctvetCommissionGhs: data.ctvetCommissionGhs ?? 2.5,
+        oneTimeRecruitmentBonusGhs: data.oneTimeRecruitmentBonusGhs,
+      });
+    }
   }, [data]);
 
   const handleCommissionPctChange = (percentage: number) => {
@@ -465,6 +478,7 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       commissionPercentage: percentage,
       beceCommissionGhs: calculateCommission(prev.beceSellingPrice, percentage),
       wassceCommissionGhs: calculateCommission(prev.wassceSellingPrice, percentage),
+      ctvetCommissionGhs: calculateCommission(prev.ctvetSellingPrice, percentage),
     }));
   };
 
@@ -481,6 +495,14 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       ...prev,
       wassceSellingPrice: price,
       wassceCommissionGhs: calculateCommission(price, prev.commissionPercentage),
+    }));
+  };
+
+  const handleCtvetPriceChange = (price: number) => {
+    setFormData(prev => ({
+      ...prev,
+      ctvetSellingPrice: price,
+      ctvetCommissionGhs: calculateCommission(price, prev.commissionPercentage),
     }));
   };
 
@@ -544,6 +566,17 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
               />
             </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-black uppercase mb-1">CTVET Selling Price</label>
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.ctvetSellingPrice}
+                onChange={e => handleCtvetPriceChange(Number(e.target.value))}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
+            </div>
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-black uppercase">BECE Commission (GHS)</label>
@@ -569,6 +602,20 @@ const GlobalConfigModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 min="0"
                 value={formData.wassceCommissionGhs}
                 onChange={e => setFormData({ ...formData, wassceCommissionGhs: Number(e.target.value) })}
+                className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
+              />
+            </div>
+            <div className="col-span-2">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-black uppercase">CTVET Commission (GHS)</label>
+                <span className="text-[10px] text-slate-400 font-medium">Auto-calculated</span>
+              </div>
+              <input
+                type="number"
+                step="any"
+                min="0"
+                value={formData.ctvetCommissionGhs}
+                onChange={e => setFormData({ ...formData, ctvetCommissionGhs: Number(e.target.value) })}
                 className={`w-full p-2 text-sm border rounded-xl ${isLight ? 'bg-white' : 'bg-slate-900'}`}
               />
             </div>

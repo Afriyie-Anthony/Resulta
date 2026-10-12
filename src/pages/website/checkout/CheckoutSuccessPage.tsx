@@ -130,11 +130,20 @@ const CheckoutSuccessPage: React.FC = () => {
     setActiveOrderId(manualInput.trim());
   };
 
-  // Determine WAEC direct URL
+  // Determine portal URL and title based on voucher type
   const firstVoucherProduct = verifyData?.vouchers?.[0]?.product || '';
   const isBece = firstVoucherProduct.toLowerCase().includes('bece');
-  const waecPortalUrl = isBece ? 'https://eresults.waecgh.org' : 'https://ghana.waecdirect.org';
-  const examTitle = isBece ? 'BECE Results Portal' : 'WASSCE / NOVDEC Results Portal';
+  const isCtvet = firstVoucherProduct.toLowerCase().includes('ctvet');
+  const waecPortalUrl = isCtvet
+    ? 'https://examination.ctvet.gov.gh/login'
+    : isBece
+    ? 'https://eresults.waecgh.org'
+    : 'https://ghana.waecdirect.org';
+  const examTitle = isCtvet
+    ? 'CTVET Results Portal'
+    : isBece
+    ? 'BECE Results Portal'
+    : 'WASSCE / NOVDEC Results Portal';
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
@@ -551,8 +560,12 @@ const CheckoutSuccessPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Direct Link to WAEC Result Portal */}
-              <div className="bg-gradient-to-br from-primary via-primary/95 to-secondary rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+              {/* Direct Link to Results Portal */}
+              <div className={`bg-gradient-to-br rounded-3xl p-6 sm:p-8 text-white shadow-xl ${
+                isCtvet
+                  ? 'from-violet-700 via-violet-600 to-indigo-600'
+                  : 'from-primary via-primary/95 to-secondary'
+              }`}>
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div className="space-y-2 max-w-xl">
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest bg-white/20 text-white px-3 py-1 rounded-full">

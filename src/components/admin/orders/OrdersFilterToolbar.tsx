@@ -41,7 +41,7 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
     { id: 'FAILED', label: 'Failed' },
   ];
 
-  const productOptions = ['ALL', 'WASSCE_NOVDEC', 'BECE'];
+  const productOptions = ['ALL', 'WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX'];
 
   return (
     <div className={`p-5 rounded-3xl border transition-colors shadow-sm space-y-4 ${
@@ -125,7 +125,7 @@ export const OrdersFilterToolbar: React.FC<OrdersFilterToolbarProps> = ({
                   : 'bg-slate-800/40 text-slate-400 border-slate-800 hover:bg-slate-800'
               }`}
             >
-              {prod === 'ALL' ? 'All Products' : prod.replace('_', ' ')}
+              {prod === 'ALL' ? 'All Products' : prod === 'CTVET_NABPTEX' ? 'CTVET / NABPTEX' : prod.replace('_', ' ')}
             </button>
           ))}
         </div>

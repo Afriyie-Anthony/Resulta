@@ -57,6 +57,10 @@ export const reportsAnalyticsDataSchema = z.object({
       vouchers: z.number().default(0),
       gross: z.number().default(0),
     }),
+    ctvetVolume: z.object({
+      vouchers: z.number().default(0),
+      gross: z.number().default(0),
+    }).optional(),
     totalVouchersSold: z.number().default(0),
     averageCheckoutPerUnit: z.number().default(0),
     totalFulfilledOrders: z.number().default(0),
@@ -72,6 +76,7 @@ export const reportsAnalyticsDataSchema = z.object({
   examMarketShare: z.object({
     wassce: examMarketShareDetailSchema,
     bece: examMarketShareDetailSchema,
+    ctvet: examMarketShareDetailSchema.optional(),
   }),
 });
 

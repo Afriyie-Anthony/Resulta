@@ -22,8 +22,8 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
   );
   
   const [selectedProductFilter, setSelectedProductFilter] = useState<FilterType>(
-    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE'))
-      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : 'BECE'
+    initialFilter && (initialFilter.includes('WASSCE') || initialFilter.includes('BECE') || initialFilter.includes('CTVET'))
+      ? initialFilter.includes('WASSCE') ? 'WASSCE_NOVDEC' : initialFilter.includes('CTVET') ? 'CTVET_NABPTEX' : 'BECE'
       : 'ALL'
   );
 
@@ -81,8 +81,8 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterType[]).map((filter) => (
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {(['ALL', 'WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX'] as FilterType[]).map((filter) => (
               <button
                 key={filter}
                 onClick={() => handleFilterChange(filter)}
@@ -96,7 +96,7 @@ export const InventoryRegistryTable: React.FC<InventoryRegistryTableProps> = ({ 
                     : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700'
                 }`}
               >
-                {filter === 'ALL' ? 'ALL' : `${filter.replace('_NOVDEC', '')} ONLY`}
+                {filter === 'ALL' ? 'ALL' : filter === 'CTVET_NABPTEX' ? 'CTVET ONLY' : `${filter.replace('_NOVDEC', '')} ONLY`}
               </button>
             ))}
           </div>

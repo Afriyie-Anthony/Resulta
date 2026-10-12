@@ -10,8 +10,10 @@ export const adminAffiliateConfigSchema = z.object({
   commissionPercentage: z.number().min(0).max(100),
   beceSellingPrice: z.number().nonnegative(),
   wassceSellingPrice: z.number().nonnegative(),
+  ctvetSellingPrice: z.number().nonnegative().optional(),
   beceCommissionGhs: z.number().nonnegative(),
   wassceCommissionGhs: z.number().nonnegative(),
+  ctvetCommissionGhs: z.number().nonnegative().optional(),
   oneTimeRecruitmentBonusGhs: z.number().nonnegative(),
 });
 
@@ -68,7 +70,12 @@ export const adminAffiliateAnalyticsSchema = z.object({
       ordersCount: z.number().int().nonnegative(),
       salesVolumeGhs: z.number().nonnegative(),
       commissionsGhs: z.number().nonnegative(),
-    })
+    }),
+    ctvet: z.object({
+      ordersCount: z.number().int().nonnegative(),
+      salesVolumeGhs: z.number().nonnegative(),
+      commissionsGhs: z.number().nonnegative(),
+    }).optional(),
   }),
   commissionTypeBreakdown: z.object({
     voucherSales: z.object({

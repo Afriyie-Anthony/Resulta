@@ -115,7 +115,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
           <div className={`inline-flex p-1 rounded-xl border ${
             isLight ? 'bg-white border-slate-300 shadow-xs' : 'bg-slate-900 border-slate-800'
           }`}>
-            {(['ALL', 'WASSCE_NOVDEC', 'BECE'] as FilterStatus[]).map((status) => (
+            {(['ALL', 'WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX'] as FilterStatus[]).map((status) => (
               <button
                 key={status}
                 onClick={() => handleStatusFilterChange(status)}
@@ -129,7 +129,7 @@ export const BatchHistoryTable: React.FC<BatchHistoryTableProps> = () => {
                     : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                {status === 'ALL' ? 'All' : status.replace('_NOVDEC', '')}
+                {status === 'ALL' ? 'All' : status === 'CTVET_NABPTEX' ? 'CTVET' : status.replace('_NOVDEC', '')}
               </button>
             ))}
           </div>

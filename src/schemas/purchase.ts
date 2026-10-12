@@ -18,12 +18,13 @@ export const priceTierSchema = z.object({
 export const voucherConfigSchema = z.object({
   beceLowStockThreshold: z.number(),
   wassceLowStockThreshold: z.number(),
+  ctvetLowStockThreshold: z.number().optional(),
   priceTiers: z.array(priceTierSchema),
 });
 
 // ─── Purchase Request ─────────────────────────────────────────────────────────
 export const purchaseRequestSchema = z.object({
-  voucherType: z.enum(['WASSCE_NOVDEC', 'BECE']),
+  voucherType: z.enum(['WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX']),
   quantity: z.number().int().positive().min(1),
   fullName: z.string().min(2, 'Enter your full name'),
   phoneNumber: ghanaPhoneSchema,

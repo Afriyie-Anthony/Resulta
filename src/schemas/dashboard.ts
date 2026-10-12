@@ -18,6 +18,7 @@ export const overviewCardsSchema = z.object({
   totalOrders: z.object({ count: z.number(), todayCount: z.number() }),
   wassceStock: z.object({ availableCount: z.number(), status: z.string() }),
   beceStock: z.object({ availableCount: z.number(), status: z.string() }),
+  ctvetStock: z.object({ availableCount: z.number(), status: z.string() }).optional(),
   pendingWithdrawals: z.object({ totalAmount: z.number(), count: z.number() }),
   activeAffiliates: z.object({ count: z.number() }),
   conversionRate: z.object({ rate: z.number(), label: z.string() }),

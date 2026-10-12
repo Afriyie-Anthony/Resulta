@@ -59,6 +59,7 @@ export const AffiliatesAnalyticsView: React.FC = () => {
   const voucherData = [
     { name: 'BECE', value: data.voucherTypeBreakdown.bece.salesVolumeGhs },
     { name: 'WASSCE', value: data.voucherTypeBreakdown.wassce.salesVolumeGhs },
+    ...(data.voucherTypeBreakdown.ctvet ? [{ name: 'CTVET', value: data.voucherTypeBreakdown.ctvet.salesVolumeGhs }] : []),
   ];
 
   const commissionData = [

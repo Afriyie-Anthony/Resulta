@@ -15,46 +15,57 @@ export const InventorySetupConfig: React.FC = () => {
 
   const [wassceThreshold, setWassceThreshold] = useState('500');
   const [beceThreshold, setBeceThreshold] = useState('200');
+  const [ctvetThreshold, setCtvetThreshold] = useState('200');
   const [wassceTiers, setWassceTiers] = useState<PriceTier[]>([]);
   const [beceTiers, setBeceTiers] = useState<PriceTier[]>([]);
+  const [ctvetTiers, setCtvetTiers] = useState<PriceTier[]>([]);
 
   useEffect(() => {
     if (config) {
       setWassceThreshold(config.wassceLowStockThreshold.toString());
       setBeceThreshold(config.beceLowStockThreshold.toString());
+      setCtvetThreshold((config.ctvetLowStockThreshold ?? 200).toString());
       setWassceTiers(config.priceTiers.filter(t => t.voucherType === 'WASSCE_NOVDEC'));
       setBeceTiers(config.priceTiers.filter(t => t.voucherType === 'BECE'));
+      setCtvetTiers(config.priceTiers.filter(t => t.voucherType === 'CTVET_NABPTEX'));
     }
   }, [config]);
 
-  const handleAddTier = (type: 'WASSCE_NOVDEC' | 'BECE') => {
+  const handleAddTier = (type: 'WASSCE_NOVDEC' | 'BECE' | 'CTVET_NABPTEX') => {
     const newTier: PriceTier = {
       voucherType: type,
       minQuantity: 1,
       maxQuantity: 10,
-      unitPrice: type === 'WASSCE_NOVDEC' ? 25.00 : 20.00
+      unitPrice: type === 'BECE' ? 20.00 : 25.00
     };
     if (type === 'WASSCE_NOVDEC') setWassceTiers([...wassceTiers, newTier]);
-    else setBeceTiers([...beceTiers, newTier]);
+    else if (type === 'BECE') setBeceTiers([...beceTiers, newTier]);
+    else setCtvetTiers([...ctvetTiers, newTier]);
   };
 
-  const handleRemoveTier = (type: 'WASSCE_NOVDEC' | 'BECE', index: number) => {
+  const handleRemoveTier = (type: 'WASSCE_NOVDEC' | 'BECE' | 'CTVET_NABPTEX', index: number) => {
     if (type === 'WASSCE_NOVDEC') {
       setWassceTiers(wassceTiers.filter((_, i) => i !== index));
-    } else {
+    } else if (type === 'BECE') {
       setBeceTiers(beceTiers.filter((_, i) => i !== index));
+    } else {
+      setCtvetTiers(ctvetTiers.filter((_, i) => i !== index));
     }
   };
 
-  const handleTierChange = (type: 'WASSCE_NOVDEC' | 'BECE', index: number, field: keyof PriceTier, value: string) => {
+  const handleTierChange = (type: 'WASSCE_NOVDEC' | 'BECE' | 'CTVET_NABPTEX', index: number, field: keyof PriceTier, value: string) => {
     if (type === 'WASSCE_NOVDEC') {
       const newTiers = [...wassceTiers];
       newTiers[index] = { ...newTiers[index], [field]: value === '' ? '' : Number(value) };
       setWassceTiers(newTiers);
-    } else {
+    } else if (type === 'BECE') {
       const newTiers = [...beceTiers];
       newTiers[index] = { ...newTiers[index], [field]: value === '' ? '' : Number(value) };
       setBeceTiers(newTiers);
+    } else {
+      const newTiers = [...ctvetTiers];
+      newTiers[index] = { ...newTiers[index], [field]: value === '' ? '' : Number(value) };
+      setCtvetTiers(newTiers);
     }
   };
 
@@ -62,12 +73,14 @@ export const InventorySetupConfig: React.FC = () => {
     e.preventDefault();
     const wThresh = parseInt(wassceThreshold) || 500;
     const bThresh = parseInt(beceThreshold) || 200;
+    const cThresh = parseInt(ctvetThreshold) || 200;
     
     updateConfig(
       {
         wassceLowStockThreshold: wThresh,
         beceLowStockThreshold: bThresh,
-        priceTiers: [...wassceTiers, ...beceTiers]
+        ctvetLowStockThreshold: cThresh,
+        priceTiers: [...wassceTiers, ...beceTiers, ...ctvetTiers]
       },
       {
         onSuccess: () => {
@@ -92,7 +105,7 @@ export const InventorySetupConfig: React.FC = () => {
     return <div className="p-8 text-center text-sm font-semibold">Loading configuration...</div>;
   }
 
-  const renderTierList = (type: 'WASSCE_NOVDEC' | 'BECE', tiers: PriceTier[]) => (
+  const renderTierList = (type: 'WASSCE_NOVDEC' | 'BECE' | 'CTVET_NABPTEX', tiers: PriceTier[]) => (
     <div className="space-y-4">
       {tiers.map((tier, index) => (
         <div key={index} className={`flex items-end gap-4 p-4 rounded-xl border ${
@@ -187,7 +200,7 @@ export const InventorySetupConfig: React.FC = () => {
             <h4 className={`text-sm font-black flex items-center gap-2 mb-4 ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
               <FiBell className={isLight ? 'text-[#0F8B8D]' : 'text-teal-400'} /> Low Stock Alert Levels
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div>
                 <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
                   WASSCE Minimum Stock Alert
@@ -227,6 +240,26 @@ export const InventorySetupConfig: React.FC = () => {
                 </div>
                 <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Sends an alert when available BECE stock falls below this number.</p>
               </div>
+
+              <div>
+                <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
+                  CTVET Minimum Stock Alert
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={ctvetThreshold}
+                    onChange={(e) => setCtvetThreshold(e.target.value)}
+                    className={`w-full rounded-xl px-4 py-2 text-sm font-black focus:outline-none transition-colors border ${
+                      isLight
+                        ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D] focus:bg-white'
+                        : 'bg-slate-950 border-slate-800 text-white focus:border-teal-500'
+                    }`}
+                  />
+                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Vouchers</span>
+                </div>
+                <p className={`text-[11px] font-semibold mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Sends an alert when available CTVET stock falls below this number.</p>
+              </div>
             </div>
           </div>
 
@@ -248,6 +281,13 @@ export const InventorySetupConfig: React.FC = () => {
                   BECE Pricing
                 </label>
                 {renderTierList('BECE', beceTiers)}
+              </div>
+
+              <div>
+                <label className={`block text-xs font-black mb-2 ${isLight ? 'text-slate-800' : 'text-slate-300'}`}>
+                  CTVET / NABPTEX Pricing
+                </label>
+                {renderTierList('CTVET_NABPTEX', ctvetTiers)}
               </div>
             </div>
           </div>

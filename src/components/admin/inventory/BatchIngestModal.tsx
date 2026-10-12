@@ -148,7 +148,7 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
           }`}>
             1. Select Exam Type
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               type="button"
               onClick={() => { setSelectedProduct('WASSCE_NOVDEC'); setValidationResult(null); }}
@@ -196,6 +196,31 @@ export const BatchIngestModal: React.FC<BatchIngestModalProps> = ({
               </div>
               {selectedProduct === 'BECE' && (
                 <FiCheckCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setSelectedProduct('CTVET_NABPTEX'); setValidationResult(null); }}
+              className={`p-3 rounded-xl font-bold text-left border transition-all flex items-center justify-between ${
+                selectedProduct === 'CTVET_NABPTEX'
+                  ? isLight
+                    ? 'bg-violet-50 border-violet-500 text-violet-950 ring-1 ring-violet-500/30 shadow-2xs'
+                    : 'bg-violet-500/20 border-violet-500 text-violet-300 shadow-2xs shadow-violet-950/50'
+                  : isLight
+                  ? 'bg-slate-50/90 border-slate-200 text-slate-600 hover:bg-slate-100/80 hover:border-slate-300'
+                  : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:bg-slate-800/80'
+              }`}
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-black ${selectedProduct === 'CTVET_NABPTEX' && isLight ? 'text-violet-950' : ''}`}>
+                    CTVET 2026 POOL
+                  </span>
+                </div>
+              </div>
+              {selectedProduct === 'CTVET_NABPTEX' && (
+                <FiCheckCircle className="w-4 h-4 shrink-0 text-violet-600 dark:text-violet-400" />
               )}
             </button>
           </div>

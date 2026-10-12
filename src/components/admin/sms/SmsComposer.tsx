@@ -167,7 +167,7 @@ export const SmsComposer: React.FC<SmsComposerProps> = ({
                   <span className="text-[10px] font-black uppercase text-slate-500 block mb-1.5">
                     Step 1: Select Target Exam Category
                   </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                     {/* GLOBAL */}
                     <button
                       type="button"
@@ -208,6 +208,20 @@ export const SmsComposer: React.FC<SmsComposerProps> = ({
                     >
                       <span className="text-xs font-black block">● WASSCE & NOVDEC</span>
                       <span className="text-[10px] text-slate-600 dark:text-slate-400 font-bold block mt-0.5">WASSCE orders & dialers</span>
+                    </button>
+
+                    {/* CTVET_NABPTEX */}
+                    <button
+                      type="button"
+                      onClick={() => setCategory('CTVET_NABPTEX')}
+                      className={`p-3 rounded-2xl text-left border transition-all ${
+                        category === 'CTVET_NABPTEX'
+                          ? 'bg-violet-100/90 border-violet-400 text-violet-950 font-black shadow-2xs'
+                          : isLight ? 'bg-white border-slate-300 text-slate-800 hover:bg-slate-100 font-extrabold' : 'bg-slate-900 border-slate-800 text-slate-400'
+                      }`}
+                    >
+                      <span className="text-xs font-black block">● CTVET Candidates</span>
+                      <span className="text-[10px] text-slate-600 dark:text-slate-400 font-bold block mt-0.5">CTVET orders & dialers</span>
                     </button>
                   </div>
                 </div>

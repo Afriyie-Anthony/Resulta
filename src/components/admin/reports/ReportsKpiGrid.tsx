@@ -48,7 +48,7 @@ export const ReportsKpiGrid: React.FC<ReportsKpiGridProps> = ({
       : `${summary.growthPercentage.toFixed(1)}%`;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${summary.ctvetVolume ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4`}>
       {/* 1. Gross Revenue */}
       <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs ${
         isLight ? 'bg-white border-slate-300 border-t-emerald-500' : 'bg-slate-900/90 border-slate-800 border-t-emerald-500'
@@ -109,7 +109,29 @@ export const ReportsKpiGrid: React.FC<ReportsKpiGridProps> = ({
         </p>
       </div>
 
-      {/* 4. Total Vouchers Sold */}
+      {/* 4. CTVET Volume */}
+      {summary.ctvetVolume && (
+        <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs ${
+          isLight ? 'bg-white border-slate-300 border-t-violet-600' : 'bg-slate-900/90 border-slate-800 border-t-violet-600'
+        }`}>
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+              CTVET 2026 Volume
+            </span>
+            <div className="w-7 h-7 rounded-xl bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-400 flex items-center justify-center text-xs">
+              <FiShoppingBag className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <p className={`text-xl font-black tracking-tight ${isLight ? 'text-violet-950' : 'text-violet-400'}`}>
+            {summary.ctvetVolume.vouchers.toLocaleString()} <span className="text-xs font-bold text-slate-500">vouchers</span>
+          </p>
+          <p className={`text-[11px] font-bold mt-1 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+            Gross: {formatCedi(summary.ctvetVolume.gross)}
+          </p>
+        </div>
+      )}
+
+      {/* 5. Total Vouchers Sold */}
       <div className={`p-3.5 rounded-2xl border border-t-4 transition-all shadow-2xs ${
         isLight ? 'bg-white border-slate-300 border-t-purple-500' : 'bg-slate-900/90 border-slate-800 border-t-purple-500'
       }`}>

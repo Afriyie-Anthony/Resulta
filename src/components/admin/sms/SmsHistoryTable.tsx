@@ -111,6 +111,7 @@ export const SmsHistoryTable: React.FC<SmsHistoryTableProps> = ({
             <option value="GLOBAL">Global</option>
             <option value="BECE">BECE</option>
             <option value="WASSCE_NOVDEC">WASSCE / NOVDEC</option>
+            <option value="CTVET_NABPTEX">CTVET / NABPTEX</option>
           </select>
         </div>
       </div>

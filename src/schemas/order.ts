@@ -18,7 +18,7 @@ export const orderChannelSchema = z.enum([
   'USSD',
 ]);
 
-export const voucherTypeSchema = z.enum(['WASSCE_NOVDEC', 'BECE']);
+export const voucherTypeSchema = z.enum(['WASSCE_NOVDEC', 'BECE', 'CTVET_NABPTEX']);
 
 export const deliveryMethodSchema = z.enum(['SMS']);
 

@@ -25,7 +25,7 @@ export const ExamMarketShareCard: React.FC<ExamMarketShareCardProps> = ({
     );
   }
 
-  const { wassce, bece } = marketShare;
+  const { wassce, bece, ctvet } = marketShare;
 
   return (
     <div className={`p-6 rounded-3xl border transition-colors shadow-sm space-y-4 ${
@@ -63,6 +63,18 @@ export const ExamMarketShareCard: React.FC<ExamMarketShareCardProps> = ({
               {bece.percentage.toFixed(1)}% ({bece.vouchers.toLocaleString()})
             </span>
           </div>
+
+          {ctvet && (
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-violet-600 shrink-0" />
+                <span className={isLight ? 'text-slate-900' : 'text-slate-200'}>CTVET</span>
+              </div>
+              <span className="font-black text-violet-600 dark:text-violet-400 font-mono">
+                {ctvet.percentage.toFixed(1)}% ({ctvet.vouchers.toLocaleString()})
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ interface StockAlertsViewProps {
   stats: {
     wassceNovdec: { available: number; sold: number; total: number; threshold?: number };
     bece: { available: number; sold: number; total: number; threshold?: number };
+    ctvetNabptex?: { available: number; sold: number; total: number; threshold?: number };
   };
   alerts?: VoucherAlerts;
   onReplenish: (product: VoucherType) => void;
@@ -21,9 +22,13 @@ export const StockAlertsView: React.FC<StockAlertsViewProps> = ({ stats, alerts,
 
   const beceThreshold = stats.bece.threshold ?? 0;
   const wassceThreshold = stats.wassceNovdec.threshold ?? 0;
+  const ctvetThreshold = stats.ctvetNabptex?.threshold ?? 200;
 
   const isBeceLow = alerts?.beceIsLowStock ?? (stats.bece.available <= beceThreshold);
   const isWassceLow = alerts?.wassceNovdecIsLowStock ?? (stats.wassceNovdec.available <= wassceThreshold);
+  const isCtvetLow = alerts?.ctvetNabptexIsLowStock ?? ((stats.ctvetNabptex?.available ?? 0) <= ctvetThreshold);
+
+  const activeAlertCount = (isBeceLow ? 1 : 0) + (isWassceLow ? 1 : 0) + (isCtvetLow ? 1 : 0);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -41,8 +46,8 @@ export const StockAlertsView: React.FC<StockAlertsViewProps> = ({ stats, alerts,
               Real-time monitoring triggers generated when result-checker pools drop below recommended minimum thresholds
             </p>
           </div>
-          <Badge variant={isBeceLow || isWassceLow ? 'warning' : 'success'} className={`font-bold text-xs !px-3 shadow-2xs ${(isBeceLow || isWassceLow) ? 'animate-pulse' : ''}`}>
-            {(isBeceLow || isWassceLow) ? `${(isBeceLow ? 1 : 0) + (isWassceLow ? 1 : 0)} CRITICAL ALERT ACTIVE` : 'POOLS HEALTHY'}
+          <Badge variant={activeAlertCount > 0 ? 'warning' : 'success'} className={`font-bold text-xs !px-3 shadow-2xs ${activeAlertCount > 0 ? 'animate-pulse' : ''}`}>
+            {activeAlertCount > 0 ? `${activeAlertCount} CRITICAL ALERT${activeAlertCount > 1 ? 'S' : ''} ACTIVE` : 'POOLS HEALTHY'}
           </Badge>
         </div>
 
@@ -143,15 +148,63 @@ export const StockAlertsView: React.FC<StockAlertsViewProps> = ({ stats, alerts,
             </div>
           )}
 
+          {/* CTVET Low Alert */}
+          {isCtvetLow && (
+            <div className={`p-6 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 transition-all shadow-xs ${
+              isLight ? 'bg-amber-50/90 border-amber-300' : 'bg-slate-950 border-amber-500/30'
+            }`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center text-2xl ${
+                  isLight ? 'bg-amber-500/20 text-amber-800 border border-amber-400' : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                }`}>
+                  <FiAlertTriangle />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="warning" className="text-[10px] font-black">CRITICAL INVENTORY DEPLETION</Badge>
+                  </div>
+                  <h4 className={`text-base font-black mt-1 ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
+                    CTVET / NABPTEX Pool is low on available stock ({(stats.ctvetNabptex?.available ?? 0).toLocaleString()} remaining)
+                  </h4>
+                  <p className={`text-xs font-medium mt-1 leading-relaxed ${isLight ? 'text-amber-900' : 'text-amber-300/80'}`}>
+                    The available count has dipped below your configured minimum threshold of <strong>{ctvetThreshold} units</strong>. High traffic during release dates may cause stock exhaustion and failed customer checkouts.
+                  </p>
+
+                  <div className="flex items-center gap-4 mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                    <span className="flex items-center gap-1"><FiMail className="text-emerald-500" /> Alert sent to admins</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 w-full sm:w-auto shrink-0">
+                <Button
+                  onClick={() => onReplenish('CTVET_NABPTEX')}
+                  variant={isLight ? 'primary' : 'gradient'}
+                  leftIcon={<FiUploadCloud />}
+                  className="font-black shadow-md whitespace-nowrap"
+                >
+                  Replenish CTVET Pool
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => addToast({ title: 'Alert Acknowledged', message: 'Muted CTVET low-stock notification for 24 hours.', type: 'info' })}
+                  className={`text-center text-[11px] font-bold py-1 hover:underline ${isLight ? 'text-slate-600' : 'text-slate-400'}`}
+                >
+                  Snooze Alert for 24 hours
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Healthy Status Display */}
-          {!isBeceLow && !isWassceLow && (
+          {!isBeceLow && !isWassceLow && !isCtvetLow && (
             <div className="p-8 text-center bg-emerald-50/50 dark:bg-slate-950 rounded-2xl border border-emerald-300 dark:border-slate-800">
               <FiCheckCircle className="w-12 h-12 text-emerald-600 dark:text-teal-400 mx-auto mb-3" />
               <p className={`text-sm font-black ${isLight ? 'text-primary' : 'text-white'}`}>
                 All Result-Checker Voucher Pools Are Optimal & Healthy
               </p>
               <p className="text-xs text-slate-400 mt-1">
-                WASSCE ({stats.wassceNovdec.available}) and BECE ({stats.bece.available}) both sit well above configured alerting triggers.
+                WASSCE ({stats.wassceNovdec.available}), BECE ({stats.bece.available}), and CTVET ({stats.ctvetNabptex?.available ?? 0}) all sit well above configured alerting triggers.
               </p>
             </div>
           )}
@@ -186,6 +239,24 @@ export const StockAlertsView: React.FC<StockAlertsViewProps> = ({ stats, alerts,
                     BECE POOL ({stats.bece.available.toLocaleString()} available)
                   </span>
                   <span className="text-slate-400 ml-2">Currently <strong>{stats.bece.available - beceThreshold} units</strong> above alert threshold ({beceThreshold}).</span>
+                </div>
+              </div>
+              <Badge variant="success" className="text-[10px] font-bold">HEALTHY POOL</Badge>
+            </div>
+          )}
+
+          {/* CTVET Health indicator - only show if healthy */}
+          {!isCtvetLow && (
+            <div className={`p-4 rounded-2xl border flex items-center justify-between text-xs transition-colors ${
+              isLight ? 'bg-slate-50/80 border-slate-200' : 'bg-slate-950/50 border-slate-800/80'
+            }`}>
+              <div className="flex items-center gap-3">
+                <FiCheckCircle className={`w-5 h-5 ${isLight ? 'text-violet-700' : 'text-violet-400'}`} />
+                <div>
+                  <span className={`font-black ${isLight ? 'text-primary' : 'text-slate-200'}`}>
+                    CTVET POOL ({(stats.ctvetNabptex?.available ?? 0).toLocaleString()} available)
+                  </span>
+                  <span className="text-slate-400 ml-2">Currently <strong>{Math.max(0, (stats.ctvetNabptex?.available ?? 0) - ctvetThreshold)} units</strong> above alert threshold ({ctvetThreshold}).</span>
                 </div>
               </div>
               <Badge variant="success" className="text-[10px] font-bold">HEALTHY POOL</Badge>

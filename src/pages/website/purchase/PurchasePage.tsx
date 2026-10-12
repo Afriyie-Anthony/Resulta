@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader, FiExternalLink } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../../components/website/layout/MobileBottomNav';
@@ -15,12 +15,22 @@ const voucherConfigData = {
     subtitle: 'Senior High School Results',
     badge: 'WASSCE 2026',
     apiType: 'WASSCE_NOVDEC' as const,
+    color: 'primary',
   },
   bece: {
     title: 'BECE',
     subtitle: 'Basic Education Results',
     badge: 'BECE 2026',
     apiType: 'BECE' as const,
+    color: 'secondary',
+  },
+  ctvet: {
+    title: 'CTVET / NABPTEX',
+    subtitle: 'Technical & Vocational Results',
+    badge: 'CTVET 2026',
+    apiType: 'CTVET_NABPTEX' as const,
+    color: 'violet',
+    portalUrl: 'https://examination.ctvet.gov.gh/login',
   },
 };
 
@@ -148,7 +158,10 @@ const PurchasePage: React.FC = () => {
       <WebsiteNavbar />
 
       <main className="flex-1 pb-20 md:pb-0">
-        <section className={`${voucherType === 'wassce' ? 'bg-primary' : 'bg-secondary'} py-16 lg:py-20`}>
+        <section className={`${
+            voucherType === 'wassce' ? 'bg-primary' :
+            voucherType === 'ctvet' ? 'bg-violet-600' : 'bg-secondary'
+          } py-16 lg:py-20`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
               {configInfo.title} Result Checker
@@ -164,11 +177,11 @@ const PurchasePage: React.FC = () => {
             <form onSubmit={handleProceedToCheckout} className="space-y-8">
               <div>
                 <div className="flex justify-center">
-                  <div className="bg-warm rounded-2xl border border-border p-1.5 inline-flex gap-1.5">
+                  <div className="bg-warm rounded-2xl border border-border p-1.5 inline-flex gap-1.5 flex-wrap justify-center">
                     <button
                       type="button"
                       onClick={() => navigate('/purchase/bece')}
-                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                      className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all ${
                         voucherType === 'bece'
                           ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
                           : 'text-text-secondary hover:text-text-primary'
@@ -179,13 +192,24 @@ const PurchasePage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => navigate('/purchase/wassce')}
-                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+                      className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all ${
                         voucherType === 'wassce'
                           ? 'bg-primary text-white shadow-lg shadow-primary/20'
                           : 'text-text-secondary hover:text-text-primary'
                       }`}
                     >
                       WASSCE / NOVDEC
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/purchase/ctvet')}
+                      className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all ${
+                        voucherType === 'ctvet'
+                          ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/20'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      CTVET / NABPTEX
                     </button>
                   </div>
                 </div>
@@ -344,6 +368,23 @@ const PurchasePage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {voucherType === 'ctvet' && (
+                <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 flex items-start gap-3">
+                  <FiExternalLink className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-violet-800">Check your results at the official CTVET Portal</p>
+                    <a
+                      href="https://examination.ctvet.gov.gh/login"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 underline text-xs mt-0.5 inline-block"
+                    >
+                      examination.ctvet.gov.gh/login
+                    </a>
+                  </div>
+                </div>
+              )}
 
               <div className="text-center">
                 <button

@@ -102,7 +102,7 @@ const slides = [
             </span>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-              Buy your WASSCE/NOVDEC and BECE result-checking voucher quickly and securely.
+              Buy your WASSCE, BECE & CTVET result-checking vouchers quickly and securely.
             </h1>
 
             <p className="font-extrabold text-accent mt-6 text-base text-3xl sm:text-4xl lg:text-5xl leading-relaxed">
