@@ -1,3 +1,5 @@
+import { env } from '../config/env';
+
 /**
  * Format currency in Ghanaian Cedi (GH₵)
  */
@@ -59,4 +61,20 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
     console.error('Failed to copy to clipboard', err);
     return false;
   }
+};
+
+/**
+ * Build an affiliate referral link on the public website (not the API host).
+ * Optional extra params (e.g. utm_campaign) are appended when non-empty.
+ */
+export const buildReferralLink = (
+  affiliateCode: string,
+  params: Record<string, string | undefined> = {},
+): string => {
+  const url = new URL(`${env.SITE_URL}/`);
+  if (affiliateCode) url.searchParams.set('ref', affiliateCode);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) url.searchParams.set(key, value);
+  });
+  return url.toString();
 };

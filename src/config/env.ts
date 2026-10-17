@@ -20,6 +20,7 @@ const get = (key: string, fallback?: string): string => {
 export const env = {
   // ── Core ──────────────────────────────────────────────────────────────────
   API_BASE_URL: get('VITE_API_BASE_URL', 'https://resulta-backend.onrender.com/api/v1'),
+  SITE_URL: get('VITE_SITE_URL', 'https://resultagh.com').replace(/\/+$/, ''),
   APP_ENV: get('VITE_APP_ENV', 'development'),
   IS_PRODUCTION: import.meta.env.PROD,
   IS_DEVELOPMENT: import.meta.env.DEV,

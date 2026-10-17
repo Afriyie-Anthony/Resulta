@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
-import { copyToClipboard, formatGhanaPhone } from '../../utils/formatters';
+import { buildReferralLink, copyToClipboard, formatGhanaPhone } from '../../utils/formatters';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAffiliateProfile } from '../../hooks/useAffiliate';
 import {
@@ -37,7 +37,7 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const referralCode = profile?.affiliateCode || '';
-  const referralLink = referralCode ? `https://resulta.com.gh/?ref=${referralCode}` : 'https://resulta.com.gh/';
+  const referralLink = buildReferralLink(referralCode);
 
   const displayName = profile?.user?.name || user?.name || profile?.accountName || 'Affiliate Partner';
   const rawPhone = profile?.phoneNumber || profile?.accountNumber || '';

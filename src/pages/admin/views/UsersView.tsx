@@ -462,7 +462,7 @@ export const UsersView: React.FC = () => {
               required
               value={formEmail}
               onChange={(e) => setFormEmail(e.target.value)}
-              placeholder="e.g. ama@resulta.com.gh"
+              placeholder="e.g. ama@resultagh.com"
               className={`w-full rounded-2xl px-4 py-2.5 text-xs font-semibold border focus:outline-none ${
                 isLight ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#0F8B8D]' : 'bg-slate-900 border-slate-700 text-white'
               }`}

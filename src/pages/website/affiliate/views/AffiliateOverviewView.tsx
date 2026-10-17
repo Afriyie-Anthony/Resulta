@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
-import { formatCedi, formatDate, copyToClipboard } from '../../../../utils/formatters';
+import { formatCedi, formatDate, copyToClipboard, buildReferralLink } from '../../../../utils/formatters';
 import {
   FiTrendingUp,
   FiDollarSign,
@@ -142,7 +142,8 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const referralCode = data?.referralTools?.affiliateCode || 'N/A';
-  const referralLink = data?.referralTools?.referralLink || `https://resulta.com.gh/?ref=${referralCode}`;
+  // Built client-side: the API's referralLink points at the backend host, not the public site
+  const referralLink = buildReferralLink(data?.referralTools?.affiliateCode || '');
 
   const handleCopyLink = async () => {
     const success = await copyToClipboard(referralLink);

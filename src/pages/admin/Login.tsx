@@ -354,7 +354,7 @@ const AdminLogin: React.FC = () => {
                         setEmail(e.target.value);
                         if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: undefined }));
                       }}
-                      placeholder="admin@resulta.com.gh"
+                      placeholder="admin@resultagh.com"
                       required
                       aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                       aria-invalid={!!fieldErrors.email}

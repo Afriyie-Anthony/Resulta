@@ -196,7 +196,7 @@ const AdminLogin: React.FC = () => {
 
               {/* ════ ADMIN LOGIN FORM ════ */}
               <form onSubmit={handleAdminSubmit} className="space-y-4" noValidate>
-                <InputField id="admin-email" label="Administrator Email" type="email" value={email || rememberedEmail} icon={<FiMail />} placeholder="admin@resulta.com.gh" error={fieldErrors.email} isLight={isLight}
+                <InputField id="admin-email" label="Administrator Email" type="email" value={email || rememberedEmail} icon={<FiMail />} placeholder="admin@resultagh.com" error={fieldErrors.email} isLight={isLight}
                   onChange={(v) => { setEmail(v); if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: undefined })); }}
                 />
                 <PasswordField id="admin-password" label="Security Password" value={password} show={showPassword} icon={<FiLock />} placeholder="Enter admin password..." error={fieldErrors.password} isLight={isLight}

@@ -227,7 +227,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                       setEmail(e.target.value);
                       if (errorMessage) setErrorMessage('');
                     }}
-                    placeholder="e.g. admin@resulta.com.gh"
+                    placeholder="e.g. admin@resultagh.com"
                     className={`w-full rounded-2xl pl-11 pr-4 py-3 text-xs font-bold border focus:outline-none transition-colors ${
                       isLight
                         ? 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#0F8B8D] focus:bg-white'

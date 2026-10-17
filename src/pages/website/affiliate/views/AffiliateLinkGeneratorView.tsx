@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Input } from '../../../../components/ui/Input';
 import { Badge } from '../../../../components/ui/Badge';
-import { copyToClipboard } from '../../../../utils/formatters';
+import { buildReferralLink, copyToClipboard } from '../../../../utils/formatters';
 import { useAffiliateProfile } from '../../../../hooks/useAffiliate';
 import { useToast } from '../../../../components/ui/Toast';
 import {
@@ -43,11 +43,11 @@ export const AffiliateLinkGeneratorView: React.FC = () => {
   });
 
   const affiliateCode = profile?.affiliateCode || 'AFFILIATE';
-  const baseUrl = 'https://resulta.com.gh/';
 
-  const generatedUrl = `${baseUrl}?ref=${affiliateCode}${
-    campaignTag.trim() ? `&utm_campaign=${encodeURIComponent(campaignTag.trim().toLowerCase().replace(/\s+/g, '_'))}` : ''
-  }${mediumTag ? `&utm_medium=${encodeURIComponent(mediumTag)}` : ''}`;
+  const generatedUrl = buildReferralLink(affiliateCode, {
+    utm_campaign: campaignTag.trim().toLowerCase().replace(/\s+/g, '_'),
+    utm_medium: mediumTag,
+  });
 
   const handleSaveCampaign = (e: React.FormEvent) => {
     e.preventDefault();

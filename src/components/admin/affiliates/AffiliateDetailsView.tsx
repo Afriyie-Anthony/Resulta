@@ -6,7 +6,7 @@ import { Button } from '../../ui/Button';
 import { Badge } from '../../ui/Badge';
 import { Modal } from '../../ui/Modal';
 import { useToast } from '../../ui/Toast';
-import { formatCedi } from '../../../utils/formatters';
+import { buildReferralLink, copyToClipboard, formatCedi } from '../../../utils/formatters';
 import type { Affiliate } from '../../../schemas/affiliate';
 import {
   useAdminAffiliateDetail,
@@ -28,7 +28,8 @@ import {
   FiMapPin,
   FiBriefcase,
   FiPercent,
-  FiRotateCcw
+  FiRotateCcw,
+  FiCopy
 } from 'react-icons/fi';
 
 interface AffiliateDetailsViewProps {
@@ -55,6 +56,16 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
   const { data: detailData, isLoading } = useAdminAffiliateDetail(initialAffiliate.id);
   const { data: globalConfig } = useAdminAffiliateConfig();
   const affiliate = detailData || initialAffiliate;
+  const referralLink = affiliate.referralCode ? buildReferralLink(affiliate.referralCode) : '';
+
+  const handleCopyReferralLink = async () => {
+    const success = await copyToClipboard(referralLink);
+    addToast(
+      success
+        ? { title: 'Link Copied', message: 'Referral link copied to clipboard.', type: 'success' }
+        : { title: 'Copy Failed', message: 'Could not copy the referral link.', type: 'error' },
+    );
+  };
 
   const approveMutation = useApproveAdminAffiliate(affiliate.id);
   const rejectMutation = useRejectAdminAffiliate(affiliate.id);
@@ -604,6 +615,35 @@ export const AffiliateDetailsView: React.FC<AffiliateDetailsViewProps> = ({
               >
                 {affiliate.referralCode}
               </span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-slate-500 font-bold uppercase text-[10px] block">Referral Link</span>
+              {referralLink ? (
+                <div className="flex items-center gap-2 mt-0.5 min-w-0">
+                  <a
+                    href={referralLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`font-mono font-black text-sm truncate hover:underline ${
+                      isLight ? 'text-[#0B2545]' : 'text-teal-400'
+                    }`}
+                  >
+                    {referralLink}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyReferralLink}
+                    title="Copy referral link"
+                    className={`shrink-0 p-1 rounded ${
+                      isLight ? 'text-[#0F8B8D] hover:text-[#0B2545]' : 'text-teal-400 hover:text-teal-300'
+                    }`}
+                  >
+                    <FiCopy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <span className="font-black block mt-0.5 text-slate-500">Assigned on approval</span>
+              )}
             </div>
             <div>
               <span className="text-slate-500 font-bold uppercase text-[10px] block">Business Name</span>

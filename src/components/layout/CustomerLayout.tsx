@@ -193,7 +193,7 @@ export const CustomerLayout: React.FC<BaseComponentProps> = ({ children }) => {
             <h4 className="font-bold text-white mb-3 uppercase tracking-wider text-[11px]">Support & Contact</h4>
             <ul className="space-y-2">
               <li className="flex items-center gap-2"><FiPhoneCall className="text-teal-400" /> WhatsApp Support: 024 657 3062</li>
-              <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Email: support@resulta.com.gh</li>
+              <li className="flex items-center gap-2"><FiCheckCircle className="text-teal-400" /> Email: support@resultagh.com</li>
               <li>Operational Hours: 24/7 Automated Fulfillment</li>
             </ul>
           </div>

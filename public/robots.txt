@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /admin/*
-Disallow: /api/
+Disallow: /portal-hq/
+Disallow: /affiliate/dashboard
+Disallow: /affiliate/login
+Disallow: /checkout/
+Disallow: /purchase/verify
+
+Sitemap: https://resultagh.com/sitemap.xml
