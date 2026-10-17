@@ -25,8 +25,18 @@ const WebsiteFooter: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
+                <Link to="/purchase/wassce" className="hover:text-white transition-colors">
+                  WASSCE Result Checker
+                </Link>
+              </li>
+              <li>
                 <Link to="/purchase/bece" className="hover:text-white transition-colors">
-                  Buy Voucher
+                  BECE Result Checker
+                </Link>
+              </li>
+              <li>
+                <Link to="/purchase/ctvet" className="hover:text-white transition-colors">
+                  CTVET Result Checker
                 </Link>
               </li>
               <li>

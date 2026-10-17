@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import {
   FiCheckCircle,
@@ -147,13 +146,6 @@ const CheckoutSuccessPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
-      <Helmet>
-        <title>Order Confirmation & Receipt - Resulta</title>
-        <meta
-          name="description"
-          content="Your Resulta voucher purchase confirmation and instant result checker voucher details."
-        />
-      </Helmet>
 
       <div className="print:hidden">
         <WebsiteNavbar />

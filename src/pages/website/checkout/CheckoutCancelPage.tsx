@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import {
   FiAlertCircle,
@@ -36,13 +35,6 @@ const CheckoutCancelPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
-      <Helmet>
-        <title>Payment Cancelled - Resulta</title>
-        <meta
-          name="description"
-          content="Your transaction was cancelled. No charges were made to your account. You can retry your voucher purchase at any time."
-        />
-      </Helmet>
 
       <WebsiteNavbar />
 

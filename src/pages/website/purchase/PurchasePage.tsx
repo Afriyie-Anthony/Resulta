@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiMinus, FiPlus, FiShoppingCart, FiUsers, FiLoader, FiExternalLink } from 'react-icons/fi';
 import WebsiteNavbar from '../../../components/website/layout/WebsiteNavbar';
@@ -151,12 +150,6 @@ const PurchasePage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
-      <Helmet>
-        <title>Buy {configInfo.title} Result Checker Voucher - Resulta GH</title>
-        <meta name="description" content={`Purchase your ${configInfo.title} result checking voucher instantly. Fast, secure payment and instant delivery via SMS and On-Screen PIN in Ghana.`} />
-        <meta name="keywords" content={`buy ${configInfo.title} voucher, ${configInfo.title} result checker, results, resulta, resultagh, result ghana, check ${configInfo.title} results`} />
-        <link rel="canonical" href={`https://resultagh.com/purchase/${voucherType}`} />
-      </Helmet>
       <WebsiteNavbar />
 
       <main className="flex-1 pb-20 md:pb-0">

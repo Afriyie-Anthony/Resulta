@@ -1,34 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronDown } from 'react-icons/fi';
+import { homeFaqs as faqs } from '../../../content/faqs';
 
-const faqs = [
-  {
-    question: 'Do I need an account to buy a voucher?',
-    answer:
-      'No. You can purchase a Resulta voucher without registering or logging in.',
-  },
-  {
-    question: 'How will I receive my voucher?',
-    answer:
-      'Your voucher details will be displayed after successful payment and may also be sent to your phone via SMS.',
-  },
-  {
-    question: 'Can I buy a voucher for someone else?',
-    answer:
-      'Yes. You can purchase a voucher for another person.',
-  },
-  {
-    question: 'Can I retrieve a voucher I previously purchased?',
-    answer:
-      'Yes. Use the My Vouchers feature with your purchase information.',
-  },
-  {
-    question: 'What happens if my payment fails?',
-    answer:
-      'If your payment is unsuccessful, you will not receive a voucher. You can try again or contact support if the issue continues.',
-  },
-];
 
 const FAQPreviewSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);

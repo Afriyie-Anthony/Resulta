@@ -17,7 +17,7 @@ const faqs: FAQ[] = [
     question: 'What is Resulta?',
     answer: (
       <p>
-        Resulta is a digital voucher distribution platform that allows customers to conveniently purchase WASSCE and BECE result-checking vouchers through supported online and USSD channels. Resulta is a product of <strong>OWUBEX DIGITAL SERVICES</strong>
+        Resulta is a digital voucher distribution platform that allows customers to conveniently purchase WASSCE/NOVDEC, BECE and CTVET/NABPTEX result-checking vouchers through supported online and USSD channels. Resulta is a product of <strong>OWUBEX DIGITAL SERVICES</strong>
       </p>
     ),
   },
@@ -33,8 +33,9 @@ const faqs: FAQ[] = [
     question: 'Which vouchers can I buy from Resulta?',
     answer: (
       <ul className="list-disc list-inside space-y-1">
-        <li>WASSCE result-checking vouchers</li>
+        <li>WASSCE / NOVDEC result-checking vouchers</li>
         <li>BECE result-checking vouchers</li>
+        <li>CTVET / NABPTEX result-checking vouchers</li>
       </ul>
     ),
   },

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import WebsiteNavbar from '../../components/website/layout/WebsiteNavbar';
 import WebsiteFooter from '../../components/website/layout/WebsiteFooter';
 import MobileBottomNav from '../../components/website/layout/MobileBottomNav';
 import BuyBottomSheet from '../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../components/website/layout/MoreBottomSheet';
 import HeroSection from '../../components/website/home/HeroSection';
+import ResultCheckersSection from '../../components/website/home/ResultCheckersSection';
 import HowItWorksWeb from '../../components/website/home/HowItWorksWeb';
 import HowItWorksUSSD from '../../components/website/home/HowItWorksUSSD';
 import FAQPreviewSection from '../../components/website/home/FAQPreviewSection';
@@ -17,15 +17,10 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Resulta - Fast & Secure WASSCE, BECE & CTVET Result Checkers</title>
-        <meta name="description" content="Buy your WASSCE, NOVDEC, BECE, or CTVET / NABPTEX result-checking voucher quickly and securely on Resulta GH. Instant SMS & On-Screen PIN delivery." />
-        <meta name="keywords" content="results, resulta, resultagh, result ghana, result checker, BECE, WASSCE, NOVDEC, CTVET, NABPTEX, Ghana exams, buy results checker" />
-        <link rel="canonical" href="https://resultagh.com/" />
-      </Helmet>
       <WebsiteNavbar />
       <main className="pb-20 md:pb-0">
         <HeroSection />
+        <ResultCheckersSection />
         <HowItWorksWeb />
         <HowItWorksUSSD />
         <FAQPreviewSection />

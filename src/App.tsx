@@ -6,6 +6,7 @@ import ProtectedRoute from './components/website/layout/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import ScrollToTop from './components/ScrollToTop';
 import ReferralCapture from './components/ReferralCapture';
+import Seo from './components/Seo';
 import Home from './pages/website/Home';
 import PurchasePage from './pages/website/purchase/PurchasePage';
 import PurchaseVerifyPage from './pages/website/purchase/PurchaseVerifyPage';
@@ -78,6 +79,7 @@ export default function App() {
       <BrowserRouter>
         <ScrollToTop />
         <ReferralCapture />
+        <Seo />
         <AuthProvider>
           <ToastProvider>
             <AppRoutes />
