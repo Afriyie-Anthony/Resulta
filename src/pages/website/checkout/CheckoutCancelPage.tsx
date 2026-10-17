@@ -125,7 +125,7 @@ const CheckoutCancelPage: React.FC = () => {
               <div className="bg-surface rounded-xl p-3 border border-border flex items-center justify-between">
                 <div>
                   <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">Dial Code</p>
-                  <p className="text-sm font-black font-mono text-secondary">*713*5912#</p>
+                  <p className="text-sm font-black font-mono text-secondary">*713*6222#</p>
                 </div>
                 <span className="text-[10px] bg-secondary/10 text-secondary font-bold px-2.5 py-1 rounded-lg">
                   MTN &bull; Telecel &bull; AT

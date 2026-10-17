@@ -30,13 +30,13 @@ export const SMS_PRESETS: PresetTemplate[] = [
     id: 'RETARGETING',
     label: 'Preset: Incomplete Order Retargeting',
     defaultText:
-      'Your transaction was incomplete! Dial *713*5912# to complete your WAEC result checker voucher order instantly on RESULTA.',
+      'Your transaction was incomplete! Dial *713*6222# to complete your WAEC result checker voucher order instantly on RESULTA.',
   },
   {
     id: 'PROMOTION',
     label: 'Preset: Promotional Voucher Discount',
     defaultText:
-      'Special Promo: Get instant discounts on bulk WASSCE/NOVDEC & BECE result checker voucher orders today on RESULTA *713*5912#',
+      'Special Promo: Get instant discounts on bulk WASSCE/NOVDEC & BECE result checker voucher orders today on RESULTA *713*6222#',
   },
 ];
 

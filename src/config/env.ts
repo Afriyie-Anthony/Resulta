@@ -39,8 +39,8 @@ export const env = {
   ARKESEL_SENDER_ID: get('VITE_ARKESEL_SENDER_ID', 'RESULTA'),
 
   // ── USSD ──────────────────────────────────────────────────────────────────
-  USSD_SHORTCODE: get('VITE_USSD_SHORTCODE', '*713*5912#'),
-  USSD_SERVICE_CODE: get('VITE_USSD_SERVICE_CODE', '5912'),
+  USSD_SHORTCODE: get('VITE_USSD_SHORTCODE', '*713*6222#'),
+  USSD_SERVICE_CODE: get('VITE_USSD_SERVICE_CODE', '6222'),
 
   // ── Feature Flags ─────────────────────────────────────────────────────────
   FEATURE_USSD_ENABLED: get('VITE_FEATURE_USSD_ENABLED', 'true') === 'true',
