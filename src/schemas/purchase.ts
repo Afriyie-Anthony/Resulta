@@ -29,6 +29,7 @@ export const purchaseRequestSchema = z.object({
   fullName: z.string().min(2, 'Enter your full name'),
   phoneNumber: ghanaPhoneSchema,
   email: z.string().email('Enter a valid email address').optional().or(z.literal('')),
+  affiliateCode: z.string().optional(),
 });
 
 // ─── Purchase Initiation Response ─────────────────────────────────────────────

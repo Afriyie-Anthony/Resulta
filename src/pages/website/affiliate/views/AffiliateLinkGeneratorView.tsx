@@ -227,7 +227,7 @@ export const AffiliateLinkGeneratorView: React.FC = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-teal-600 font-bold">•</span>
-                Any student who clicks your link has a 30-day commission attribution cookie.
+                Any student who clicks your link is attributed to you for 30 days on that device.
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-teal-600 font-bold">•</span>

@@ -8,6 +8,7 @@ import MobileBottomNav from '../../../components/website/layout/MobileBottomNav'
 import BuyBottomSheet from '../../../components/website/layout/BuyBottomSheet';
 import MoreBottomSheet from '../../../components/website/layout/MoreBottomSheet';
 import { useVoucherConfig, useInitiatePurchase } from '../../../hooks/usePurchase';
+import { getReferralCode } from '../../../utils/referral';
 
 const voucherConfigData = {
   wassce: {
@@ -130,6 +131,7 @@ const PurchasePage: React.FC = () => {
         fullName,
         phoneNumber: phone,
         email: email || '',
+        affiliateCode: getReferralCode(),
       },
       {
         onSuccess: (data) => {

@@ -5,6 +5,7 @@ import { ToastProvider } from './components/ui/Toast';
 import ProtectedRoute from './components/website/layout/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import ScrollToTop from './components/ScrollToTop';
+import ReferralCapture from './components/ReferralCapture';
 import Home from './pages/website/Home';
 import PurchasePage from './pages/website/purchase/PurchasePage';
 import PurchaseVerifyPage from './pages/website/purchase/PurchaseVerifyPage';
@@ -76,6 +77,7 @@ export default function App() {
     <HelmetProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <ReferralCapture />
         <AuthProvider>
           <ToastProvider>
             <AppRoutes />
