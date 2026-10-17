@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import type { BaseComponentProps } from '../../types/ui';
 import { Button } from '../ui/Button';
-import { buildReferralLink, copyToClipboard, formatGhanaPhone } from '../../utils/formatters';
+import { buildReferralLink, copyToClipboard, extractRefCode, formatGhanaPhone } from '../../utils/formatters';
 import { useAuth } from '../../contexts/AuthContext';
-import { useAffiliateProfile } from '../../hooks/useAffiliate';
+import { useAffiliateDashboard, useAffiliateProfile } from '../../hooks/useAffiliate';
 import {
   FiGrid,
   FiCreditCard,
@@ -36,8 +36,12 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
   const [copied, setCopied] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const referralCode = profile?.affiliateCode || '';
-  const referralLink = buildReferralLink(referralCode);
+  const { data: dashboard } = useAffiliateDashboard();
+  const referralCode =
+    profile?.affiliateCode ||
+    dashboard?.referralTools?.affiliateCode ||
+    extractRefCode(dashboard?.referralTools?.referralLink);
+  const referralLink = referralCode ? buildReferralLink(referralCode) : '';
 
   const displayName = profile?.user?.name || user?.name || profile?.accountName || 'Affiliate Partner';
   const rawPhone = profile?.phoneNumber || profile?.accountNumber || '';
@@ -184,6 +188,7 @@ export const AffiliateLayout: React.FC<AffiliateLayoutProps> = ({
               <span className="font-mono font-bold text-teal-600">{referralCode}</span>
               <button
                 onClick={handleCopyLink}
+                disabled={!referralLink}
                 className="ml-2 text-slate-400 hover:text-teal-600 p-1 rounded hover:bg-slate-200/50 transition-colors"
                 title="Copy referral link"
               >

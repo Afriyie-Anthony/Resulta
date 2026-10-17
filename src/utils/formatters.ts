@@ -64,6 +64,18 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 };
 
 /**
+ * Pull the `ref` code out of a referral URL (e.g. one returned by the API).
+ */
+export const extractRefCode = (link?: string | null): string => {
+  if (!link) return '';
+  try {
+    return new URL(link, 'https://placeholder.invalid').searchParams.get('ref')?.trim() || '';
+  } catch {
+    return '';
+  }
+};
+
+/**
  * Build an affiliate referral link on the public website (not the API host).
  * Optional extra params (e.g. utm_campaign) are appended when non-empty.
  */

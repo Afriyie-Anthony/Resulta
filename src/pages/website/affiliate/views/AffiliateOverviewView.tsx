@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../../../../components/ui/Button';
 import { Badge } from '../../../../components/ui/Badge';
-import { formatCedi, formatDate, copyToClipboard, buildReferralLink } from '../../../../utils/formatters';
+import { formatCedi, formatDate, copyToClipboard, buildReferralLink, extractRefCode } from '../../../../utils/formatters';
 import {
   FiTrendingUp,
   FiDollarSign,
@@ -141,9 +141,14 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
   onRequestPayout,
 }) => {
   const [copied, setCopied] = useState(false);
-  const referralCode = data?.referralTools?.affiliateCode || 'N/A';
-  // Built client-side: the API's referralLink points at the backend host, not the public site
-  const referralLink = buildReferralLink(data?.referralTools?.affiliateCode || '');
+  // The code can arrive in several places; the API's referralLink points at the
+  // backend host, so only its `ref` param is reused and the link is rebuilt here.
+  const affiliateCode =
+    data?.referralTools?.affiliateCode ||
+    data?.profile?.affiliateCode ||
+    extractRefCode(data?.referralTools?.referralLink);
+  const referralCode = affiliateCode || 'N/A';
+  const referralLink = affiliateCode ? buildReferralLink(affiliateCode) : '';
 
   const handleCopyLink = async () => {
     const success = await copyToClipboard(referralLink);
@@ -304,6 +309,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
                     type="text"
                     readOnly
                     value={referralLink}
+                    placeholder="Your link appears once your affiliate code is assigned"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-mono focus:outline-none focus:border-teal-500 shadow-inner"
                   />
                 </div>
@@ -311,6 +317,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
                   variant="primary"
                   leftIcon={copied ? <FiCheck className="w-4 h-4 text-white" /> : <FiCopy className="w-4 h-4" />}
                   onClick={handleCopyLink}
+                  disabled={!referralLink}
                   className="sm:w-auto shadow-md"
                 >
                   {copied ? 'Copied!' : 'Copy Link'}
@@ -384,6 +391,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
                 type="text"
                 readOnly
                 value={referralLink}
+                placeholder="Your link appears once your affiliate code is assigned"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-mono focus:outline-none focus:border-teal-500 shadow-inner"
               />
             </div>
@@ -391,6 +399,7 @@ export const AffiliateOverviewView: React.FC<AffiliateOverviewViewProps> = ({
               variant="primary"
               leftIcon={copied ? <FiCheck className="w-4 h-4 text-white" /> : <FiCopy className="w-4 h-4" />}
               onClick={handleCopyLink}
+              disabled={!referralLink}
               className="sm:w-auto shadow-md"
             >
               {copied ? 'Copied Link!' : 'Copy Referral Link'}
