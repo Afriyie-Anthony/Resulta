@@ -102,7 +102,7 @@ const slides = [
             </span>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-              Buy your WASSCE, BECE & CTVET result-checking vouchers quickly and securely.
+              Buy your WASSCE/NOVDEC, BECE & CTVET result-checking vouchers quickly and securely.
             </h1>
 
             <p className="font-extrabold text-accent mt-6 text-base text-3xl sm:text-4xl lg:text-5xl leading-relaxed">
@@ -261,7 +261,7 @@ const slides = [
                 <div className="absolute -top-10 -right-10 w-64 h-64 border border-white/10 rounded-full pointer-events-none" aria-hidden="true" />
                 <div className="absolute top-10 -left-8 w-48 h-48 border border-accent/20 rounded-full pointer-events-none" aria-hidden="true" />
 
-                <VoucherCard title="WASSCE" subtitle="VOUCHER" variant="gold" />
+                <VoucherCard title="WASSCE/NOVDEC" subtitle="VOUCHER" variant="gold" />
                 <VoucherCard title="BECE" subtitle="VOUCHER" variant="teal" overlap />
               </div>
             </div>
